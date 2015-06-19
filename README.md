@@ -9,8 +9,9 @@ using black-box mutation testing.
 
 Two versions are being developed in parallel
 (I haven't decided which is the best yet):
-	* [Black](black): black-box functions under test, black-box properties;
-	* [White](white): black-box functions under test, white-box properties.
+
+* [Black](black): black-box functions under test, black-box properties;
+* [White](white): black-box functions under test, white-box properties.
 
 See each respective folder.
 
