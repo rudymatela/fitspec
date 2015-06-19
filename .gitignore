@@ -1,0 +1,7 @@
+# cabal stuff
+*/dist
+*/cabal.sandbox.config
+*/.cabal-sandbox
+
+# vim stuff
+**.swp
