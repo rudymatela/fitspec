@@ -10,8 +10,8 @@ using black-box mutation testing.
 Two versions are being developed in parallel
 (I haven't decided which is the best yet):
 
-* [Black](black): black-box functions under test, black-box properties;
-* [White](white): black-box functions under test, white-box properties.
+* black-box functions under test, black-box properties: see the [black](black) folder;
+* black-box functions under test, white-box properties -- mutation by demand: see the [white](white) folder.
 
 See each respective folder.
 
