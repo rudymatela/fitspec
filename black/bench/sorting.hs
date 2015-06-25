@@ -14,8 +14,8 @@ permutation :: Eq a => [a] -> [a] -> Bool
 []     `permutation` (_:_) = False
 (x:xs) `permutation` ys    = x `elem` ys  &&  xs `permutation` delete x ys
 
-nOccurrences :: Eq a => a -> [a] -> Int
-nOccurrences x = length . filter (==x)
+count :: Eq a => a -> [a] -> Int
+count x = length . filter (==x)
 
 
 mapProps :: (Ord a, Show a, Listable a) => ([a] -> [a]) -> Int -> [Bool]
@@ -23,7 +23,7 @@ mapProps sort' n =
   [ holds n $ \xs ->          ordered (sort' xs)
   , holds n $ \xs ->           length (sort' xs) == length xs
   , holds n $ \x xs ->         elem x (sort' xs) == elem x xs
-  , holds n $ \x xs -> nOccurrences x (sort' xs) == nOccurrences x xs
+  , holds n $ \x xs ->        count x (sort' xs) == count x xs
   , holds n $ \xs ->   permutation xs (sort' xs)
   , holds n $ \xs ->            sort' (sort' xs) == sort' xs
   , holds n $ \x xs ->       insert x (sort' xs) == sort' (x:xs)
