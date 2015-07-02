@@ -12,3 +12,5 @@ To load from a sandboxed ghci:
 	cabal install enumerable
 	ghci -package-db .cabal-sandbox/*-packages.conf.d  Mutants.hs
 
+
+[sized-functors]: https://github.com/JonasDuregard/sized-functors
