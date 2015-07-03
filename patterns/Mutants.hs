@@ -99,7 +99,7 @@ result ps a r
   where pids  = [ pid | (pid,o) <- ps, o /= Killed]
         
         os                        = map snd ps
-        merge (old,n,x) (new,m,y) = (if n == 0 && m > 0 then new else old,n+m,x+y)
+        merge (new,n,x) (old,m,y) = (if m == 0 && n > 0 then new else old,n+m,x+y)
         rep n x                   = r{survivors = insertWith merge pids (a,n,x) (survivors r)}
 
 framework :: [a] -> PropertySet a -> Result a
