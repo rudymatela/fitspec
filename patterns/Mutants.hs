@@ -14,6 +14,7 @@ import Data.List (sortBy, sort)
 import Data.Ord (comparing)
 import Data.Map(Map, insertWith, toList, empty, delete)
 
+
 attach :: Eq b => (a -> b) -> (a -> Maybe b) -> IO (IO (Bool,Bool), a -> b)
 attach original mutant = do
   r <- newIORef False -- Has the function been executed on a modified value
@@ -26,8 +27,8 @@ attach original mutant = do
       m = do
         x <- readIORef r
         y <- readIORef s
-        writeIORef r False
-        writeIORef s False
+        -- writeIORef r False
+        -- writeIORef s False
         return (x,y)
   return (m, f)
 
@@ -85,25 +86,24 @@ type PropertySet a  = [(PropertyID, a -> Outcome)]
 data Result a = Result 
   { survivors :: Map [PropertyID] (a,Int,Int) -- Maps property subsets to minimal survivor, and number of survivors divided into actual/uncovered survivors
   , improper  :: Int
-  , killed    :: Int
+--  , killed    :: Int
   }
 
 
 result :: [(PropertyID,Outcome)] -> a -> Result a -> Result a
 result ps a r
-  | Survived `elem` os       = r{survivors = 
-                 insertWith merge pids (a,1,0) (survivors r)}
-  | Killed `elem` os         = r{killed = killed r + 1}
-  | Unchanged `elem` os      = r{improper = improper r + 1}
-  | otherwise                = r{survivors = 
-                 insertWith merge pids (a,0,1) (survivors r)}
-                                  -- Failure to match, report separately?
+  | Survived `elem` os       = rep 1 0  -- Actual survivor
+  | Killed `elem` os         = rep 0 1  -- Failure to match on subset
+  | Unchanged `elem` os      = r{improper = improper r + 1} -- Either kill or survived, later
+  | otherwise                = rep 0 1  -- Failure to match on complete set
   where pids  = [ pid | (pid,o) <- ps, o /= Killed]
-        os    = map snd ps
+        
+        os                        = map snd ps
         merge (old,n,x) (new,m,y) = (if n == 0 && m > 0 then new else old,n+m,x+y)
+        rep n x                   = r{survivors = insertWith merge pids (a,n,x) (survivors r)}
 
 framework :: [a] -> PropertySet a -> Result a
-framework ms ps = go ms Result{survivors = Data.Map.empty, improper = 0, killed = 0} where
+framework ms ps = go ms Result{survivors = Data.Map.empty, improper = 0} where
   go []      r  = r
   go (x:xs)  r  = go xs $ result [(pid,p x) | (pid,p) <- ps ] x r
 
@@ -112,7 +112,7 @@ framework ms ps = go ms Result{survivors = Data.Map.empty, improper = 0, killed 
 report :: Show a => Result a -> IO ()
 report r@Result{survivors = m} = do
   putStr "Discarded: " >> print (improper r)
-  putStr "Killed: " >> print (killed r)
+--  putStr "Killed: " >> print (killed r)
   putStrLn ""
   let xs                  =  toList (delete [] m) -- sortBy (comparing (snd . snd)) $
       rep (pids, (a,n,m))  
