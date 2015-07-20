@@ -12,8 +12,10 @@ import Data.Maybe(isJust, isNothing)
 
 import Data.List (sortBy, sort)
 import Data.Ord (comparing)
-import Data.Map(Map, insertWith, toList, empty, delete)
 
+import qualified Data.Map as M (Map, insertWith, toList, empty, delete)
+
+import BitMask
 
 attach :: Eq b => (a -> b) -> (a -> Maybe b) -> IO (IO (Bool,Bool), a -> b)
 attach original mutant = do
@@ -44,9 +46,6 @@ mutants :: (Parameter a, Enumerable b) => Int -> (Integer, [Mutator a b])
 mutants k = (crds, vs) where
   crds = sum $ take (k+1) $ count $ countparam vs
   vs = concat $ values' k
-
--- |Minimal, proper mutants (unless they accidentally mirror the original function)
-minis k = tail $ filter mini $ snd $ mutants k
 
 mutate :: Eq b => (a -> b) -> Mutator a b -> IO (IO (Bool,Bool), (a -> b))
 mutate f m = attach f (m $$)
@@ -84,7 +83,7 @@ prepost n f p = runTests n $ \a -> p a (f a)
 type PropertyID     = Int
 type PropertySet a  = [(PropertyID, a -> Outcome)]
 data Result a = Result 
-  { survivors :: Map [PropertyID] (a,Int,Int) -- Maps property subsets to minimal survivor, and number of survivors divided into actual/uncovered survivors
+  { survivors :: M.Map BitSet (a,Int,Int) -- Maps property subsets to minimal survivor, and number of survivors divided into actual/uncovered survivors
   , improper  :: Int
 --  , killed    :: Int
   }
@@ -93,45 +92,61 @@ data Result a = Result
 result :: [(PropertyID,Outcome)] -> a -> Result a -> Result a
 result ps a r
   | Survived `elem` os       = rep 1 0  -- Actual survivor
-  | Killed `elem` os         = rep 0 1  -- Failure to match on subset
+  | Killed `elem` os         = rep 0 1  -- Failure to match on subset -- What if os is all UCh?
   | Unchanged `elem` os      = r{improper = improper r + 1} -- Either kill or survived, later
   | otherwise                = rep 0 1  -- Failure to match on complete set
-  where pids  = [ pid | (pid,o) <- ps, o /= Killed]
+  where pids  = fromList [ pid | (pid,o) <- ps, o /= Killed]
         
         os                        = map snd ps
         merge (new,n,x) (old,m,y) = (if m == 0 && n > 0 then new else old,n+m,x+y)
-        rep n x                   = r{survivors = insertWith merge pids (a,n,x) (survivors r)}
+        rep n x                   = r{survivors = M.insertWith merge pids (a,n,x) (survivors r)}
 
 framework :: [a] -> PropertySet a -> Result a
-framework ms ps = go ms Result{survivors = Data.Map.empty, improper = 0} where
+framework ms ps = go ms Result{survivors = M.empty, improper = 0} where
   go []      r  = r
   go (x:xs)  r  = go xs $ result [(pid,p x) | (pid,p) <- ps ] x r
 
 
-
-report :: Show a => Result a -> IO ()
-report r@Result{survivors = m} = do
+report :: Show b => Int -> Result (Mutator a b) -> IO ()
+report numprops r@Result{survivors = m} = do
   putStr "Discarded: " >> print (improper r)
 --  putStr "Killed: " >> print (killed r)
   putStrLn ""
-  let xs                  =  toList (delete [] m) -- sortBy (comparing (snd . snd)) $
+  let keys                =  map fst $ M.toList m
+      xs                  =  M.toList (M.delete emp m) -- sortBy (comparing (snd . snd)) $
       rep (pids, (a,n,m))  
         | n > 0 = do
-                print pids 
+                print (toList pids) 
                 putStr $ show n ++ " survivors"
                 when (m > 0) $ putStr $ " and " ++ show m ++ " uncovered cases"
                 putStrLn $ ". Minimal survivor:"
-                print a >> putStrLn ""
+                putStrLn (showMutant a)
+                putStrLn ""
                             
         | m > 0 = do 
-                print pids
+                print (toList pids) 
                 putStrLn $ show m ++ " uncovered cases. Minimal uncovered:"
-                print a >> putStrLn ""
+                putStrLn (showMutant a)
+                putStrLn ""
   mapM_ rep xs
 
+  putStrLn ""
+  putStrLn "mimimal complete sets: "
+  mapM_ (print . toList) (findComplete numprops keys)
+  putStrLn ""
 
 numbered :: [(a -> Outcome)] -> PropertySet a
 numbered xs = zip [1..] xs
+
+data Mutated a = NotMutated | Mutated a
+instance Show a => Show (Mutated a) where
+  show NotMutated   = "original i"
+  show (Mutated a)  = show a
+toMutated :: Maybe a -> Mutated a 
+toMutated = maybe NotMutated Mutated
+
+showMutant :: Show b => Mutator a b -> String
+showMutant = ("\\i@" ++) . drop 1 . show . fmap toMutated 
 
 
 run :: (Eq b, Show b, Enumerable b, Parameter a) => 
@@ -139,42 +154,40 @@ run :: (Eq b, Show b, Enumerable b, Parameter a) =>
 run k prs f = do
   putStrLn $ "Killing "++show n++" mutants"
   putStrLn $ show n'++" proper mutants\n"
-  report $ framework ms ps
+  report (length prs) $ framework ms ps
   where
     (n,raws) = mutants k
     n' = length ms
-    ms = tail $ filter mini $ raws
+    ms = tail $ filter isMinimal $ raws
 
     -- ps 
     ps = numbered $ map (useMutant' f) prs 
 
-
-
-
-
-
-
-
+run2 :: (Eq c, Show c, Enumerable c, Parameter a, Parameter b) => 
+   Int -> [((a -> b -> c) -> Bool)] -> (a -> b -> c) -> IO () 
+run2 k prs f = run k (map (. curry) prs) (uncurry f)
 
 
 
 
 
 -- Example 1
-ex1 k n = run k [assoc n, single n, nil n] append
+ex1 k n = run2 k (map ($ n) [assoc, single, nil, appends, revdist, drops, takes]) (++)
 
+assoc, single, nil, revdist, appends, drops, takes :: Int -> ([Bool] -> [Bool] -> [Bool]) -> Bool
 
-append = uncurry (++) :: ([Bool],[Bool]) -> [Bool]
+assoc k (+)    = runTests k $ \(x,y,z) -> x + (y + z) == (x + y) + z
 
-assoc :: Int -> (([Bool],[Bool]) -> [Bool]) -> Bool
-assoc k ap = let (+) = curry ap 
-           in runTests k $ \(x,y,z) -> x + (y + z) == (x + y) + z
+single k (+)   = runTests k $ \(x,xs) -> [x] + xs == x:xs
 
-single :: Int -> (([Bool],[Bool]) -> [Bool]) -> Bool
-single k ap = let (+) = curry ap 
-           in runTests k $ \(x,xs) -> [x] + xs == x:xs
+nil k (+)      = runTests k $ \xs -> [] + xs == xs
 
-nil :: Int -> (([Bool],[Bool]) -> [Bool]) -> Bool
-nil k ap = let (+) = curry ap 
-           in runTests k $ \xs -> [] + xs == xs
+revdist k (+)  = runTests k $ \(xs,ys) -> reverse ys + reverse xs == reverse (xs + ys)
+
+appends k (+)  = runTests k $ \(xs,ys) -> xs + ys == xs ++ ys
+
+drops k (+)    = runTests k $ \(xs,ys) -> drop (length xs) (xs + ys) == ys
+
+takes k (+)    = runTests k $ \(xs,ys) -> take (length xs) (xs + ys) == xs
+
 
