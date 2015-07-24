@@ -63,16 +63,17 @@ propertyMap n insert'' deleteMin' merge'' = runListate3 insert'' deleteMin' merg
                                           $ traverse (Compose . Compose)
   [ lholds3 n $ nullProperty 
   , lholds3 n $ insertCommut
-  , lholds3 n $ \(h,x) -> do insertxh <- lsMutateApply2 x h
+  , lholds3 n $ \(h,x) -> do insertxh <- lapp x h
                              return . return . return $ null (insertxh) == False
-  , lholds3 n $ \(h,h1,x) -> do insertxh1 <- lsMutateApply2 x h1
-                                return . return $ do mergehinsertxh1 <- lsMutateApply2 h insertxh1
+  , lholds3 n $ \(h,h1,x) -> do insertxh1 <- lapp x h1
+                                return . return $ do mergehinsertxh1 <- lapp h insertxh1
                                                      return True  -- 11  incomplete
   , lholds3 n $ \h -> return $ do deletemin_h <- lsMutateApply h
-                                  return $ do merge_h_deletemin_h <- lsMutateApply2 h deletemin_h
-                                              merge_h_h <- lsMutateApply2 h h
+                                  return $ do merge_h_deletemin_h <- lapp h deletemin_h
+                                              merge_h_h <- lapp h h
                                               return True -- 13 incomplete
   ]
+  where lapp = uncurry lsMutateApply
   {-
   [ lholds3 n $ \x y h ->      insert' x (insert' y h) == insert' y (insert' x h) --  1
   , lholds3 n $ \h x ->             null (insert' x h) == False                   --  2

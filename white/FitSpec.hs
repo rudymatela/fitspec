@@ -7,11 +7,7 @@ module FitSpec
 
   , Listate (..)
   , runListate
-  , runListate2
-  , runListate3
-  , lsMutateApply' -- TODO: DEBUG, remove this from exports
   , lsMutateApply
-  , lsMutateApply2
 
   , Sized (..)
 
@@ -82,36 +78,15 @@ data Listate a b c = Listate { listates :: Memo a b
                                         -> [[ (c,Memo a b) ]] -- a listing
                              }
 
-data Listate2 a b c d e = Listate2 { listate :: Memo a b
-                                             -> Memo c d
-                                             -> [[ (e,Memo a b,Memo c d) ]] }
-
--- I have to write this if I want to compose the Listate monad
--- see "Composing monads" by Mark Jones et al.
---
--- Probably impossible in this case?
-swap :: Listate a b (Listate c d e) -> Listate c d (Listate a b e)
-swap ls = Listate $ \m -> undefined
+data Listate2 a b c d e = Listate2 { listates2 :: Memo a b
+                                               -> Memo c d
+                                               -> [[ (e,Memo a b,Memo c d) ]] }
 
 runListate :: (a->b)
            -> Listate a b c
            -> [[ (c,Memo a b) ]]
 runListate f = (`listates` initMemo f)
 
-runListate2 :: (a->b)
-            -> (c->d)
-            -> Listate a b (Listate c d e)
-            -> [[ (e,Memo a b,Memo c d) ]]
-runListate2 f g ls = lsConcatMap (\(rs,m) -> lsmap (\(rs',m') -> (rs',m,m'))
-                                                   (rs `listates` initMemo g))
-                                 (ls `listates` initMemo f) -- runListate f ls
-
-runListate3 :: (a->b) -> (c->d) -> (e->f)
-            -> Listate a b (Listate c d (Listate e f g))
-            -> [[ (g,Memo a b,Memo c d,Memo e f) ]]
-runListate3 f g h ls = lsConcatMap (\(rs,m,m') -> lsmap (\(rs'',m'') -> (rs'',m,m',m''))
-                                                        (rs `listates` initMemo h))
-                                   (runListate2 f g ls)
 
 lsMutateApply :: (Ord a, Eq b, Sized a, Listable b)
               => a
@@ -143,11 +118,6 @@ lsMutateApply22 :: (Ord c, Eq d, Sized c, Listable d)
                 -> Listate2 a b c d d
 lsMutateApply22 x = Listate2 $ \m' m -> lsMutateApply' (\x m'' -> (x,m',m'')) x m
 
-
-lsMutateApply2 :: (Ord a, Ord b, Eq c, Sized a, Sized b, Listable c)
-               => a -> b
-               -> Listate (a,b) c c
-lsMutateApply2 = curry lsMutateApply
 
 instance Functor (Listate a b) where
   fmap = liftM

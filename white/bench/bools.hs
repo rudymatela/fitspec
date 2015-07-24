@@ -23,19 +23,19 @@ commutative :: (Ord a, Eq b, Listable b, Sized a)
             => (a,a)
             -> Listate (a,a) b Bool
 commutative (x,y) = (==) <$> x `op` y <*> y `op` x
-  where op = lsMutateApply2
+  where op = curry lsMutateApply
 
 allidempotent :: (Ord a, Listable a, Sized a)
               => a
               -> Listate (a,a) a Bool
 allidempotent x = (x ==) <$> x `op` x
-  where op = lsMutateApply2
+  where op = curry lsMutateApply
 
 associative :: (Listable a, Ord a, Sized a)
             => (a,a,a)
             -> Listate (a,a) a Bool
 associative (x,y,z) = (==) <$> (x % y >>= (% z)) <*> ((x %) =<< (y % z))
-  where (%) = lsMutateApply2
+  where (%) = curry lsMutateApply
 
 
 checknot = putLL 100
