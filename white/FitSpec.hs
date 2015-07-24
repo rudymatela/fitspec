@@ -27,8 +27,6 @@ module FitSpec
   , args
 
   , lholds
-  , lholds2
-  , lholds3
 
   , report
   , reportWith
@@ -203,40 +201,17 @@ instance Monad (Listate3 a b c d e f) where
             $ \m m' m'' -> lsConcatMap (\(x,m''',m'''',m''''') -> listates3 (gg x) m''' m'''' m''''')
                                      $ listates3 ff m m' m''
 
-ltest :: (c -> Listate a b Bool)
+ltest :: Monad m
+      => (c -> m Bool)
       -> [c]
-      -> Listate a b Bool
+      -> m Bool
 ltest prop xs = foldr (liftM2 (&&)) (return True) (map prop xs)
 
-lholds :: Listable c
+lholds :: (Monad m, Listable c)
        => Int
-       -> (c -> Listate a b Bool)
-       -> Listate a b Bool
+       -> (c -> m Bool)
+       -> m Bool
 lholds n prop = ltest prop (take n list)
-
-
-ltest2 :: (e -> Listate2 a b c d Bool)
-       -> [e]
-       -> Listate2 a b c d Bool
-ltest2 prop xs = foldr (liftM2 (&&)) (return True) (map prop xs)
-
-lholds2 :: Listable e
-        => Int
-        -> (e -> Listate2 a b c d Bool)
-        -> Listate2 a b c d Bool
-lholds2 n prop = ltest2 prop (take n list)
-
-
-ltest3 :: (g -> Listate3 a b c d e f Bool)
-       -> [g]
-       -> Listate3 a b c d e f Bool
-ltest3 prop xs = foldr (liftM2 (&&)) (return True) (map prop xs)
-
-lholds3 :: Listable g
-        => Int
-        -> (g -> Listate3 a b c d e f Bool)
-        -> Listate3 a b c d e f Bool
-lholds3 n prop = ltest3 prop (take n list)
 
 
 -- | Extra arguments for reporting functions

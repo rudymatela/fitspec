@@ -43,10 +43,10 @@ propertyMap :: (Ord a, Listable a, Sized a)
             -> ([a] -> [a])
             -> [[ ([Bool],Memo [a] [a],Memo [a] a) ]]
 propertyMap n head' tail' = runListate2 tail' head'
-                          $ sequence [ lholds2 n headIsHead
-                                     , lholds2 n tailIsTail
-                                     , lholds2 n headConsTail
-                                     , lholds2 n nullProperty
+                          $ sequence [ lholds n headIsHead
+                                     , lholds n tailIsTail
+                                     , lholds n headConsTail
+                                     , lholds n nullProperty
                                      ]
 
 main :: IO ()

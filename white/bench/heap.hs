@@ -61,24 +61,24 @@ propertyMap :: (Ord a, Sized a, Listable a)
             -> [[ ([Bool], Memo (a,Heap a) (Heap a), Memo (Heap a) (Heap a), Memo (Heap a,Heap a) (Heap a)) ]]
 propertyMap n insert'' deleteMin'' merge'' = runListate3 insert'' deleteMin'' merge''
                                           $ sequence
-  [ lholds3 n $ nullProperty 
-  , lholds3 n $ insertCommut
-  , lholds3 n $ \(h,x) -> do insertxh <- insert' x h
-                             return $ null (insertxh) == False
-  , lholds3 n $ \(h,x) -> do insertxh <- insert' x h
-                             return $ L.insert x (toList h) == toList (insertxh)
+  [ lholds n $ nullProperty
+  , lholds n $ insertCommut
+  , lholds n $ \(h,x) -> do insertxh <- insert' x h
+                            return $ null (insertxh) == False
+  , lholds n $ \(h,x) -> do insertxh <- insert' x h
+                            return $ L.insert x (toList h) == toList (insertxh)
   ,                       do deleteMinNil <- deleteMin' Nil
                              return $ deleteMinNil == Nil
-  , lholds3 n $ \(h,h1) -> do mergehh1 <- merge' h h1
-                              mergeh1h <- merge' h1 h
-                              return $ mergehh1 == mergeh1h
-  , lholds3 n $ \h -> do mergehnil <- merge' h Nil
-                         return $ mergehnil == h
-  , lholds3 n $ \(h,h1,h2) -> do mergeh1h2 <- merge' h1 h2
-                                 mergehh1h2 <- merge' h mergeh1h2
-                                 mergehh2 <- merge' h h2
-                                 mergeh1hh2 <- merge' h1 mergehh2
-                                 return $ mergehh1h2 == mergeh1hh2
+  , lholds n $ \(h,h1) -> do mergehh1 <- merge' h h1
+                             mergeh1h <- merge' h1 h
+                             return $ mergehh1 == mergeh1h
+  , lholds n $ \h -> do mergehnil <- merge' h Nil
+                        return $ mergehnil == h
+  , lholds n $ \(h,h1,h2) -> do mergeh1h2 <- merge' h1 h2
+                                mergehh1h2 <- merge' h mergeh1h2
+                                mergehh2 <- merge' h h2
+                                mergeh1hh2 <- merge' h1 mergehh2
+                                return $ mergehh1h2 == mergeh1hh2
   ]
   where insert' = curry lsMutateApply13
         deleteMin' = lsMutateApply23
