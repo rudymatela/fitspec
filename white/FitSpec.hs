@@ -6,8 +6,20 @@ module FitSpec
   , toList
 
   , Listate (..)
+  , Listate2 (..)
+  , Listate3 (..)
   , runListate
+  , runListate2
+  , runListate3
+
   , lsMutateApply
+
+  , lsMutateApply12
+  , lsMutateApply22
+
+  , lsMutateApply13
+  , lsMutateApply23
+  , lsMutateApply33
 
   , Sized (..)
 
@@ -83,10 +95,30 @@ data Listate2 a b c d e = Listate2 { listates2 :: Memo a b
                                                -> Memo c d
                                                -> [[ (e,Memo a b,Memo c d) ]] }
 
+data Listate3 a b c d e f g = Listate3 { listates3 :: Memo a b
+                                                   -> Memo c d
+                                                   -> Memo e f
+                                                   -> [[ (g,Memo a b,Memo c d,Memo e f) ]] }
+
 runListate :: (a->b)
            -> Listate a b c
            -> [[ (c,Memo a b) ]]
 runListate f = (`listates` initMemo f)
+
+
+runListate2 :: (a->b)
+            -> (c->d)
+            -> Listate2 a b c d e
+            -> [[ (e,Memo a b,Memo c d) ]]
+runListate2 f g = \ls -> listates2 ls (initMemo f) (initMemo g)
+
+
+runListate3 :: (a->b)
+            -> (c->d)
+            -> (e->f)
+            -> Listate3 a b c d e f g
+            -> [[ (g,Memo a b,Memo c d,Memo e f) ]]
+runListate3 f g h = \ls -> listates3 ls (initMemo f) (initMemo g) (initMemo h)
 
 
 lsMutateApply :: (Ord a, Eq b, Sized a, Listable b)
@@ -120,6 +152,22 @@ lsMutateApply22 :: (Ord c, Eq d, Sized c, Listable d)
 lsMutateApply22 x = Listate2 $ \m' m -> lsMutateApply' (\x m'' -> (x,m',m'')) x m
 
 
+lsMutateApply13 :: (Ord a, Eq b, Sized a, Listable b)
+                => a
+                -> Listate3 a b c d e f b
+lsMutateApply13 x = Listate3 $ \m n o -> lsMutateApply' (\x m' -> (x,m',n,o)) x m
+
+lsMutateApply23 :: (Ord c, Eq d, Sized c, Listable d)
+                => c
+                -> Listate3 a b c d e f d
+lsMutateApply23 x = Listate3 $ \m n o -> lsMutateApply' (\x n' -> (x,m,n',o)) x n
+
+lsMutateApply33 :: (Ord e, Eq f, Sized e, Listable f)
+                => e
+                -> Listate3 a b c d e f f
+lsMutateApply33 x = Listate3 $ \m n o -> lsMutateApply' (\x o' -> (x,m,n,o')) x o
+
+
 instance Functor (Listate a b) where
   fmap = liftM
 
@@ -131,6 +179,29 @@ instance Monad (Listate a b) where
   return x = Listate $ \m -> [[ (x,m) ]]
   ff >>= gg = Listate $ \m -> lsConcatMap (\(x,m') -> listates (gg x) m') $ listates ff m
 
+instance Functor (Listate2 a b c d) where
+  fmap = liftM
+
+instance Applicative (Listate2 a b c d) where
+  pure = return
+  (<*>) = ap
+
+instance Monad (Listate2 a b c d) where
+  return x = Listate2 $ \m m' -> [[ (x,m,m') ]]
+  ff >>= gg = Listate2 $ \m m' -> lsConcatMap (\(x,m'',m''') -> listates2 (gg x) m'' m''') $ listates2 ff m m'
+
+instance Functor (Listate3 a b c d e f) where
+  fmap = liftM
+
+instance Applicative (Listate3 a b c d e f) where
+  pure = return
+  (<*>) = ap
+
+instance Monad (Listate3 a b c d e f) where
+  return x = Listate3 $ \m m' m'' -> [[ (x,m,m',m'') ]]
+  ff >>= gg = Listate3
+            $ \m m' m'' -> lsConcatMap (\(x,m''',m'''',m''''') -> listates3 (gg x) m''' m'''' m''''')
+                                     $ listates3 ff m m' m''
 
 ltest :: (c -> Listate a b Bool)
       -> [c]
@@ -143,29 +214,30 @@ lholds :: Listable c
        -> Listate a b Bool
 lholds n prop = ltest prop (take n list)
 
-ltest2 :: (e -> Listate a b (Listate c d Bool))
+
+ltest2 :: (e -> Listate2 a b c d Bool)
        -> [e]
-       -> Listate a b (Listate c d Bool)
-ltest2 prop xs = getCompose
-               $ foldr (liftA2 (&&)) (pure True) (map (fmap Compose prop) xs)
+       -> Listate2 a b c d Bool
+ltest2 prop xs = foldr (liftM2 (&&)) (return True) (map prop xs)
 
 lholds2 :: Listable e
         => Int
-        -> (e -> Listate a b (Listate c d Bool))
-        -> Listate a b (Listate c d Bool)
+        -> (e -> Listate2 a b c d Bool)
+        -> Listate2 a b c d Bool
 lholds2 n prop = ltest2 prop (take n list)
 
-ltest3 :: (g -> Listate a b (Listate c d (Listate e f Bool)))
+
+ltest3 :: (g -> Listate3 a b c d e f Bool)
        -> [g]
-       -> Listate a b (Listate c d (Listate e f Bool))
-ltest3 prop xs = getCompose . getCompose
-               $ foldr (liftA2 (&&)) (pure True) (map (fmap (Compose . Compose) prop) xs)
+       -> Listate3 a b c d e f Bool
+ltest3 prop xs = foldr (liftM2 (&&)) (return True) (map prop xs)
 
 lholds3 :: Listable g
         => Int
-        -> (g -> Listate a b (Listate c d (Listate e f Bool)))
-        -> Listate a b (Listate c d (Listate e f Bool))
+        -> (g -> Listate3 a b c d e f Bool)
+        -> Listate3 a b c d e f Bool
 lholds3 n prop = ltest3 prop (take n list)
+
 
 -- | Extra arguments for reporting functions
 data Args = Args

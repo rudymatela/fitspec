@@ -38,18 +38,19 @@ instance (Ord a, Sized a) => Sized (Heap a) where
 
 nullProperty :: (Ord a, Listable a, Sized a)
              => a
-             -> Listate (a,Heap a) (Heap a) (Listate (Heap a) (Heap a) (Listate (Heap a,Heap a) (Heap a) Bool))
-nullProperty x = (return . return . return) True
+             -> Listate3 (a,Heap a) (Heap a)  (Heap a) (Heap a)  (Heap a,Heap a) (Heap a) Bool
+nullProperty x = return True
 
 
 insertCommut :: (Ord a, Listable a, Sized a)
              => (a,a,Heap a)
-             -> Listate (a,Heap a) (Heap a) (Listate (Heap a) (Heap a) (Listate (Heap a,Heap a) (Heap a) Bool))
-insertCommut (x,y,h) = do insertyh        <- lsMutateApply (y,h)
-                          insertxinsertyh <- lsMutateApply (x,insertyh)
-                          insertxh        <- lsMutateApply (x,h)
-                          insertyinsertxh <- lsMutateApply (y,insertxh)
-                          return . return . return $ insertyinsertxh == insertxinsertyh
+             -> Listate3 (a,Heap a) (Heap a)  (Heap a) (Heap a)  (Heap a,Heap a) (Heap a) Bool
+insertCommut (x,y,h) = do insertyh        <- insert' y h
+                          insertxinsertyh <- insert' x insertyh
+                          insertxh        <- insert' x h
+                          insertyinsertxh <- insert' y insertxh
+                          return $ insertyinsertxh == insertxinsertyh
+  where insert' = curry lsMutateApply13
 
 
 propertyMap :: (Ord a, Sized a, Listable a)
@@ -58,22 +59,30 @@ propertyMap :: (Ord a, Sized a, Listable a)
             -> (Heap a -> Heap a)
             -> ((Heap a,Heap a) -> Heap a)
             -> [[ ([Bool], Memo (a,Heap a) (Heap a), Memo (Heap a) (Heap a), Memo (Heap a,Heap a) (Heap a)) ]]
-propertyMap n insert'' deleteMin' merge'' = runListate3 insert'' deleteMin' merge''
-                                          $ getCompose . getCompose
-                                          $ traverse (Compose . Compose)
+propertyMap n insert'' deleteMin'' merge'' = runListate3 insert'' deleteMin'' merge''
+                                          $ sequence
   [ lholds3 n $ nullProperty 
   , lholds3 n $ insertCommut
-  , lholds3 n $ \(h,x) -> do insertxh <- lapp x h
-                             return . return . return $ null (insertxh) == False
-  , lholds3 n $ \(h,h1,x) -> do insertxh1 <- lapp x h1
-                                return . return $ do mergehinsertxh1 <- lapp h insertxh1
-                                                     return True  -- 11  incomplete
-  , lholds3 n $ \h -> return $ do deletemin_h <- lsMutateApply h
-                                  return $ do merge_h_deletemin_h <- lapp h deletemin_h
-                                              merge_h_h <- lapp h h
-                                              return True -- 13 incomplete
+  , lholds3 n $ \(h,x) -> do insertxh <- insert' x h
+                             return $ null (insertxh) == False
+  , lholds3 n $ \(h,x) -> do insertxh <- insert' x h
+                             return $ L.insert x (toList h) == toList (insertxh)
+  ,                       do deleteMinNil <- deleteMin' Nil
+                             return $ deleteMinNil == Nil
+  , lholds3 n $ \(h,h1) -> do mergehh1 <- merge' h h1
+                              mergeh1h <- merge' h1 h
+                              return $ mergehh1 == mergeh1h
+  , lholds3 n $ \h -> do mergehnil <- merge' h Nil
+                         return $ mergehnil == h
+  , lholds3 n $ \(h,h1,h2) -> do mergeh1h2 <- merge' h1 h2
+                                 mergehh1h2 <- merge' h mergeh1h2
+                                 mergehh2 <- merge' h h2
+                                 mergeh1hh2 <- merge' h1 mergehh2
+                                 return $ mergehh1h2 == mergeh1hh2
   ]
-  where lapp = uncurry lsMutateApply
+  where insert' = curry lsMutateApply13
+        deleteMin' = lsMutateApply23
+        merge' = curry lsMutateApply33
   {-
   [ lholds3 n $ \x y h ->      insert' x (insert' y h) == insert' y (insert' x h) --  1
   , lholds3 n $ \h x ->             null (insert' x h) == False                   --  2
