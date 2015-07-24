@@ -235,26 +235,30 @@ reportWith args nf rss = putStrLn
                        . table "   "
                        . map showResult
                        . maybe id take (limitResults args)
-                       $ fitspec nf rss
+                       $ fitspec fst snd nf rss
   where showResult (x,y,mm) = [ show x, show y, showM mm ]
         showM Nothing  = ""
         showM (Just m) = showAsCaseExp (functionName args) (variableName args) m
 
-fitspec :: Int -> [[([Bool], a)]] -> [(Int, [Int], Maybe a)]
-fitspec n rss@(((rs,_):_):_) = filterU relevant
-                             . sortBy (comparing $ \(s,ids,_) -> (s, length ids))
-                             . tag
-                             . fitspec' n
-                             $ rss
-  where tag = zipWith (\ids (rs,f) -> (rs,ids,f)) (subsets [1..length rs])
+fitspec :: (a -> [Bool]) -> (a -> b)
+        -> Int -> [[a]] -> [(Int, [Int], Maybe b)]
+fitspec getrs getsm n rss@((p:_):_) =
+      filterU relevant
+    . sortBy (comparing $ \(s,ids,_) -> (s, length ids))
+    . tag
+    . fitspec' getrs getsm n
+    $ rss
+  where tag = zipWith (\ids (ns,sms) -> (ns,ids,sms)) (subsets [1..length (getrs p)])
         (n,is,_) `relevant` (n',is',_) = not (n == n' && is `contained` is')
-fitspec _ _ = error "fitspec: something went wrong, no results to analyse?"
+fitspec _ _ _ _ = error "fitspec: something went wrong, no results to analyse?"
 
-fitspec' :: Int -> [[([Bool], a)]] -> [(Int, Maybe a)]
-fitspec' n = map (\fs -> (count isJust fs, listToMaybe $ catMaybes fs))
-           . transpose
-           . map (\(rs,f) -> map (\b -> if b then Just f else Nothing) (compositions rs))
-           . take n . tail . concat
+fitspec' :: (a -> [Bool]) -> (a -> b)
+         -> Int -> [[a]] -> [(Int, Maybe b)]
+fitspec' getrs getsm n =
+      map (\fs -> (count isJust fs, listToMaybe $ catMaybes fs))
+    . transpose
+    . map (\p -> map (\b -> if b then Just (getsm p) else Nothing) (compositions (getrs p)))
+    . take n . tail . concat
   where count f = length . filter f
 
 
