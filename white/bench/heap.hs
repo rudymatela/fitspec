@@ -106,4 +106,5 @@ propertyMap n insert'' deleteMin'' merge'' = runListate3 insert'' deleteMin'' me
 
 main :: IO ()
 main = do putLL 4 $ propertyMap 4 (uncurry insert) (deleteMin :: Heap Bool -> Heap Bool) (uncurry merge)
+          report3 8 $ propertyMap 4 (uncurry insert) (deleteMin :: Heap Bool -> Heap Bool) (uncurry merge)
 

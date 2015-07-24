@@ -30,6 +30,11 @@ module FitSpec
 
   , report
   , reportWith
+  , report2
+  , report2With
+  , report3
+  , report3With
+
   , fitspec
   )
 where
@@ -239,6 +244,39 @@ reportWith args nf rss = putStrLn
   where showResult (x,y,mm) = [ show x, show y, showM mm ]
         showM Nothing  = ""
         showM (Just m) = showAsCaseExp (functionName args) (variableName args) m
+
+report2 :: (Show a, Show b, Eq b, Show c, Show d, Eq d)
+        => Int -> [[([Bool], Memo a b, Memo c d)]] -> IO ()
+report2 nf rss = report2With args nf rss
+
+report2With :: (Show a, Show b, Eq b, Show c, Show d, Eq d)
+            => Args -> Int -> [[([Bool], Memo a b, Memo c d)]] -> IO ()
+report2With args nf rss = putStrLn
+                        . table "   "
+                        . map showResult
+                        . maybe id take (limitResults args)
+                        $ fitspec (\(x,_,_)->x) (\(_,m,n)->(m,n)) nf rss
+  where showResult (x,y,mm) = [ show x, show y, showM mm ]
+        showM Nothing  = ""
+        showM (Just (m,n)) = showAsCaseExp (functionName args) (variableName args) m
+                          ++ showAsCaseExp (functionName args) (variableName args) n
+
+report3 :: (Show a, Show b, Eq b, Show c, Show d, Eq d, Show e, Show f, Eq f)
+        => Int -> [[([Bool], Memo a b, Memo c d, Memo e f)]] -> IO ()
+report3 nf rss = report3With args nf rss
+
+report3With :: (Show a, Show b, Eq b, Show c, Show d, Eq d, Show e, Show f, Eq f)
+            => Args -> Int -> [[([Bool], Memo a b, Memo c d, Memo e f)]] -> IO ()
+report3With args nf rss = putStrLn
+                        . table "   "
+                        . map showResult
+                        . maybe id take (limitResults args)
+                        $ fitspec (\(x,_,_,_)->x) (\(_,m,n,o)->(m,n,o)) nf rss
+  where showResult (x,y,mm) = [ show x, show y, showM mm ]
+        showM Nothing  = ""
+        showM (Just (m,n,o)) = showAsCaseExp (functionName args) (variableName args) m
+                            ++ showAsCaseExp (functionName args) (variableName args) n
+                            ++ showAsCaseExp (functionName args) (variableName args) o
 
 fitspec :: (a -> [Bool]) -> (a -> b)
         -> Int -> [[a]] -> [(Int, [Int], Maybe b)]
