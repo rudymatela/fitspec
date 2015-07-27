@@ -1,4 +1,4 @@
-
+module Mutants where
 import Control.Enumerable
 import Control.Enumerable.Functions
 import Control.Enumerable.Values
@@ -7,43 +7,33 @@ import Control.Enumerable.Count
 import System.IO.Unsafe
 import Data.IORef
 import Control.Monad(when)
-import Data.Maybe(isJust)
+import Data.Maybe(isJust, isNothing)
 -- import Data.Either(partitionEithers)
 
-import Data.List (sort) -- Just for testing
+import Data.List (sortBy, sort)
+import Data.Ord (comparing)
 
-attach :: Eq b => (a -> b) -> (a -> b) -> IO (IO Bool, a -> b)
+import qualified Data.Map as M (Map, insertWith, toList, empty, delete)
+
+import BitMask
+
+attach :: Eq b => (a -> b) -> (a -> Maybe b) -> IO (IO (Bool,Bool), a -> b)
 attach original mutant = do
-  r <- newIORef False
-  let f a = let b = mutant a 
-            in unsafePerformIO $ do
+  r <- newIORef False -- Has the function been executed on a modified value
+  s <- newIORef False -- Has the function been executed
+  let f a = maybe (original a) (x a) (mutant a) 
+      x a b = unsafePerformIO $ do
+                writeIORef s True
                 when (b /= original a) (writeIORef r True)
-                return b 
-  return (readIORef r, f)
+                return b
+      m = do
+        x <- readIORef r
+        y <- readIORef s
+        -- writeIORef r False
+        -- writeIORef s False
+        return (x,y)
+  return (m, f)
 
-
-test1 f m xs = do 
-  (mb, f') <- attach f m
-  print (map f' xs)
-  mb >>= print
-  
-
-
-newtype FreeBool = Free {freeBool :: Bool}
-instance Enumerable FreeBool where
-  enumerate = share $ fmap Free (pure False <|> pure True)
-
-patterns :: Parameter a => Int -> (Integer, [Function a Bool])
-patterns k = (crds, map (fmap freeBool) vs) where
-  crds = sum $ take (k+1) $ count $ countparam vs
-  vs = concat $ values' k
-
--- | Returns a minimal pattern (up to a given size limit) that distinguishes the elements of two lists
-partition :: Parameter a => Int -> [a] -> [a] -> Function a Bool 
-partition k xs ys = head [ p  |p <- snd (patterns k)
-                                    , not (any (p $$) xs)
-                                    , any (p $$) ys
-                                    ]
 
 
 
@@ -57,40 +47,30 @@ mutants k = (crds, vs) where
   crds = sum $ take (k+1) $ count $ countparam vs
   vs = concat $ values' k
 
-propers k = filter proper $ snd $ mutants k
+mutate :: Eq b => (a -> b) -> Mutator a b -> IO (IO (Bool,Bool), (a -> b))
+mutate f m = attach f (m $$)
 
-minis k = tail $ filter mini $ snd $ mutants k
 
-testmutants k = mutants k :: (Integer, [Mutator [Bool] [Bool]])
-testpropers k = propers k :: [Mutator [Bool] [Bool]]
-testminis   k = minis   k :: [Mutator [Bool] [Bool]]
+data Outcome = Survived
+             | Killed
+             | Unmatched
+             | Unchanged
+             deriving (Eq, Ord ,Show)
 
-overlay :: (a -> b) -> (a -> Maybe b) -> (a -> b)
-overlay f g a = maybe (f a) id (g a)
+useMutant :: Eq b => ((a -> b) -> Bool) -> (a -> b) -> Mutator a b -> IO Outcome
+useMutant p f m = do
+  (mb,f') <- mutate f m
+  case p f' of 
+    True   -> mb >>= \(proper,used) -> case (proper,used) of
+                      (False,False)    -> return Unmatched
+                      (True,True)      -> return Survived
+                      (False,True)     -> return Unchanged
+    False  -> return Killed
+  
 
-mutate :: Eq b => (a -> b) -> Mutator a b -> IO (IO Bool, (a -> b))
-mutate f m = attach f (overlay f (m $$))
+useMutant' :: Eq b => (a -> b) -> ((a -> b) -> Bool) -> Mutator a b -> Outcome
+useMutant' f p m = unsafePerformIO (useMutant p f m) -- This is probably safe, right?
 
-findMutant :: (Parameter a, Enumerable b, Eq b, Show b) => 
-                 Int -> (a -> b) -> ((a -> b) -> Bool) -> IO ()
-findMutant k f p = do
-  putStrLn $ "Killing "++show n++" mutants"
-  putStrLn $ show n'++" proper mutants\n"
-  go ps
-  where
-    (n,ms) = mutants k
-    n' = length ps
-    ps = tail $ filter mini $ ms
-    go [] = putStrLn "All mutants are dead."
-    go (x:xs) = do
-      (mb, f') <- mutate f x
-      case p f' of 
-        False -> go xs
-        True  -> do
-          used <- mb
-          if used  then putStrLn "One got through!" >> print x
-                   else putStrLn "Killed!" >> print x >> putStrLn "" >> 
-                        go xs
 
 runTests :: Enumerable x => Int -> (x -> Bool) -> Bool
 runTests n p = all p (take n (concatMap values [0..]))
@@ -100,29 +80,114 @@ prepost n f p = runTests n $ \a -> p a (f a)
 
 
 
+type PropertyID     = Int
+type PropertySet a  = [(PropertyID, a -> Outcome)]
+data Result a = Result 
+  { survivors :: M.Map BitSet (a,Int,Int) -- Maps property subsets to minimal survivor, and number of survivors divided into actual/uncovered survivors
+  , improper  :: Int
+--  , killed    :: Int
+  }
+
+
+result :: [(PropertyID,Outcome)] -> a -> Result a -> Result a
+result ps a r
+  | Survived `elem` os       = rep 1 0  -- Actual survivor
+  | Killed `elem` os         = rep 0 1  -- Failure to match on subset -- What if os is all UCh?
+  | Unchanged `elem` os      = r{improper = improper r + 1} -- Either kill or survived, later
+  | otherwise                = rep 0 1  -- Failure to match on complete set
+  where pids  = fromList [ pid | (pid,o) <- ps, o /= Killed]
+        
+        os                        = map snd ps
+        merge (new,n,x) (old,m,y) = (if m == 0 && n > 0 then new else old,n+m,x+y)
+        rep n x                   = r{survivors = M.insertWith merge pids (a,n,x) (survivors r)}
+
+framework :: [a] -> PropertySet a -> Result a
+framework ms ps = go ms Result{survivors = M.empty, improper = 0} where
+  go []      r  = r
+  go (x:xs)  r  = go xs $ result [(pid,p x) | (pid,p) <- ps ] x r
+
+
+report :: Show b => Int -> Result (Mutator a b) -> IO ()
+report numprops r@Result{survivors = m} = do
+  putStr "Discarded: " >> print (improper r)
+--  putStr "Killed: " >> print (killed r)
+  putStrLn ""
+  let keys                =  map fst $ M.toList m
+      xs                  =  M.toList (M.delete emp m) -- sortBy (comparing (snd . snd)) $
+      rep (pids, (a,n,m))  
+        | n > 0 = do
+                print (toList pids) 
+                putStr $ show n ++ " survivors"
+                when (m > 0) $ putStr $ " and " ++ show m ++ " uncovered cases"
+                putStrLn $ ". Minimal survivor:"
+                putStrLn (showMutant a)
+                putStrLn ""
+                            
+        | m > 0 = do 
+                print (toList pids) 
+                putStrLn $ show m ++ " uncovered cases. Minimal uncovered:"
+                putStrLn (showMutant a)
+                putStrLn ""
+  mapM_ rep xs
+
+  putStrLn ""
+  putStrLn "mimimal complete sets: "
+  mapM_ (print . toList) (findComplete numprops keys)
+  putStrLn ""
+
+numbered :: [(a -> Outcome)] -> PropertySet a
+numbered xs = zip [1..] xs
+
+data Mutated a = NotMutated | Mutated a
+instance Show a => Show (Mutated a) where
+  show NotMutated   = "original i"
+  show (Mutated a)  = show a
+toMutated :: Maybe a -> Mutated a 
+toMutated = maybe NotMutated Mutated
+
+showMutant :: Show b => Mutator a b -> String
+showMutant = ("\\i@" ++) . drop 1 . show . fmap toMutated 
+
+
+run :: (Eq b, Show b, Enumerable b, Parameter a) => 
+   Int -> [((a -> b) -> Bool)] -> (a -> b) -> IO () 
+run k prs f = do
+  putStrLn $ "Killing "++show n++" mutants"
+  putStrLn $ show n'++" proper mutants\n"
+  report (length prs) $ framework ms ps
+  where
+    (n,raws) = mutants k
+    n' = length ms
+    ms = tail $ filter isMinimal $ raws
+
+    -- ps 
+    ps = numbered $ map (useMutant' f) prs 
+
+run2 :: (Eq c, Show c, Enumerable c, Parameter a, Parameter b) => 
+   Int -> [((a -> b -> c) -> Bool)] -> (a -> b -> c) -> IO () 
+run2 k prs f = run k (map (. curry) prs) (uncurry f)
+
+
+
+
+
 -- Example 1
-ordered :: [Bool] -> Bool
-ordered (x:t@(y:_)) = x <= y && ordered t
-ordered _           = True
+ex1 k n = run2 k (map ($ n) [assoc, single, nil, appends, revdist, drops, takes]) (++)
 
-matchLength :: [Bool] -> [Bool] -> Bool
-matchLength xs ys = length xs == length ys
+assoc, single, nil, revdist, appends, drops, takes :: Int -> ([Bool] -> [Bool] -> [Bool]) -> Bool
 
+assoc k (+)    = runTests k $ \(x,y,z) -> x + (y + z) == (x + y) + z
 
-test_orders :: Int -> ([Bool] -> [Bool]) -> Bool
-test_orders n f = prepost n f $ \i o -> ordered o && matchLength i o
+single k (+)   = runTests k $ \(x,xs) -> [x] + xs == x:xs
 
-example1 k n = findMutant k sort (test_orders n) -- Parameters: max-size of mutants and number of tests
+nil k (+)      = runTests k $ \xs -> [] + xs == xs
 
+revdist k (+)  = runTests k $ \(xs,ys) -> reverse ys + reverse xs == reverse (xs + ys)
 
+appends k (+)  = runTests k $ \(xs,ys) -> xs + ys == xs ++ ys
 
--- Example 2
-append = uncurry (++)
+drops k (+)    = runTests k $ \(xs,ys) -> drop (length xs) (xs + ys) == ys
 
-assoc :: Int -> (([Bool],[Bool]) -> [Bool]) -> Bool
-assoc k ap = let (+) = curry ap 
-           in runTests k $ \(x,y,z) -> x + (y + z) == (x + y) + z
+takes k (+)    = runTests k $ \(xs,ys) -> take (length xs) (xs + ys) == xs
 
-
-example2 k n = findMutant k append (assoc n)
 
