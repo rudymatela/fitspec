@@ -35,6 +35,7 @@ import Data.Monoid
 import Data.Maybe (catMaybes, listToMaybe)
 import Mutate
 import Table
+import Utils
 
 -- | Extra arguments for 'getResultsWith' and 'reportWith'
 data Args a = Args
@@ -124,31 +125,9 @@ nSurvT pids pmap = filterU relevant
                                      (compositions (pmap func)))
   where (n,is,_) `relevant` (n',is',_) = not (n == n' && is `contained` is')
 
--- | 'subsets' @xs@ returns the list of sublists formed by taking values of @xs@
-subsets :: [a] -> [[a]]
-subsets []     = [[]]
-subsets (x:xs) = map (x:) (subsets xs) ++ subsets xs
-
 -- | 'compositions' @bs@ returns all compositions formed by taking values of @bs@
 compositions :: [Bool] -> [Bool]
 compositions = map and . subsets
-
--- | Check if all elements of a list is contained in another list
-contained :: Eq a => [a] -> [a] -> Bool
-xs `contained` ys = all (`elem` ys) xs
-
--- | 'filterU' filter greater-later elements in a list according to a partial
---   ordering relation.
---
--- > filterU (notContained) [[1],[2],[1,2,3],[3,4,5]] == [[1],[2],[3,4,5]]
-filterU :: (a -> a -> Bool) -> [a] -> [a]
-filterU f []     = []
-filterU f (x:xs) = x : filter (f x) (filterU f xs)
-
-boolToMaybe :: a -> Bool -> Maybe a
-boolToMaybe x p = if p
-                    then Just x
-                    else Nothing
 
 mutateBy :: (b->a) -> [a->a] -> [b->a]
 mutateBy f = map (. f)

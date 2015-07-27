@@ -1,4 +1,5 @@
 import FitSpec
+import FitSpecC
 import Data.List
 import Test.Check
 
@@ -51,6 +52,11 @@ sargs = args { functionName = "sort"
                          \++/ cons2 (\y ys -> ((y:ys) ++))
              }
 
+csargs = cargs { functionNames = ["sort"]
+               , variableNames = ["xs"]
+               , nResults = Just 10
+               }
+
 main :: IO ()
 main = do putStrLn "### Strict mutant enumerations ###"
           putStrLn "Booleans:"
@@ -59,8 +65,10 @@ main = do putStrLn "### Strict mutant enumerations ###"
           reportWith sargs  1000 sortI (`mapProps` 1000)
           putStrLn "Noples:"
           reportWith sargs  1000 sortU (`mapProps`   20)
+          putStrLn "Booleans (filtered):"
+          report1With csargs 1000 sortB (`mapProps` 1000)
+
 
 
 sortCounter :: (Bounded a, Ord a) => [a] -> [a]
 sortCounter = (++ [maxBound]) . sort
-

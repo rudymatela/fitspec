@@ -1,9 +1,11 @@
 import FitSpec
+import FitSpecC
 import Test.Check
 import Prelude hiding (null)
 import qualified Data.List as L
 import Data.Maybe (listToMaybe)
 import Heap
+import Utils (uncurry3)
 
 (==>) :: Bool -> Bool -> Bool
 False ==> _ = True
@@ -16,12 +18,11 @@ instance (Ord a, Listable a) => Listable (Heap a) where
 
 propertyMap :: (Ord a, Show a, Listable a)
             => Int
-            -> ( (a,Heap a) -> Heap a
-               , Heap a -> Heap a
-               , (Heap a,Heap a) -> Heap a
-               )
+            -> ((a,Heap a) -> Heap a)
+            -> (Heap a -> Heap a)
+            -> ((Heap a,Heap a) -> Heap a)
             -> [Bool]
-propertyMap n (insert'',deleteMin',merge'') =
+propertyMap n insert'' deleteMin' merge'' =
   [ holds n $ \x y h ->      insert' x (insert' y h) == insert' y (insert' x h) --  1
   , holds n $ \h x ->             null (insert' x h) == False                   --  2
   , holds n $ \x h ->          L.insert x (toList h) == toList (insert' x h)    --  3
@@ -42,6 +43,9 @@ propertyMap n (insert'',deleteMin',merge'') =
   where merge' = curry merge''
         insert' = curry insert''
 
+csargs = cargs { functionNames = ["insert","deleteMin","merge"]
+               , nResults = Just 10
+               }
 
 main :: IO ()
 main = do putStrLn "Heap:"
@@ -52,7 +56,11 @@ main = do putStrLn "Heap:"
                   -- 10000 -- 2000 -- 2m 47s -- [4,11,12] [3,4,7,12] [3,4,5,8,10,12] [1,2,4,7,12,13] [1,2,4,5,8,10,12,13]
                      1000
                      (uncurry insert,(deleteMin::Heap Bool -> Heap Bool),uncurry merge)
-                     (propertyMap 2000)
+                     (uncurry3 (propertyMap 2000))
+          report3With csargs 1000 (uncurry insert)
+                                  (deleteMin :: Heap Bool -> Heap Bool)
+                                  (uncurry merge)
+                                  (propertyMap 2000)
 
 
 maxInsert :: Ord a => a -> Heap a -> Heap a

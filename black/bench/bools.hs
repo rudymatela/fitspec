@@ -1,4 +1,5 @@
 import FitSpec
+import FitSpecC
 import Test.Check
 
 
@@ -59,3 +60,6 @@ main = do putStrLn "### Strict mutant enumerations ###"
           putStrLn "Not, and, or:"
           reportWith args { limitResults = Just 9 }
                      100 (not,uncurry (&&),uncurry (||)) (pMapNAO 100)
+
+          putStrLn "Not, and (filtered):"
+          report2 500 not (uncurry (&&)) (curry (pMapNA 500))

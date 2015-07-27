@@ -13,7 +13,7 @@ build-type:          Simple
 cabal-version:       >=1.10
 
 library
-  exposed-modules:   FitSpec, Mutate
+  exposed-modules:   FitSpec, FitSpecC, Mutate, Mutation
   other-modules:     Table
   build-depends:     base,  llcheck
   hs-source-dirs:    .
