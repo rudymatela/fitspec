@@ -221,14 +221,14 @@ lholds n prop = ltest prop (take n list)
 
 -- | Extra arguments for reporting functions
 data Args = Args
-          { functionName :: String
-          , variableName :: String
+          { functionNames :: [String]
+          , variableNames :: [String]
           , limitResults :: Maybe Int -- maximum number of results
           }
 
 -- | Default arguments
-args = Args { functionName = "function"
-            , variableName = "x"
+args = Args { functionNames = repeat "function"
+            , variableNames = repeat "x"
             , limitResults = Nothing    -- show everything
             }
 
@@ -243,7 +243,7 @@ reportWith args nf rss = putStrLn
                        $ fitspec fst snd nf rss
   where showResult (x,y,mm) = [ show x, show y, showM mm ]
         showM Nothing  = ""
-        showM (Just m) = showAsCaseExp (functionName args) (variableName args) m
+        showM (Just m) = showAsCaseExp (functionNames args !! 0) (variableNames args !! 0) m
 
 report2 :: (Show a, Show b, Eq b, Show c, Show d, Eq d)
         => Int -> [[([Bool], Memo a b, Memo c d)]] -> IO ()
@@ -258,8 +258,8 @@ report2With args nf rss = putStrLn
                         $ fitspec (\(x,_,_)->x) (\(_,m,n)->(m,n)) nf rss
   where showResult (x,y,mm) = [ show x, show y, showM mm ]
         showM Nothing  = ""
-        showM (Just (m,n)) = showAsCaseExp (functionName args) (variableName args) m
-                          ++ showAsCaseExp (functionName args) (variableName args) n
+        showM (Just (m,n)) = showAsCaseExp (functionNames args !! 0) (variableNames args !! 0) m
+                          ++ showAsCaseExp (functionNames args !! 1) (variableNames args !! 1) n
 
 report3 :: (Show a, Show b, Eq b, Show c, Show d, Eq d, Show e, Show f, Eq f)
         => Int -> [[([Bool], Memo a b, Memo c d, Memo e f)]] -> IO ()
@@ -274,9 +274,9 @@ report3With args nf rss = putStrLn
                         $ fitspec (\(x,_,_,_)->x) (\(_,m,n,o)->(m,n,o)) nf rss
   where showResult (x,y,mm) = [ show x, show y, showM mm ]
         showM Nothing  = ""
-        showM (Just (m,n,o)) = showAsCaseExp (functionName args) (variableName args) m
-                            ++ showAsCaseExp (functionName args) (variableName args) n
-                            ++ showAsCaseExp (functionName args) (variableName args) o
+        showM (Just (m,n,o)) = showAsCaseExp (functionNames args !! 0) (variableNames args !! 0) m
+                            ++ showAsCaseExp (functionNames args !! 1) (variableNames args !! 1) n
+                            ++ showAsCaseExp (functionNames args !! 2) (variableNames args !! 2) o
 
 fitspec :: (a -> [Bool]) -> (a -> b)
         -> Int -> [[a]] -> [(Int, [Int], Maybe b)]

@@ -61,8 +61,8 @@ propertyMap force n sort' =
 
 
 
-sargs = args { functionName = "sort"
-             , variableName = "xs"
+sargs = args { functionNames = ["sort"]
+             , variableNames = ["xs"]
              , limitResults = Just 10
              }
 

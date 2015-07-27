@@ -49,7 +49,13 @@ propertyMap n head' tail' = runListate2 tail' head'
                                      , lholds n nullProperty
                                      ]
 
+
+sargs = args { functionNames = ["head","tail"]
+             , variableNames = ["xs","xs"]
+             , limitResults = Just 10
+             }
+
 main :: IO ()
 main = do putLL 5 $ propertyMap 5 (head :: [Bool] -> Bool) tail
-          report2 8 $ propertyMap 8 (head :: [Bool] -> Bool) tail
+          report2With sargs 8 $ propertyMap 8 (head :: [Bool] -> Bool) tail
 

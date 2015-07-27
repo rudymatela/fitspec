@@ -25,8 +25,8 @@ propertyMap n sum' =
 
 
 
-sargs = args { functionName = "plus"
-             , variableName = "p"
+sargs = args { functionNames = ["plus"]
+             , variableNames = ["p"]
              , limitResults = Just 10
              }
 
