@@ -6,6 +6,7 @@ import Test.Check.Function
 import Data.List (intercalate)
 import Data.Maybe
 import Table
+import Utils (errorToNothing)
 
 -- The first mutant returned by szMutants and mutants is the actual function
 -- without mutation.
@@ -55,7 +56,17 @@ properMutation f [] = False
 properMutation f bs = all (\(a,r) -> f a /= r) bs
 
 canonicalMutation :: Eq b => (a -> b) -> [(a, b)] -> Bool
-canonicalMutation f = all (\(a,r) -> f a /= r)
+-- This simple version on the line below
+-- is one that does not deal with partially undefined functions.
+-- canonicalMutation f = all (\(a,r) -> f a /= r)
+canonicalMutation f = all different
+  where
+    -- the errorToNothing here deals partial functions (error/undefined)
+    -- We define that mutating undefined values is noncanonical
+    different (a,r) = case errorToNothing $ f a of
+                        Just r' -> r' /= r
+                        Nothing -> True -- for our purposes,
+                                        -- undefined is equal to anything
 
 nePartialFunctions :: [[a]] -> [[b]] -> [[(a,b)]]
 nePartialFunctions ass = tail . partialFunctions ass
@@ -77,7 +88,7 @@ showMutant_ funName varName f f' =
                  . mapMaybe bindingFor
                  . take 200
                  $ list
-        bindingFor a = if f a /= f' a
+        bindingFor a = if errorToNothing (f a) /= errorToNothing (f' a)
                          then Just (a,f' a)
                          else Nothing
 

@@ -8,8 +8,24 @@ module Utils
   , spread
   , filterU
   , indexDefault
+  , bindArgumentType
+  , errorToNothing
+  , errorToFalse
   )
 where
+
+import System.IO.Unsafe (unsafePerformIO)
+import Control.Exception ( Exception
+                         , SomeException
+                         , ArithException
+                         , ArrayException
+                         , ErrorCall
+                         , PatternMatchFail
+                         , catch
+                         , catches
+                         , Handler (Handler)
+                         , evaluate
+                         )
 
 uncurry3 :: (a->b->c->d) -> (a,b,c) -> d
 uncurry3 f (x,y,z) = f x y z
@@ -55,3 +71,36 @@ indexDefault :: [a] -> Int -> a -> a
 indexDefault []     _ x = x
 indexDefault (x:_)  0 _ = x
 indexDefault (_:xs) n x = indexDefault xs (n-1) x
+
+-- | Takes a value and a function.  Ignores the value.  Binds the argument of
+--   the function to the type of the value.
+bindArgumentType :: a -> (a -> b) -> a -> b
+bindArgumentType _ f = f
+
+-- | Transforms a value into 'Just' that value or 'Nothing' on error.
+anyErrorToNothing :: a -> Maybe a
+anyErrorToNothing x = unsafePerformIO $
+  (Just <$> evaluate x) `catch` \e -> do let _ = e :: SomeException
+                                         return Nothing
+
+-- | Transforms a value into 'Just' that value or 'Nothing' on some errors:
+--
+--   * ArithException
+--   * ArrayException
+--   * ErrorCall
+--   * PatternMatchFail
+errorToNothing :: a -> Maybe a
+errorToNothing x = unsafePerformIO $
+  (Just <$> evaluate x) `catches` map ($ return Nothing)
+                                      [ hf (undefined :: ArithException)
+                                      , hf (undefined :: ArrayException)
+                                      , hf (undefined :: ErrorCall)
+                                      , hf (undefined :: PatternMatchFail)
+                                      ]
+  where hf :: Exception e => e -> IO a -> Handler a -- handlerFor
+        hf e h = Handler $ bindArgumentType e (\_ -> h)
+
+errorToFalse :: Bool -> Bool
+errorToFalse p = case errorToNothing p of
+                   Just p' -> p
+                   Nothing -> False

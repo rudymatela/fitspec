@@ -7,12 +7,23 @@ import Data.List (intercalate)
 import Data.Maybe
 import Table
 import CatchEvaluation
-import Utils (spread)
+import Utils (spread,errorToNothing)
 
 type Mutation a b = [(a,b)]
 
 canonicalMutation :: Eq b => (a -> b) -> [(a, b)] -> Bool
-canonicalMutation f = all (\(a,r) -> f a /= r)
+-- This simple version on the line below
+-- is one that does not deal with partially undefined functions.
+-- canonicalMutation f = all (\(a,r) -> f a /= r)
+canonicalMutation f = all different
+  where
+    -- the errorToNothing here deals partial functions (error/undefined)
+    -- We define that mutating undefined values is noncanonical
+    different (a,r) = case errorToNothing $ f a of
+                        Just r' -> r' /= r
+                        Nothing -> True -- for our purposes,
+                                        -- undefined is equal to anything
+
 
 -- The first mutant returned by szMutants and mutants is the actual function
 -- without mutation.
