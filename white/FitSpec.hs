@@ -138,8 +138,10 @@ lsMutateApply' :: (Eq b, Ord a, Listable b, Sized a)
 lsMutateApply' tup x (m@(Memo f bs)) =
   case lookup x m of
     Nothing  -> [f x `tup` insert x Nothing m]
-              : (replicate (size x) [] ++
-                 lsmap (\y -> y `tup` insert x (Just y) m) (lsfilter (/= f x) listing))
+              : case errorToNothing (f x) of
+                  Just (fx) -> replicate (size x) []
+                            ++ lsmap (\y -> y `tup` insert x (Just y) m) (lsfilter (/= fx) listing)
+                  Nothing   -> []  -- we don't mutate undefined / error values
     (Just Nothing)  -> [[ f x `tup` m ]]
     (Just (Just y)) -> [[ y `tup` m ]]
 

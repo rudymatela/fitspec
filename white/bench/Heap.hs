@@ -1,7 +1,4 @@
 -- Heap from QuickSpec examples.
--- This was just changed a bit so that all functions are total:
---   findMin returns a Maybe a
---   deleteMin is noop on nil list
 module Heap where
 
 import Data.Function (on)
@@ -15,9 +12,8 @@ instance Ord a => Ord (Heap a) where
   compare = compare `on` toList
 
 toList :: Ord a => Heap a -> [a]
-toList h = case findMin h of
-             Nothing -> []
-             Just x  -> x:toList (deleteMin h)
+toList Nil = []
+toList h   = findMin h : toList (deleteMin h)
 
 fromList :: Ord a => [a] -> Heap a
 fromList = foldr insert Nil
@@ -26,16 +22,14 @@ null :: Heap a -> Bool
 null Nil = True
 null _ = False
 
-findMin :: Heap a -> Maybe a
-findMin (Branch _ x _ _) = Just x
-findMin Nil              = Nothing
+findMin :: Heap a -> a
+findMin (Branch _ x _ _) = x
 
 insert :: Ord a => a -> Heap a -> Heap a
 insert x h = merge h (branch x Nil Nil)
 
 deleteMin :: Ord a => Heap a -> Heap a
 deleteMin (Branch _ _ l r) = merge l r
-deleteMin Nil              = Nil
 
 branch :: Ord a => a -> Heap a -> Heap a -> Heap a
 branch x l r | npl l <= npl r = Branch (npl l + 1) x l r

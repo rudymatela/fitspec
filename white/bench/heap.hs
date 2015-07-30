@@ -1,5 +1,3 @@
--- TODO: use runListate3 and lholds3 (to be implemented...)
-
 import FitSpec hiding (insert,toList)
 import Test.Check
 import Test.Check.Debug
@@ -9,20 +7,8 @@ import Prelude hiding (null,toList)
 import qualified Data.List as L
 import Data.Maybe (listToMaybe)
 import Heap
+import Utils (errorToFalse)
 
-{-
-headIsHead :: (Ord a, Listable a, Sized a)
-           => (a,[a])
-           -> Listate [a] [a] (Listate [a] a Bool)
-headIsHead (x,xs) = return $ do headxxs <- lsMutateApply (x:xs)
-                                return $ x == headxxs
-
-tailIsTail :: (Ord a, Listable a, Sized a)
-           => (a,[a])
-           -> Listate [a] [a] (Listate [a] a Bool)
-tailIsTail (x,xs) = do tailxxs <- lsMutateApply (x:xs)
-                       return . return $ xs == tailxxs
--}
 
 (==>) :: Bool -> Bool -> Bool
 False ==> _ = True
@@ -61,28 +47,52 @@ propertyMap :: (Ord a, Sized a, Listable a)
             -> [[ ([Bool], Memo (a,Heap a) (Heap a), Memo (Heap a) (Heap a), Memo (Heap a,Heap a) (Heap a)) ]]
 propertyMap n insert'' deleteMin'' merge'' = runListate3 insert'' deleteMin'' merge''
                                           $ sequence
-  [ lholds n $ nullProperty
-  , lholds n $ insertCommut
-  , lholds n $ \(h,x) -> do insertxh <- insert' x h
+  [ lholds n $ nullProperty                                                     -- 0 (just a test)
+  , lholds n $ insertCommut                                                     -- 1
+  , lholds n $ \(h,x) -> do insertxh <- insert' x h                             -- 2
                             return $ null (insertxh) == False
-  , lholds n $ \(h,x) -> do insertxh <- insert' x h
+  , lholds n $ \(h,x) -> do insertxh <- insert' x h                             -- 3
                             return $ L.insert x (toList h) == toList (insertxh)
-  ,                       do deleteMinNil <- deleteMin' Nil
-                             return $ deleteMinNil == Nil
-  , lholds n $ \(h,h1) -> do mergehh1 <- merge' h h1
+--,                       do deleteMinNil <- deleteMin' Nil                     -- 4
+--                           return $ deleteMinNil == Nil
+  , lholds n $ \(h,h1) -> do mergehh1 <- merge' h h1                            -- 5
                              mergeh1h <- merge' h1 h
                              return $ mergehh1 == mergeh1h
-  , lholds n $ \h -> do mergehnil <- merge' h Nil
+  , lholds n $ \h -> do mergehnil <- merge' h Nil                               -- 6
                         return $ mergehnil == h
-  , lholds n $ \(h,h1,h2) -> do mergeh1h2 <- merge' h1 h2
+  , lholds n $ \(h,h1,h2) -> do mergeh1h2 <- merge' h1 h2                       -- 7
                                 mergehh1h2 <- merge' h mergeh1h2
                                 mergehh2 <- merge' h h2
                                 mergeh1hh2 <- merge' h1 mergehh2
                                 return $ mergehh1h2 == mergeh1hh2
+  , lholdE n $ \h -> if null h                                                  -- 8
+                        then return True
+                        else do merge_h_h <- merge' h h
+                                return $ findMin (merge_h_h) == findMin h
+  , lholds n $ \h -> do merge_h_h <- merge' h h                                 -- 9
+                        return $ null merge_h_h == null h
+  , lholds n $ \(h,h1) -> do merge_h_h1 <- merge' h h1                          -- 10
+                             return $ null h && null h1 == null merge_h_h1
+  , lholds n $ \(h,h1,x) -> do insert_x_h1 <- insert' x h1                      -- 11
+                               merge_h_insert_x_h1 <- merge' h insert_x_h1
+                               merge_h_h1 <- merge' h h1
+                               insert_x_merge_h_h1 <- insert' x merge_h_h1
+                               return $ merge_h_insert_x_h1 == insert_x_merge_h_h1
+  , lholdE n $ \h -> if null h                                                  -- 12
+                        then return True -- not (null h) ==>
+                        else do deleteMin_h <- deleteMin' h
+                                merge_h_deleteMin_h <- merge' h deleteMin_h
+                                merge_h_h <- merge' h h
+                                deleteMin_merge_h_h <- deleteMin' merge_h_h
+                                return $ merge_h_deleteMin_h == deleteMin_merge_h_h
+  , lholdE n $ \x -> do insert_x_Nil <- insert' x Nil                           -- 13
+                        deleteMin_insert_x_Nil <- deleteMin' insert_x_Nil
+                        return $ deleteMin_insert_x_Nil == Nil
   ]
   where insert' = curry lsMutateApply13
         deleteMin' = lsMutateApply23
         merge' = curry lsMutateApply33
+        lholdE n = fmap errorToFalse . lholds n
   {-
   [ lholds3 n $ \x y h ->      insert' x (insert' y h) == insert' y (insert' x h) --  1
   , lholds3 n $ \h x ->             null (insert' x h) == False                   --  2
