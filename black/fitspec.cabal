@@ -47,8 +47,8 @@ benchmark simple-sorting
   default-language:  Haskell2010
   type:              exitcode-stdio-1.0
 
-benchmark heap
-  main-is:           heap.hs
+benchmark heaps
+  main-is:           heaps.hs
   build-depends:     base,  llcheck
   hs-source-dirs:    ., bench, bench
   default-language:  Haskell2010
