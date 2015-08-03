@@ -1,4 +1,10 @@
-module Mutants where
+{-#LANGUAGE GADTs, StandaloneDeriving #-}
+module Mutants 
+  ( module Mutants
+  , module Control.Enumerable
+  , module Control.Enumerable.Functions
+  , module Control.Enumerable.Values
+  ) where
 import Control.Enumerable
 import Control.Enumerable.Functions
 import Control.Enumerable.Values
@@ -42,7 +48,7 @@ type Mutator a b = Function a (Maybe b)
 proper :: Mutator a b -> Bool
 proper = any isJust . rhss
 
-mutants :: (Parameter a, Enumerable b) => Int -> (Integer, [Mutator a b])
+mutants :: Mutable a => Int -> (Integer, [Mutates a])
 mutants k = (crds, vs) where
   crds = sum $ take (k+1) $ count $ countparam vs
   vs = concat $ values' k
@@ -57,19 +63,9 @@ data Outcome = Survived
              | Unchanged
              deriving (Eq, Ord ,Show)
 
-useMutant :: Eq b => ((a -> b) -> Bool) -> (a -> b) -> Mutator a b -> IO Outcome
-useMutant p f m = do
-  (mb,f') <- mutate f m
-  case p f' of 
-    True   -> mb >>= \(proper,used) -> case (proper,used) of
-                      (False,False)    -> return Unmatched
-                      (True,True)      -> return Survived
-                      (False,True)     -> return Unchanged
-    False  -> return Killed
-  
 
-useMutant' :: Eq b => (a -> b) -> ((a -> b) -> Bool) -> Mutator a b -> Outcome
-useMutant' f p m = unsafePerformIO (useMutant p f m) -- This is probably safe, right?
+-- useMutant' :: a -> (a -> Bool) -> Mutates a -> Outcome
+-- useMutant' f p m = unsafePerformIO (useMutant f p m) -- This is probably safe, right?
 
 
 runTests :: Enumerable x => Int -> (x -> Bool) -> Bool
@@ -81,7 +77,7 @@ prepost n f p = runTests n $ \a -> p a (f a)
 
 
 type PropertyID     = Int
-type PropertySet a  = [(PropertyID, a -> Outcome)]
+type PropertySet a  = [(PropertyID, a -> IO Outcome)]
 data Result a = Result 
   { survivors :: M.Map BitSet (a,Int,Int) -- Maps property subsets to minimal survivor, and number of survivors divided into actual/uncovered survivors
   , improper  :: Int
@@ -101,13 +97,15 @@ result ps a r
         merge (new,n,x) (old,m,y) = (if m == 0 && n > 0 then new else old,n+m,x+y)
         rep n x                   = r{survivors = M.insertWith merge pids (a,n,x) (survivors r)}
 
-framework :: [a] -> PropertySet a -> Result a
+framework :: [a] -> PropertySet a -> IO (Result a)
 framework ms ps = go ms Result{survivors = M.empty, improper = 0} where
-  go []      r  = r
-  go (x:xs)  r  = go xs $ result [(pid,p x) | (pid,p) <- ps ] x r
+  go []      r  = return r
+  go (x:xs)  r  = do 
+    ps <- sequence [fmap ((,) pid) (p x) | (pid,p) <- ps ]
+    go xs $ result ps x r
 
 
-report :: Show b => Int -> Result (Mutator a b) -> IO ()
+report :: Int -> Result (Mutates a) -> IO ()
 report numprops r@Result{survivors = m} = do
   putStr "Discarded: " >> print (improper r)
 --  putStr "Killed: " >> print (killed r)
@@ -135,7 +133,7 @@ report numprops r@Result{survivors = m} = do
   mapM_ (print . toList) (findComplete numprops keys)
   putStrLn ""
 
-numbered :: [(a -> Outcome)] -> PropertySet a
+numbered :: [(a -> IO Outcome)] -> PropertySet a
 numbered xs = zip [1..] xs
 
 data Mutated a = NotMutated | Mutated a
@@ -145,49 +143,79 @@ instance Show a => Show (Mutated a) where
 toMutated :: Maybe a -> Mutated a 
 toMutated = maybe NotMutated Mutated
 
-showMutant :: Show b => Mutator a b -> String
-showMutant = ("\\i@" ++) . drop 1 . show . fmap toMutated 
+showMutant :: Mutates a -> String
+showMutant (F f)     = ("\\i@" ++) . drop 1 . show . fmap toMutated $ f
+showMutant (T (a,b))  = unlines [showMutant a,"--",showMutant b]
 
 
-run :: (Eq b, Show b, Enumerable b, Parameter a) => 
-   Int -> [((a -> b) -> Bool)] -> (a -> b) -> IO () 
-run k prs f = do
-  putStrLn $ "Killing "++show n++" mutants"
-  putStrLn $ show n'++" proper mutants\n"
-  report (length prs) $ framework ms ps
-  where
-    (n,raws) = mutants k
-    n' = length ms
-    ms = tail $ filter isMinimal $ raws
-
-    -- ps 
-    ps = numbered $ map (useMutant' f) prs 
 
 run2 :: (Eq c, Show c, Enumerable c, Parameter a, Parameter b) => 
    Int -> [((a -> b -> c) -> Bool)] -> (a -> b -> c) -> IO () 
-run2 k prs f = run k (map (. curry) prs) (uncurry f)
+run2 k prs f = runM k (map (. curry) prs) (uncurry f)
+
+
+runM :: Mutable a => Int -> ([a -> Bool]) -> a -> IO ()
+runM k prs f = do
+  putStrLn $ "Killing "++show n++" mutants"
+  putStrLn $ show n'++" proper mutants\n"
+  framework ms ps >>= report (length prs)
+  where
+    (n,raws) = mutants k
+    n' = length ms
+    ms = tail $ filter isMinimalM $ raws
+    ps = numbered $ map (useMutant f) prs 
+
+-- runM' :: Mutable a => (a -> [Bool]) -> a
 
 
 
 
+data Mutates a where
+  F :: (Eq b, Show b) => (Function a (Maybe b)) -> Mutates (a -> b)
+  T :: (Mutates a, Mutates b) -> Mutates (a,b)
 
--- Example 1
-ex1 k n = run2 k (map ($ n) [assoc, single, nil, appends, revdist, drops, takes]) (++)
+isMinimalM :: Mutates a -> Bool
+isMinimalM (F f)      = isMinimal f
+isMinimalM (T (a,b))  = isMinimalM a && isMinimalM b
 
-assoc, single, nil, revdist, appends, drops, takes :: Int -> ([Bool] -> [Bool] -> [Bool]) -> Bool
+deriving instance Show (Mutates a)
 
-assoc k (+)    = runTests k $ \(x,y,z) -> x + (y + z) == (x + y) + z
 
-single k (+)   = runTests k $ \(x,xs) -> [x] + xs == x:xs
+class Typeable a => Mutable a where
+  mutates :: (Typeable f, Sized f) => Shareable f (Mutates a)
+  
+instance (Parameter a, Enumerable b, Eq b, Show b) => Mutable (a -> b) where
+  mutates = fmap F access
 
-nil k (+)      = runTests k $ \xs -> [] + xs == xs
+instance (Mutable a, Mutable b) => Mutable (a,b) where
+  mutates = fmap T access -- fmap T global
 
-revdist k (+)  = runTests k $ \(xs,ys) -> reverse ys + reverse xs == reverse (xs + ys)
 
-appends k (+)  = runTests k $ \(xs,ys) -> xs + ys == xs ++ ys
+instance Mutable a => Enumerable (Mutates a) where
+  enumerate = share mutates
 
-drops k (+)    = runTests k $ \(xs,ys) -> drop (length xs) (xs + ys) == ys
+mutateM :: a -> Mutates a -> IO (IO (Bool,Bool), a)
+mutateM f (F m)            = attach f (m $$)
+mutateM p (T (ma,mb))  = case p of
+  (a,b) -> do
+    (ioa, ra) <- mutateM a ma
+    (iob, rb) <- mutateM b mb
+    let merge = do
+         (b1,b2) <- ioa
+         (b3,b4) <- iob
+         return (b1 || b3, b2 || b4)
+    return (merge,(ra,rb))
 
-takes k (+)    = runTests k $ \(xs,ys) -> take (length xs) (xs + ys) == xs
+
+useMutant :: a -> (a -> Bool) -> Mutates a -> IO Outcome
+useMutant f p m = do
+  (mb,f') <- mutateM f m
+  case p f' of 
+    True   -> mb >>= \(proper,used) -> case (proper,used) of
+                      (False,False)    -> return Unmatched
+                      (True,True)      -> return Survived
+                      (False,True)     -> return Unchanged
+    False  -> return Killed
+
 
 
