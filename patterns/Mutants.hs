@@ -19,6 +19,8 @@ import Data.Maybe(isJust, isNothing)
 import Data.List (sortBy, sort)
 import Data.Ord (comparing)
 
+import System.IO(hFlush, hPutStr, stdout)
+
 import qualified Data.Map as M (Map, insertWith, toList, empty, delete)
 
 import BitMask
@@ -98,11 +100,17 @@ result ps a r
         rep n x                   = r{survivors = M.insertWith merge pids (a,n,x) (survivors r)}
 
 framework :: [a] -> PropertySet a -> IO (Result a)
-framework ms ps = go ms Result{survivors = M.empty, improper = 0} where
-  go []      r  = return r
-  go (x:xs)  r  = do 
+framework ms ps = go 0 ms Result{survivors = M.empty, improper = 0} where
+  go n []      r  = putStrLn "" >> return r
+  go n (x:xs)  r  = do 
+    put n
     ps <- sequence [fmap ((,) pid) (p x) | (pid,p) <- ps ]
-    go xs $ result ps x r
+    go (n+1) xs $ result ps x r
+    
+  put n = reStr $ "Done: "++show n
+  reStr s = do 
+    hPutStr stdout $ replicate (length s) '\b' ++ s
+    hFlush stdout
 
 
 report :: Int -> Result (Mutates a) -> IO ()

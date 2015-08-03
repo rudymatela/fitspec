@@ -47,24 +47,25 @@ propertyMap' n = map (propertyMap n) [1..14]
 
 
 main :: IO () 
-main = runM 11 (propertyMap' 2000) (uncurry insert,(deleteMinP,uncurry merge))
+main = runM 10 (propertyMap' 2000) (uncurry insert,(deleteMinP,uncurry merge))
 
-data Heap a = Nil | Branch Int a (Heap a) (Heap a) deriving Show
+data Heap a = Nil | Branch Int a (Heap a) (Heap a)
+instance (Show a, Ord a) => Show (Heap a) where -- Keep the type abstract
+  show h = "fromList " ++ show (toList h)
+
 
 instance (Ord a, Enumerable a) => Enumerable (Heap a) where 
   enumerate = datatype [c1 fromList] -- Relying on the tested code a bit...
                       -- [c0 Nil, c4 Branch]
 
-instance Parameter a => Parameter (Heap a) where
-  functions = signature go where
+instance (Ord a, Parameter a) => Parameter (Heap a) where
+  functions = lets "splitP" splitP
+  {-signature go where
     go (n,b) = [p0 "Nil" null n, p4 "Branch" extB b]
     extB (Branch a b c d) = Just (a,b,c,d)
     extB _                = Nothing
+    -}
 
--- Maybe not a good instance for Ints, but works as a placeholder
-instance Parameter Int where
-  functions = signature go where
-    go (ex,a,b) = [p0 (show (ex :: Int)) (== ex) a, p0 "_" (/= ex) b]
 
 
 instance Ord a => Eq (Heap a) where
@@ -110,4 +111,11 @@ deleteMinP h           = Just $ deleteMin h
         
 findMinP h | null h = Nothing
 findMinP h          = Just $ findMin h
+
+
+splitP :: Ord a => Heap a -> Maybe (a,Heap a)
+splitP  Nil              = Nothing
+splitP (Branch _ x l r)  = Just (x,(merge l r))
+
+
 
