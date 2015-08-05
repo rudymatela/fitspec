@@ -21,8 +21,8 @@ canonicalMutation f = all different
     -- We define that mutating undefined values is noncanonical
     different (a,r) = case errorToNothing $ f a of
                         Just r' -> r' /= r
-                        Nothing -> True -- for our purposes,
-                                        -- undefined is equal to anything
+                        Nothing -> False -- for our purposes,
+                                         -- undefined is equal to anything
 
 
 -- The first mutant returned by szMutants and mutants is the actual function
