@@ -2,6 +2,7 @@ import FitSpec
 import FitSpecC
 import Data.List
 import Test.Check
+import Test.Types
 
 
 ordered :: Ord a => [a] -> Bool
@@ -34,6 +35,10 @@ mapProps sort' n =
 sortI :: [Int] -> [Int]
 sortI = sort
 
+-- sorts lists of two-bit integers
+sortI2 :: [UInt2] -> [UInt2]
+sortI2 = sort
+
 sortB :: [Bool] -> [Bool]
 sortB = sort
 
@@ -59,14 +64,25 @@ csargs = cargs { functionNames = ["sort"]
 
 main :: IO ()
 main = do putStrLn "### Strict mutant enumerations ###"
+
           putStrLn "Booleans:"
           reportWith sargs  1000 sortB (`mapProps` 1000)
           putStrLn "Integers:"
           reportWith sargs  1000 sortI (`mapProps` 1000)
+          putStrLn "Integers (2bit):"
+          reportWith sargs  4000 sortI2 (`mapProps` 3000)
+          -- By limiting to only 2bit integers, results improve.
+          -- Too many possibilities of elements in the lists makes it hard for
+          -- FitSpec to find a realistic result.
+
           putStrLn "Noples:"
           reportWith sargs  1000 sortU (`mapProps`   20)
-          putStrLn "Booleans (filtered):"
+          putStrLn "Booleans (classification on):"
           report1With csargs 1000 sortB (`mapProps` 1000)
+          putStrLn "Integers (classification on):"
+          report1With csargs 1000 sortI (`mapProps` 1000)
+          putStrLn "Integers (2bit,classification on):"
+          report1With csargs 4000 sortI2 (`mapProps` 3000)
 
 
 
