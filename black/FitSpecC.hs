@@ -206,9 +206,9 @@ nSurvCT pids pmap = filterU relevant
                   . map (\func -> map (resultToMaybe func)
                                       (compositions' (pmap func)))
    where (is,n,_,m,_) `relevant` (is',n',_,m',_) = not (n == n' && m == m' && is `contained` is')
-         resultToMaybe _ Nothing      = Nothing
-         resultToMaybe f (Just True)  = Just (Right f)
-         resultToMaybe f (Just False) = Just (Left  f)
+         resultToMaybe _ Nothing      = Nothing         -- dead mutant
+         resultToMaybe f (Just True)  = Just (Right f)  -- survivor
+         resultToMaybe f (Just False) = Just (Left  f)  -- survivor, but possible duplicate
 
 compositions' :: [Maybe Bool] -> [Maybe Bool]
 compositions' = map (foldr (liftA2 (&&)) (Just True)) . subsets
