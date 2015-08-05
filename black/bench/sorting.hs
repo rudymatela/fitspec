@@ -20,8 +20,9 @@ count :: Eq a => a -> [a] -> Int
 count x = length . filter (==x)
 
 
-mapProps :: (Ord a, Show a, Listable a) => ([a] -> [a]) -> Int -> [Bool]
-mapProps sort' n =
+-- The property map
+pmap :: (Ord a, Show a, Listable a) => Int -> ([a] -> [a]) -> [Bool]
+pmap n sort' =
   [ holds n $ \xs ->          ordered (sort' xs)
   , holds n $ \xs ->           length (sort' xs) == length xs
   , holds n $ \x xs ->         elem x (sort' xs) == elem x xs
@@ -66,23 +67,23 @@ main :: IO ()
 main = do putStrLn "### Strict mutant enumerations ###"
 
           putStrLn "Booleans:"
-          reportWith sargs  1000 sortB (`mapProps` 1000)
+          reportWith sargs  1000 sortB (pmap 1000)
           putStrLn "Integers:"
-          reportWith sargs  1000 sortI (`mapProps` 1000)
+          reportWith sargs  1000 sortI (pmap 1000)
           putStrLn "Integers (2bit):"
-          reportWith sargs  4000 sortI2 (`mapProps` 3000)
+          reportWith sargs  4000 sortI2 (pmap 3000)
           -- By limiting to only 2bit integers, results improve.
           -- Too many possibilities of elements in the lists makes it hard for
           -- FitSpec to find a realistic result.
 
           putStrLn "Noples:"
-          reportWith sargs  1000 sortU (`mapProps`   20)
+          reportWith sargs  1000 sortU (pmap 20)
           putStrLn "Booleans (classification on):"
-          report1With csargs 1000 sortB (`mapProps` 1000)
+          report1With csargs 1000 sortB (pmap 1000)
           putStrLn "Integers (classification on):"
-          report1With csargs 1000 sortI (`mapProps` 1000)
+          report1With csargs 1000 sortI (pmap 1000)
           putStrLn "Integers (2bit,classification on):"
-          report1With csargs 4000 sortI2 (`mapProps` 3000)
+          report1With csargs 4000 sortI2 (pmap 3000)
 
 
 
