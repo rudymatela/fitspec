@@ -12,9 +12,11 @@ import Control.Enumerable.Count
 
 import System.IO.Unsafe
 import Data.IORef
-import Control.Monad(when)
+import Control.Monad(when, filterM)
 import Data.Maybe(isJust, isNothing)
 -- import Data.Either(partitionEithers)
+
+import Control.Exception
 
 import Data.List (sortBy, sort)
 import Data.Ord (comparing)
@@ -163,17 +165,27 @@ run2 k prs f = runM k (map (. curry) prs) (uncurry f)
 
 
 runM :: Mutable a => Int -> ([a -> Bool]) -> a -> IO ()
-runM k prs f = do
+runM = runV Nothing
+
+-- Run with a validating function that checks reachability for the mutants
+runV :: Mutable a => Maybe (a -> ()) -> Int -> ([a -> Bool]) -> a -> IO ()
+runV val k prs f = do
   putStrLn $ "Killing "++show n++" mutants"
   putStrLn $ show n'++" proper mutants\n"
-  framework ms ps >>= report (length prs)
+  ms' <- case val of 
+    Nothing -> return ms
+    Just vf -> do 
+      putStrLn "Validating mutants"
+      xs <- filterM (validateV vf f) ms
+      putStrLn $ show (length xs) ++ " mutants validated"
+      return xs
+      
+  framework ms' ps >>= report (length prs)
   where
     (n,raws) = mutants k
     n' = length ms
     ms = tail $ filter isMinimalM $ raws
     ps = numbered $ map (useMutant f) prs 
-
--- runM' :: Mutable a => (a -> [Bool]) -> a
 
 
 
@@ -225,5 +237,21 @@ useMutant f p m = do
                       (False,True)     -> return Unchanged
     False  -> return Killed
 
+
+data Stop = Stop deriving (Show, Typeable)
+instance Exception Stop
+
+validateV :: (a -> ()) -> a -> Mutates a -> IO Bool
+validateV vf a ma = catch (vf (a `mutateV` ma ) `seq` return False ) (\Stop -> return True)
+
+mutateV :: a -> Mutates a -> a
+mutateV f (F m)            = attachV f (m $$)
+mutateV p (T (ma,mb))  = case p of
+  (a,b) -> (mutateV a ma, mutateV b mb)
+
+attachV :: Eq b => (a -> b) -> (a -> Maybe b) -> (a -> b)
+attachV original mutant = f where
+  f a = maybe (original a) (x a) (mutant a) 
+  x a b = if (b /= original a) then throw Stop else b
 
 
