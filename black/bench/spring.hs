@@ -2,8 +2,10 @@ import FitSpec
 import Data.List
 import Test.Check
 
-mapPropsR :: ((Int,Int)->Int, (Int,Int)->Int) -> Int -> [Bool]
-mapPropsR (sum',product') n =
+propertyMap :: (Listable a, Show a, Eq a, Num a)
+            => Int
+            -> ((a,a)->a, (a,a)->a) -> [Bool]
+propertyMap n (sum',product') =
   [ holds n $ \x y   ->        x -+- y  ==  y -+- x
   , holds n $ \x y z -> x -+- (y -+- z) == (x -+- y) -+- z
   , holds n $ \x     ->         x -+- 0 == x
@@ -19,32 +21,41 @@ mapPropsR (sum',product') n =
         (-*-) = curry product'
 
 
-sargs :: Args ((Int,Int)->Int,(Int,Int)->Int)
-sargs = args { extraMutants = [ (uncurry (*),     uncurry (+))
-                              , (\(x,y) -> x+y+1, uncurry (*))
-                              , (uncurry (+),     \(x,y) -> x*y*2)
-                              , (\(x,y) -> (x+y)*2, uncurry (*))
-
-                              , (uncurry (+++),   uncurry (*))
-                              , (uncurry (+),     uncurry (+++))
-                              , (uncurry (+++),   uncurry (+++))
-                              , (uncurry min,     uncurry max)
-                              , (uncurry max,     uncurry min)
-                              -- another good example would be 
-                              -- || and && defined over integers
-                              ]
-             }
+sargs :: (Integral a, Show a, Read a)
+      => Bool -> Args ((a,a)->a,(a,a)->a)
+sargs useExtra =
+  args { limitResults = Just 10
+       , extraMutants =
+           if useExtra
+             then [ (uncurry (*),     uncurry (+))
+                  , (\(x,y) -> x+y+1, uncurry (*))
+                  , (uncurry (+),     \(x,y) -> x*y+x*y)
+                  , (\(x,y) -> x+y+x+y, uncurry (*))
+                  , (uncurry (+++),   uncurry (*))
+                  , (uncurry (+),     uncurry (+++))
+                  , (uncurry (+++),   uncurry (+++))
+                  , (uncurry min,     uncurry max)
+                  , (uncurry max,     uncurry min)
+                  -- another good example would be
+                  -- || and && defined over integers
+                  ]
+             else []
+       }
 
 
 main :: IO ()
 main = do putStrLn "### Sum and Product Ring ###"
           putStrLn "Simple finite mutations:"
-          report           500 (uncurry (+),uncurry (*)) (`mapPropsR` 200)
+          reportWith (sargs False) 1000
+                     (uncurry (+) :: (Int,Int)->Int,uncurry (*))
+                     (propertyMap 1000)
           putStrLn "Also manual mutations:"
-          reportWith sargs 500 (uncurry (+),uncurry (*)) (`mapPropsR` 200)
+          reportWith (sargs True) 1000
+                     (uncurry (+) :: (Int,Int)->Int,uncurry (*))
+                     (propertyMap 1000)
 
 
-(+++) :: Int -> Int -> Int
+(+++) :: (Show a, Read a, Integral a) => a -> a -> a
 x +++ 0 = x
 0 +++ y = y
 x +++ y = read (show x ++ show y)
