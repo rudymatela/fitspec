@@ -53,3 +53,11 @@ benchmark avl
   default-language:  Haskell2010
   type:              exitcode-stdio-1.0
   ghc-options:      -O2
+
+benchmark pretty
+  main-is:           pretty.hs
+  build-depends:     base, sized-functors, containers, pretty
+  hs-source-dirs:    ., bench
+  default-language:  Haskell2010
+  type:              exitcode-stdio-1.0
+  ghc-options:      -O2
