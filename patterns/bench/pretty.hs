@@ -8,11 +8,17 @@ instance Enumerable (Doc) where
 instance Parameter (Doc) where
   functions = lets "splitP" splitP
 
--- Split in lines then characters???  currently just characters
+-- Splits into first line, then other lines.
+-- If there is just one line, splits into first char, other chars
+-- Otherwise does not split
+-- NOTE: This implementation assumes that documents are always
+-- terminated in newlines when rendered
 splitP :: Doc -> Maybe (Doc,Doc)
-splitP d = case render d of
-             ""     -> Nothing
-             (c:cs) -> Just (char c, text cs)
+splitP d = case lines (render d) of
+             []     -> Nothing
+             [""]   -> Nothing
+             [c:cs] -> Just (char c, text cs)
+             (l:ls) -> Just (text l, text (unlines ls))
 
 propertyMap :: Int -> ((Doc,Doc) -> Doc) -> ((Doc,Doc) -> Doc) -> ((Int,Doc) -> Doc) -> [Bool]
 propertyMap n beside' above' nest'' =
