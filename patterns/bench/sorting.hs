@@ -42,9 +42,11 @@ sortU :: [()] -> [()]
 sortU = sort
 
 main :: IO ()
-main = do runV (Just $ valid 4000) 15 (pmap' 4000) (sort :: [Bool] -> [Bool])
-          runV (Just $ valid 4000) 15 (pmap' 4000) (sort :: [[Bool]] -> [[Bool]])
+main = do runM 9 (pmap' 4000) (sort :: [Bool] -> [Bool])
+      --    runV (Just $ valid 4000) 10 (pmap' 4000) (sort :: [[Bool]] -> [[Bool]])
 
 valid :: Enumerable a => Int -> ([a] -> [a]) -> ()
 valid n f = v f where
   v a = runTests n ((`seq` True) . a) `seq` ()
+
+

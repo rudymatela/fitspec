@@ -8,6 +8,9 @@ instance Enumerable (Doc) where
 instance Parameter (Doc) where
   functions = lets "splitP" splitP
 
+instance Output Doc
+ -- TODO: add custom mutants here
+
 -- Splits into first line, then other lines.
 -- If there is just one line, splits into first char, other chars
 -- Otherwise does not split
@@ -60,7 +63,7 @@ propertyMap' :: Int
 propertyMap' = map uncurry3' . transform3 . propertyMap
 
 main = do runV (Just $ valid 4000)
-               9
+               6
                (propertyMap' $ 4000)
                (uncurry (<>),(uncurry ($$),uncurry nest))
 

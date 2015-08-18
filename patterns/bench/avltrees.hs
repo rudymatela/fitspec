@@ -9,6 +9,8 @@ instance (Ord a, Enumerable a) => Enumerable (Tree a) where
 instance (Ord a, Parameter a) => Parameter (Tree a) where
   functions = lets "splitP" splitP -- FIXME: check if ok, adapted from heap
 
+instance (Ord a, Output a) => Output (Tree a) where
+-- TODO: add custom mutants here
 
 splitP :: Ord a => Tree a -> Maybe (a,Tree a)
 splitP Empty = Nothing
@@ -78,7 +80,7 @@ propertyMap' :: (Ord a, Enumerable a)
 propertyMap' n = map uncurry3' $ map (propertyMap n) [0..9]
 
 main :: IO ()
-main = do runV (Just $ valid 4000) 5 (propertyMap' 4000) (uncurry insert :: (Int,Tree Int)->Tree Int,(uncurry remove,uncurry find))
+main = do runV (Just $ valid 4000) 4 (propertyMap' 4000) (uncurry insert :: (Int,Tree Int)->Tree Int,(uncurry remove,uncurry find))
           putStrLn "#### NOTE: ####"
           putStrLn "-- Rudy: The results above seem strange,"
           putStrLn "         double check if I didn't do anything wrong"
@@ -94,3 +96,10 @@ valid n (f,(g,h)) = v f `seq` v g `seq` v h where
 
 uncurry3' :: (a -> b -> c -> d) -> (a,(b,c)) -> d
 uncurry3' f = \(x,(y,z)) -> f x y z
+
+tst :: Int -> Bool
+tst k = propertyMap 4000 k 
+  (uncurry insert :: (Int,Tree Int)->Tree Int)
+  (\_ -> AVLTree.empty)
+  -- (uncurry remove :: (Int,Tree Int)->Tree Int)
+  (uncurry find)

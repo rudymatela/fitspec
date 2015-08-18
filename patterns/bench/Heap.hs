@@ -49,7 +49,7 @@ propertyMap' n = map (propertyMap n) [1..14]
 
 
 main :: IO () 
-main = runV (Just $ valid 4000) 15 (propertyMap' 4000) (uncurry insert,(deleteMinP,uncurry merge))
+main = runV (Just $ valid 4000) 7 (propertyMap' 4000) (uncurry insert,(deleteMinP,uncurry merge))
 
 {- Complete sets:
 [1,11,12,13,14]
@@ -79,7 +79,9 @@ instance (Ord a, Enumerable a) => Enumerable (Heap a) where
 instance (Ord a, Parameter a) => Parameter (Heap a) where
   functions = lets "splitP" splitP
 
-
+instance (Ord a, Output a) => Output (Heap a) where
+  mutateO = share empty
+  genesisO = share empty
 
 
 instance Ord a => Eq (Heap a) where

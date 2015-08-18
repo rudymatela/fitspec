@@ -2,10 +2,10 @@ module Main where
 import Mutants
 
 main :: IO ()
-main = ex1 12 3000
+main = ex1 7 3000
 
 -- Example 1
-ex1 k n = run2 k (map ($ n) [assoc, single, nil, appends, revdist, drops, takes]) (++)
+ex1 k n = runM k (map ((. curry) . ($ n)) [assoc, single, nil, appends, revdist, drops, takes]) (uncurry (++))
 
 assoc, single, nil, revdist, appends, drops, takes :: Int -> ([Bool] -> [Bool] -> [Bool]) -> Bool
 
