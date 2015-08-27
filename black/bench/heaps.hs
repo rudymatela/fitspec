@@ -37,7 +37,7 @@ propertyMap n insert'' deleteMin' merge'' =
   , holds n $ \h h1 ->           (null h && null h1) == null (merge' h h1)      -- 10
 
   , holds n $ \h h1 x ->     merge' h (insert' x h1) == insert' x (merge' h h1) -- 11
-  , holdE n $ \h ->          merge' h (deleteMin' h) == deleteMin' (merge' h h) -- 12
+  , holdE n $ \h -> not (null h) ==> merge' h (deleteMin' h) == deleteMin' (merge' h h) -- 12
   , holdE n $ \x ->       deleteMin' (insert' x Nil) == Nil                     -- 13
   ]
   where merge' = curry merge''
