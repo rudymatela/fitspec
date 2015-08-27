@@ -6,6 +6,7 @@ import qualified Data.List as L
 import Data.Maybe (listToMaybe)
 import Heap
 import Utils (uncurry3,errorToFalse)
+import Control.Monad (unless)
 
 (==>) :: Bool -> Bool -> Bool
 False ==> _ = True
@@ -50,6 +51,14 @@ csargs = cargs { functionNames = ["insert","deleteMin","merge"]
 
 main :: IO ()
 main = do putStrLn "Heap:"
+
+          let res = and $ propertyMap
+                            2000
+                            (uncurry insert)
+                            (deleteMin :: Heap Bool -> Heap Bool)
+                            (uncurry maxMerge)
+          unless res $ putStrLn "Warning: functions being mutated do not follow properties"
+
           reportWith args { limitResults = Just 10
                           , extraMutants = take 0 [(uncurry maxInsert,maxDeleteMin,uncurry maxMerge)] }
                   -- 1000  -- 2000 --    18s -- [4,11,12] [3,4,7,12] [3,4,5,     12] [1,2,4,7,12]    [1,2,4,5,     12   ]
