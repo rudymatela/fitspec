@@ -35,6 +35,7 @@ mutants k = (crds, vs) where
 
 runTests :: Enumerable x => Int -> (x -> Bool) -> Bool
 runTests n p = all p (take n (concat allValues))
+  where allValues = map values [0..]
 
 
 data Outcome = Survived

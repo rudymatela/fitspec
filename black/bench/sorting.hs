@@ -1,3 +1,5 @@
+{-# Language DeriveDataTypeable #-}
+import System.Console.CmdArgs hiding (args)
 import FitSpec
 import FitSpecC
 import Data.List
@@ -63,29 +65,41 @@ csargs = cargs { functionNames = ["sort"]
                , nResults = Just 10
                }
 
+data CmdArguments = CmdArguments
+  { nMutants :: Int
+  , nTests :: Int
+  , testType :: String
+  , method :: String
+  } deriving (Data,Typeable,Show,Eq)
+
+arguments = CmdArguments
+  { nTests   = 1000    &= help "number of tests to run"
+  , nMutants = 1000    &= help "number of mutants to generate"
+                       &= name "m"
+  , testType = "int"   &= help "type to use"
+                       &= name "type"
+                       &= name "t"
+                       &= explicit
+  , method   = "black" &= help "method (black/grey)"
+                       &= name "e"
+  }
+
 main :: IO ()
-main = do putStrLn "### Strict mutant enumerations ###"
+main = do as <- cmdArgs arguments
+          run (method as) (testType as) (nMutants as) (nTests as)
 
-          putStrLn "Booleans:"
-          reportWith sargs  1000 sortB (pmap 1000)
-          putStrLn "Integers:"
-          reportWith sargs  1000 sortI (pmap 1000)
-          putStrLn "Integers (2bit):"
-          reportWith sargs  4000 sortI2 (pmap 3000)
-          -- By limiting to only 2bit integers, results improve.
-          -- Too many possibilities of elements in the lists makes it hard for
-          -- FitSpec to find a realistic result.
-
-          putStrLn "Noples:"
-          reportWith sargs  1000 sortU (pmap 20)
-          putStrLn "Booleans (classification on):"
-          report1With csargs 1000 sortB (pmap 1000)
-          putStrLn "Integers (classification on):"
-          report1With csargs 1000 sortI (pmap 1000)
-          putStrLn "Integers (2bit,classification on):"
-          report1With csargs 4000 sortI2 (pmap 3000)
-
-
+run :: String -> String -> Int -> Int -> IO ()
+run "grey" "int"  = runGrey sortI
+run "grey" "int2" = runGrey sortI2
+run "grey" "bool" = runGrey sortB
+run "grey" "unit" = runGrey sortU
+run _      "int"  = runBlack sortI
+run _      "int2" = runBlack sortI2
+run _      "bool" = runBlack sortB
+run _      "unit" = runBlack sortU
+run _      _      = \_ _ -> putStrLn "unknown parameters"
+runBlack f nm nt = reportWith sargs nm f (pmap nt)
+runGrey f nm nt = report1With csargs nm f (pmap nt)
 
 sortCounter :: (Bounded a, Ord a) => [a] -> [a]
 sortCounter = (++ [maxBound]) . sort

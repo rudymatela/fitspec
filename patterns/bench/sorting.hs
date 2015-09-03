@@ -1,4 +1,6 @@
+{-# Language DeriveDataTypeable #-}
 module Main where
+import System.Console.CmdArgs hiding (args)
 import Mutants
 import Data.List
 
@@ -41,9 +43,33 @@ sortB = sort
 sortU :: [()] -> [()]
 sortU = sort
 
+data CmdArguments = CmdArguments
+  { nMutants :: Int
+  , nTests :: Int
+  , testType :: String
+  } deriving (Data,Typeable,Show,Eq)
+
+arguments = CmdArguments
+  { nTests   = 4000    &= help "number of tests to run"
+  , nMutants = 9       &= help "mutant threshold"
+                       &= name "m"
+  , testType = "int"   &= help "type to use"
+                       &= name "type"
+                       &= name "t"
+                       &= explicit
+  }
+
 main :: IO ()
-main = do runM 9 (pmap' 4000) (sort :: [Bool] -> [Bool])
-      --    runV (Just $ valid 4000) 10 (pmap' 4000) (sort :: [[Bool]] -> [[Bool]])
+main = do as <- cmdArgs arguments
+          runM (nMutants as) (pmap' (nTests as)) (sort :: [Bool] -> [Bool])
+       -- runV (Just $ valid 4000) 10 (pmap' 4000) (sort :: [[Bool]] -> [[Bool]])
+
+run :: String -> Int -> Int -> IO ()
+run "int"   = run' (sort :: [Int] -> [Int])
+run "bool"  = run' (sort :: [Bool] -> [Bool])
+
+run' f nMutants nTests =
+  runM nMutants (pmap' nTests) f
 
 valid :: Enumerable a => Int -> ([a] -> [a]) -> ()
 valid n f = v f where

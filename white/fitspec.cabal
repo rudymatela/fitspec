@@ -30,7 +30,7 @@ benchmark bools
 
 benchmark sorting
   main-is:           sorting.hs
-  build-depends:     base,  llcheck,  containers,  transformers
+  build-depends:     base,  llcheck,  containers,  transformers,  cmdargs
   hs-source-dirs:    ., bench
   default-language:  Haskell2010
   type:              exitcode-stdio-1.0

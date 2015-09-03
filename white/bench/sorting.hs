@@ -1,6 +1,9 @@
+{-# Language DeriveDataTypeable #-}
+import System.Console.CmdArgs hiding (args)
 import FitSpec
 import Test.Check
 import Test.Check.Debug
+import Test.Types
 import Control.Monad
 import Data.List (sort,delete)
 
@@ -66,8 +69,33 @@ sargs = args { functionNames = ["sort"]
              , limitResults = Just 10
              }
 
+data CmdArguments = CmdArguments
+  { nMutants :: Int
+  , nTests :: Int
+  , testType :: String
+  , force :: Bool
+  } deriving (Data,Typeable,Show,Eq)
+
+arguments = CmdArguments
+  { nTests   = 256     &= help "number of tests to run"
+  , nMutants = 1024    &= help "number of mutants to generate"
+                       &= name "m"
+  , testType = "int"   &= help "type to use"
+                       &= name "type"
+                       &= name "t"
+                       &= explicit
+  , force    = False   &= help "force unevaluated arguments"
+  }
+
 main :: IO ()
-main = do reportWith sargs 1024 $ propertyMap False 256 (sort :: [Bool] -> [Bool])
-          reportWith sargs 1024 $ propertyMap True  256 (sort :: [Bool] -> [Bool])
-          reportWith sargs 1024 $ propertyMap False 256 (sort :: [Int] -> [Int])
-          reportWith sargs 1024 $ propertyMap True  256 (sort :: [Int] -> [Int])
+main = do as <- cmdArgs arguments
+          run (testType as) (nMutants as) (nTests as) (force as)
+
+run :: String -> Int -> Int -> Bool -> IO ()
+run "bool" = run' (sort :: [Bool]  -> [Bool])
+run "int"  = run' (sort :: [Int]   -> [Int])
+-- run "int2" = run' (sort :: [UInt2] -> [UInt2])
+run "unit" = run' (sort :: [()]    -> [()])
+
+run' f nmuts ntests force = reportWith sargs nmuts
+                          $ propertyMap force ntests f
