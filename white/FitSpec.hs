@@ -58,8 +58,13 @@ import Utils
 class Sized a where
   size :: a -> Int
 
+instance Sized () where
+  size _ = 0
+
 instance Sized Int where
-  size = id
+  size 0 = 0
+  size n | n > 0     = n*2 - 1
+         | otherwise = (abs n)*2
 
 instance Sized Bool where
   size _ = 0
@@ -70,6 +75,8 @@ instance (Sized a) => Sized [a] where
 instance (Sized a, Sized b) => Sized (a,b) where
   size (x,y) = size x + size y
 
+instance (Sized a, Sized b, Sized c) => Sized (a,b,c) where
+  size (x,y,z) = size x + size y + size z
 
 data Memo a b = Memo (a->b) (Map.Map a (Maybe b))
 
