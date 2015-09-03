@@ -1,3 +1,5 @@
+{-# Language DeriveDataTypeable #-}
+import System.Console.CmdArgs hiding (args)
 import FitSpec
 import FitSpecC
 import Test.Check
@@ -45,32 +47,54 @@ propertyMap n insert'' deleteMin' merge'' =
         insert' = curry insert''
         holdE n = errorToFalse . holds n
 
+sargs = args { limitResults = Just 10 }
+             -- , extraMutants = take 0 [(uncurry maxInsert,maxDeleteMin,uncurry maxMerge)] }
+
 csargs = cargs { functionNames = ["insert","deleteMin","merge"]
                , nResults = Just 10
                }
 
+
+data CmdArguments = CmdArguments
+  { nMutants :: Int
+  , nTests :: Int
+  , testType :: String
+  , method :: String
+  } deriving (Data,Typeable,Show,Eq)
+
+arguments = CmdArguments
+  { nTests   = 500     &= help "number of tests to run"
+  , nMutants = 500     &= help "number of mutants to generate"
+                       &= name "m"
+  , testType = "int"   &= help "type to use"
+                       &= name "type"
+                       &= name "t"
+                       &= explicit
+  , method   = "black" &= help "method (black/grey)"
+                       &= name "e"
+  }
+
+
 main :: IO ()
 main = do putStrLn "Heap:"
+          as <- cmdArgs arguments
+          run (testType as) (method as) (nTests as) (nMutants as)
 
-          let res = and $ propertyMap
-                            2000
-                            (uncurry insert)
-                            (deleteMin :: Heap Bool -> Heap Bool)
-                            (uncurry maxMerge)
-          unless res $ putStrLn "Warning: functions being mutated do not follow properties"
+run :: String -> String -> Int -> Int -> IO ()
+run "bool"  = run' (uncurry insert) (deleteMin :: Heap Bool   -> Heap Bool)   (uncurry merge)
+run "int"   = run' (uncurry insert) (deleteMin :: Heap Int    -> Heap Int)    (uncurry merge)
+run "bools" = run' (uncurry insert) (deleteMin :: Heap [Bool] -> Heap [Bool]) (uncurry merge)
 
-          reportWith args { limitResults = Just 10
-                          , extraMutants = take 0 [(uncurry maxInsert,maxDeleteMin,uncurry maxMerge)] }
-                  -- 1000  -- 2000 --    18s -- [4,11,12] [3,4,7,12] [3,4,5,     12] [1,2,4,7,12]    [1,2,4,5,     12   ]
-                  -- 6000  -- 2000 -- 1m 38s -- [4,11,12] [3,4,7,12] [3,4,5,8,   12] [1,2,4,7,12,13] [1,2,4,5,8,   12,13]
-                  -- 10000 -- 2000 -- 2m 47s -- [4,11,12] [3,4,7,12] [3,4,5,8,10,12] [1,2,4,7,12,13] [1,2,4,5,8,10,12,13]
-                     1000
-                     (uncurry insert,(deleteMin::Heap Bool -> Heap Bool),uncurry merge)
-                     (uncurry3 (propertyMap 2000))
-          report3With csargs 1000 (uncurry insert)
-                                  (deleteMin :: Heap Bool -> Heap Bool)
-                                  (uncurry merge)
-                                  (propertyMap 2000)
+run' f g h method n m =
+  do unless (and $ propertyMap n f g h) $
+       putStrLn "Warning: functions being mutated *do not* follow properties"
+     case method of
+       "grey" -> runGrey f g h n m
+       _      -> runBlack (f,g,h) n m
+
+runGrey f g h n m = report3With csargs m f g h (propertyMap n)
+
+runBlack fs n m = reportWith sargs m fs (uncurry3 $ propertyMap n)
 
 
 maxInsert :: Ord a => a -> Heap a -> Heap a
