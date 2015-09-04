@@ -1,3 +1,5 @@
+{-# Language DeriveDataTypeable #-}
+import System.Console.CmdArgs hiding (args)
 import FitSpec hiding (insert,toList)
 import Test.Check
 import Test.Check.Debug
@@ -116,11 +118,33 @@ propertyMap n insert'' deleteMin'' merge'' = runListate3 insert'' deleteMin'' me
 
 sargs = args { functionNames = ["insert","deleteMin","merge"]
              , variableNames = ["ps","ps","ps"]
-             , limitResults = Just 20
+             , limitResults = Just 10
              }
 
 
-main :: IO ()
-main = do putLL 4 $ propertyMap 4 (uncurry insert) (deleteMin :: Heap Bool -> Heap Bool) (uncurry merge)
-          report3With sargs 8 $ propertyMap 4 (uncurry insert) (deleteMin :: Heap Bool -> Heap Bool) (uncurry merge)
+data CmdArguments = CmdArguments
+  { nMutants :: Int
+  , nTests :: Int
+  , testType :: String
+  } deriving (Data,Typeable,Show,Eq)
 
+arguments = CmdArguments
+  { nTests   = 8       &= help "number of tests to run"
+  , nMutants = 32      &= help "number of mutants to generate"
+                       &= name "m"
+  , testType = "int"   &= help "type to use"
+                       &= name "type"
+                       &= name "t"
+                       &= explicit
+  }
+
+
+main :: IO ()
+main = do as <- cmdArgs arguments
+          run (testType as) (nMutants as) (nTests as)
+
+run "bool"  = run' (uncurry insert) (deleteMin :: Heap Bool   -> Heap Bool  ) (uncurry merge)
+run "bools" = run' (uncurry insert) (deleteMin :: Heap [Bool] -> Heap [Bool]) (uncurry merge)
+run "int"   = run' (uncurry insert) (deleteMin :: Heap Int    -> Heap Int   ) (uncurry merge)
+
+run' f g h m n = report3With sargs m $ propertyMap n f g h
