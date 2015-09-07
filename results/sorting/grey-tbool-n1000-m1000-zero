@@ -1,0 +1,24 @@
+2015-09-07 17:01:37
+zero$ ./black/dist/build/sorting/sorting --classify -tbool -n1000 -m1000
+
+[7]         0                                                                 0                                                              
+[1,4]       0                                                                 0                                                              
+[1,5]       0                                                                 0                                                              
+[1,2,3,6]   4    \xs -> case xs of  [False,True,False] -> [False,True,True]   4    \xs -> case xs of  [False,True,False] -> [False,True,True]
+                                    _                  -> sort xs                                     _                  -> sort xs          
+[4,6]       5    \xs -> case xs of  [True,False] -> [True,False]              5    \xs -> case xs of  [True,False] -> [True,False]           
+                                    _            -> sort xs                                           _            -> sort xs                
+[5,6]       5    \xs -> case xs of  [True,False] -> [True,False]              5    \xs -> case xs of  [True,False] -> [True,False]           
+                                    _            -> sort xs                                           _            -> sort xs                
+[1,2,3]     6    \xs -> case xs of  [False,False,True] -> [False,True,True]   6    \xs -> case xs of  [False,False,True] -> [False,True,True]
+                                    _                  -> sort xs                                     _                  -> sort xs          
+[2,3,6]     9    \xs -> case xs of  [True,False] -> [True,False]              9    \xs -> case xs of  [True,False] -> [True,False]           
+                                    _            -> sort xs                                           _            -> sort xs                
+[4]         14   \xs -> case xs of  [False,True] -> [True,False]              14   \xs -> case xs of  [False,True] -> [True,False]           
+                                    _            -> sort xs                                           _            -> sort xs                
+[5]         14   \xs -> case xs of  [False,True] -> [True,False]              14   \xs -> case xs of  [False,True] -> [True,False]           
+                                    _            -> sort xs                                           _            -> sort xs                
+
+real 1.11
+user 1.10
+sys 0.00

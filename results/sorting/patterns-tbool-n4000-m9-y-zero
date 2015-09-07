@@ -1,0 +1,141 @@
+2015-09-07 17:17:22
+zero$ ./patterns/dist/build/sorting/sorting -tbool -n4000 -m9 -y
+
+Killing 17953 mutants
+5827 proper mutants
+
+Done: 5827
+Discarded: 5
+
+[1]
+3747 survivors. Minimal survivor:
+\i@x1 -> case x1 of
+  []   -> original i
+  x2:_ -> case x2 of
+    False -> []
+    True  -> original i
+
+
+[2]
+3 survivors. Minimal survivor:
+Shallow mutant: [([],[]),([False],[True]),([True],[False]),([False,False],[True,True]),([False,True],[True,False])]
+
+[1,2]
+4 survivors. Minimal survivor:
+\i@x1 -> case x1 of
+  []   -> original i
+  _:x2 -> case x2 of
+    []    -> original i
+    x3:x4 -> case x3 of
+      False -> original i
+      True  -> case x4 of
+        []  -> [False,False]
+        _:_ -> original i
+
+
+[3]
+1 survivors. Minimal survivor:
+\i@x1 -> case x1 of
+  []    -> original i
+  x2:x3 -> case x2 of
+    False -> case x3 of
+      []   -> original i
+      x4:_ -> case x4 of
+        False -> original i
+        True  -> [True,False]
+    True  -> original i
+
+
+[1,3]
+1 survivors. Minimal survivor:
+\i@x1 -> case x1 of
+  []    -> original i
+  x2:x3 -> case x2 of
+    False -> case x3 of
+      []   -> original i
+      x4:_ -> case x4 of
+        False -> original i
+        True  -> [False,True]
+    True  -> original i
+
+
+[6]
+50 survivors. Minimal survivor:
+\i@_ -> [True,False]
+
+
+[1,6]
+1895 survivors. Minimal survivor:
+\i@_ -> []
+
+
+[2,6]
+4 survivors. Minimal survivor:
+\i@x1 -> case x1 of
+  []   -> original i
+  _:x2 -> case x2 of
+    []   -> original i
+    _:x3 -> case x3 of
+      []  -> [True,False]
+      _:_ -> original i
+
+
+[1,2,6]
+22 survivors. Minimal survivor:
+\i@x1 -> case x1 of
+  []   -> original i
+  _:x2 -> case x2 of
+    []  -> [False]
+    _:_ -> original i
+
+
+[3,6]
+1 survivors. Minimal survivor:
+\i@x1 -> case x1 of
+  []    -> original i
+  x2:x3 -> case x2 of
+    False -> original i
+    True  -> case x3 of
+      []   -> original i
+      x4:_ -> case x4 of
+        False -> [True,False]
+        True  -> original i
+
+
+[1,3,6]
+9 survivors. Minimal survivor:
+\i@x1 -> case x1 of
+  []    -> original i
+  x2:x3 -> case x2 of
+    False -> original i
+    True  -> case x3 of
+      []    -> original i
+      x4:x5 -> case x4 of
+        False -> original i
+        True  -> case x5 of
+          []  -> [True]
+          _:_ -> original i
+
+
+[2,3,4,5,6]
+1 survivors. Minimal survivor:
+Shallow mutant: [([],[]),([False],[False]),([True],[True]),([False,False],[False,False]),([False,True],[True,False])]
+
+[1,7]
+1 survivors. Minimal survivor:
+Shallow mutant: [([],[False]),([False],[False,False]),([True],[False,True]),([False,False],[False,False,False]),([False,True],[False,False,True])]
+
+
+mimimal complete sets: 
+[1,2,3]
+[1,4]
+[1,5]
+[2,7]
+[3,7]
+[4,7]
+[5,7]
+[6,7]
+
+real 37.73
+user 37.63
+sys 0.09

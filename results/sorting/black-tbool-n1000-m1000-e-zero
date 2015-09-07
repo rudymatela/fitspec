@@ -1,0 +1,98 @@
+2015-09-07 17:00:40
+zero$ ./black/dist/build/sorting/sorting -tbool -n1000 -m1000 -e
+
+0      [1,4]                                                                          
+0      [1,5]                                                                          
+0      [2,7]                                                                          
+0      [3,7]                                                                          
+0      [4,7]                                                                          
+0      [5,7]                                                                          
+0      [6,7]                                                                          
+4      [1,2,3,6]   \xs -> case xs of  [False,True,False] -> [False,True,True]         
+                                      _                  -> sort xs                   
+                                                                                      
+5      [4,6]       \xs -> case xs of  [True,False] -> [True,False]                    
+                                      _            -> sort xs                         
+                                                                                      
+5      [5,6]       \xs -> case xs of  [True,False] -> [True,False]                    
+                                      _            -> sort xs                         
+                                                                                      
+6      [1,2,3]     \xs -> case xs of  [False,False,True] -> [False,True,True]         
+                                      _                  -> sort xs                   
+                                                                                      
+9      [2,3,6]     \xs -> case xs of  [True,False] -> [True,False]                    
+                                      _            -> sort xs                         
+                                                                                      
+11     [1,7]       \xs -> case xs of  []                  -> [False]                  
+                                      [False]             -> [False,False]            
+                                      [True]              -> [False,True]             
+                                      [False,False]       -> [False,False,False]      
+                                      [False,True]        -> [False,False,True]       
+                                      [True,False]        -> [False,False,True]       
+                                      [True,True]         -> [False,True,True]        
+                                      [False,False,False] -> [False,False,False,False]
+                                      [False,False,True]  -> [False,False,False,True] 
+                                      [False,True,False]  -> [False,False,False,True] 
+                                      ...                 -> ...                      
+                                                                                      
+14     [4]         \xs -> case xs of  [False,True] -> [True,False]                    
+                                      _            -> sort xs                         
+                                                                                      
+14     [5]         \xs -> case xs of  [False,True] -> [True,False]                    
+                                      _            -> sort xs                         
+                                                                                      
+26     [1,2,6]     \xs -> case xs of  [False] -> [True]                               
+                                      _       -> sort xs                              
+                                                                                      
+31     [2,6]       \xs -> case xs of  [False] -> [True]                               
+                                      _       -> sort xs                              
+                                                                                      
+32     [2,3]       \xs -> case xs of  [False,True] -> [True,False]                    
+                                      _            -> sort xs                         
+                                                                                      
+33     [1,3,6]     \xs -> case xs of  [False] -> [False,False]                        
+                                      _       -> sort xs                              
+                                                                                      
+35     [1,2]       \xs -> case xs of  [False] -> [True]                               
+                                      _       -> sort xs                              
+                                                                                      
+37     [7]         \xs -> case xs of  []                  -> [False]                  
+                                      [False]             -> [False,False]            
+                                      [True]              -> [False,True]             
+                                      [False,False]       -> [False,False,False]      
+                                      [False,True]        -> [False,False,True]       
+                                      [True,False]        -> [False,False,True]       
+                                      [True,True]         -> [False,True,True]        
+                                      [False,False,False] -> [False,False,False,False]
+                                      [False,False,True]  -> [False,False,False,True] 
+                                      [False,True,False]  -> [False,False,False,True] 
+                                      ...                 -> ...                      
+                                                                                      
+38     [3,6]       \xs -> case xs of  [False] -> [False,False]                        
+                                      _       -> sort xs                              
+                                                                                      
+42     [1,3]       \xs -> case xs of  [False] -> [False,False]                        
+                                      _       -> sort xs                              
+                                                                                      
+71     [2]         \xs -> case xs of  [False] -> [True]                               
+                                      _       -> sort xs                              
+                                                                                      
+104    [3]         \xs -> case xs of  [False] -> [False,False]                        
+                                      _       -> sort xs                              
+                                                                                      
+373    [1,6]       \xs -> case xs of  [] -> [False]                                   
+                                      _  -> sort xs                                   
+                                                                                      
+380    [6]         \xs -> case xs of  [] -> [False]                                   
+                                      _  -> sort xs                                   
+                                                                                      
+596    [1]         \xs -> case xs of  [] -> [False]                                   
+                                      _  -> sort xs                                   
+                                                                                      
+1100   []          \xs -> case xs of  [] -> [False]                                   
+                                      _  -> sort xs                                   
+                                                                                      
+
+real 1.15
+user 1.14
+sys 0.00
