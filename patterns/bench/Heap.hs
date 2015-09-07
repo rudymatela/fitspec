@@ -1,4 +1,6 @@
+{-# Language DeriveDataTypeable #-}
 module Main where
+import System.Console.CmdArgs hiding (args)
 import Mutants
 import Prelude hiding (null)
 import qualified Data.List as L
@@ -9,14 +11,14 @@ True  ==> p = p
 infixr 0 ==>
 
 
-type TestType = ((A,Heap A) -> Heap A
-               ,((Heap A -> Maybe (Heap A))
-               ,(Heap A,Heap A) -> Heap A))
+type TestType a = ((a,Heap a) -> Heap a
+                  ,((Heap a -> Maybe (Heap a))
+                   ,(Heap a,Heap a) -> Heap a))
 
-type A = [Bool]
-propertyMap :: Int
+propertyMap :: (Ord a, Enumerable a)
+            => Int
             -> Int
-            -> TestType
+            -> TestType a
             -> Bool
 propertyMap n k (insert'', (deleteMin', merge'')) =
   [ runTests n $ \(x,y,h) ->      insert' x (insert' y h) == insert' y (insert' x h) --  1
@@ -40,16 +42,38 @@ propertyMap n k (insert'', (deleteMin', merge'')) =
   where merge' = curry merge''
         insert' = curry insert''
 
-propertyMap' :: Int
-            -> [((A,Heap A) -> Heap A
-               ,((Heap A -> Maybe (Heap A))
-               ,(Heap A,Heap A) -> Heap A))
-            -> Bool]
+propertyMap' :: (Ord a, Enumerable a)
+             => Int
+             -> [TestType a -> Bool]
 propertyMap' n = map (propertyMap n) [1..14]
 
 
+data CmdArguments = CmdArguments
+  { nMutants :: Int
+  , nTests :: Int
+  , testType :: String
+  } deriving (Data,Typeable,Show,Eq)
+
+arguments = CmdArguments
+  { nTests   = 4000    &= help "number of tests to run"
+  , nMutants = 7       &= help "mutant threshold"
+                       &= name "m"
+  , testType = "bools" &= help "type to use"
+                       &= name "type"
+                       &= name "t"
+                       &= explicit
+  }
+
+
 main :: IO () 
-main = runV (Just $ valid 4000) 7 (propertyMap' 4000) (uncurry insert,(deleteMinP,uncurry merge))
+main = do as <- cmdArgs arguments
+          run (testType as) (nMutants as) (nTests as)
+
+run "bool"  = run' ((uncurry insert,(deleteMinP,uncurry merge)) :: TestType Bool)
+run "bools" = run' ((uncurry insert,(deleteMinP,uncurry merge)) :: TestType [Bool])
+run "int"   = run' ((uncurry insert,(deleteMinP,uncurry merge)) :: TestType Int)
+
+run' fs m n = runV (Just $ valid n) m (propertyMap' n) fs
 
 {- Complete sets:
 [1,11,12,13,14]
@@ -61,7 +85,8 @@ main = runV (Just $ valid 4000) 7 (propertyMap' 4000) (uncurry insert,(deleteMin
 -}
 
 
-valid :: Int -> TestType -> ()
+valid :: (Ord a, Enumerable a)
+      => Int -> TestType a -> ()
 valid n (f,(g,h)) = v f `seq` v g `seq` v h where
   v a = runTests n ((`seq` True) . a) `seq` ()
 
