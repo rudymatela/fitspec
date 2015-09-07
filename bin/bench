@@ -45,7 +45,7 @@ main() {
 	case $method in
 	"grey")
 		methoddir=black
-		extraargs=-egrey
+		extraargs=--classify
 		;;
 	esac
 

@@ -48,11 +48,12 @@ sortB = sort
 sortU :: [()] -> [()]
 sortU = sort
 
-sargs :: (Listable a, Bounded a, Ord a) => Args ([a] -> [a])
-sargs = args { functionName = "sort"
+sargs :: (Listable a, Bounded a, Ord a) => Bool -> Args ([a] -> [a])
+sargs em = args
+             { functionName = "sort"
              , variableName = "xs"
              --, extraMutants = [sortCounter]
-             , extraMutants = take 100
+             , extraMutants = (if em then take 100 else take 0)
                             -- $ mutateBySz sort (cons1 (:) \++/ cons1 (++) \++/ cons1 (flip (++)))  -- reps
                             $ mutateBySz sort
                             $ cons1 (\x    -> (x:))
@@ -69,37 +70,44 @@ data CmdArguments = CmdArguments
   { nMutants :: Int
   , nTests :: Int
   , testType :: String
-  , method :: String
+  , classify :: Bool
+  , useExtraMutants :: Bool
   } deriving (Data,Typeable,Show,Eq)
 
 arguments = CmdArguments
   { nTests   = 1000    &= help "number of tests to run"
   , nMutants = 1000    &= help "number of mutants to generate"
                        &= name "m"
-  , testType = "int"   &= help "type to use"
+  , testType = "bool"  &= help "type to use"
                        &= name "type"
                        &= name "t"
                        &= explicit
-  , method   = "black" &= help "method (black/grey)"
+  , classify = False   &= help "classify mutants, report extra column with fully evaluated ones (grey-box)"
+  , useExtraMutants = False
+                       &= help "pass extra manual mutants to the algorithm (only works for black-box version)"
                        &= name "e"
   }
 
 main :: IO ()
 main = do as <- cmdArgs arguments
-          run (method as) (testType as) (nMutants as) (nTests as)
+          run (testType as) (classify as) (useExtraMutants as) (nMutants as) (nTests as)
 
-run :: String -> String -> Int -> Int -> IO ()
-run "grey" "int"  = runGrey sortI
-run "grey" "int2" = runGrey sortI2
-run "grey" "bool" = runGrey sortB
-run "grey" "unit" = runGrey sortU
-run _      "int"  = runBlack sortI
-run _      "int2" = runBlack sortI2
-run _      "bool" = runBlack sortB
-run _      "unit" = runBlack sortU
-run _      _      = \_ _ -> putStrLn "unknown parameters"
-runBlack f nm nt = reportWith sargs nm f (pmap nt)
-runGrey f nm nt = report1With csargs nm f (pmap nt)
+type Ty a = [a] -> [a]
+
+run :: String -> Bool -> Bool -> Int -> Int -> IO ()
+run "int"   = run' (sort :: Ty Int)
+run "int2"  = run' (sort :: Ty UInt2)
+run "bool"  = run' (sort :: Ty Bool)
+run "bools" = run' (sort :: Ty [Bool])
+run "unit"  = run' (sort :: Ty ())
+run' f False em nm nt = reportWith (sargs em) nm f (pmap nt)
+run' f True  em nm nt = report1With csargs nm f (pmap nt)
+
+-- This hack bounded instace is only necessary when using sortCounter as a
+-- manual mutant when sorting lists of things
+instance Bounded a => Bounded [a] where
+  minBound = []
+  maxBound = repeat maxBound -- non terminating upper bound
 
 sortCounter :: (Bounded a, Ord a) => [a] -> [a]
 sortCounter = (++ [maxBound]) . sort

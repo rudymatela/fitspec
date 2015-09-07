@@ -47,29 +47,37 @@ data CmdArguments = CmdArguments
   { nMutants :: Int
   , nTests :: Int
   , testType :: String
+  , typeLevelMutants :: Bool
   } deriving (Data,Typeable,Show,Eq)
 
 arguments = CmdArguments
   { nTests   = 4000    &= help "number of tests to run"
   , nMutants = 9       &= help "mutant threshold"
                        &= name "m"
-  , testType = "int"   &= help "type to use"
+  , testType = "bool"  &= help "type to use"
                        &= name "type"
                        &= name "t"
                        &= explicit
+  , typeLevelMutants = False
+                       &= help "use type level mutants (mutate output of functions)"
+                       &= name "y"
   }
 
 main :: IO ()
 main = do as <- cmdArgs arguments
-          runM (nMutants as) (pmap' (nTests as)) (sort :: [Bool] -> [Bool])
+          run (testType as) (typeLevelMutants as) (nMutants as) (nTests as)
+       -- runM (nMutants as) (pmap' (nTests as)) (sort :: [Bool] -> [Bool])
        -- runV (Just $ valid 4000) 10 (pmap' 4000) (sort :: [[Bool]] -> [[Bool]])
 
-run :: String -> Int -> Int -> IO ()
-run "int"   = run' (sort :: [Int] -> [Int])
-run "bool"  = run' (sort :: [Bool] -> [Bool])
+type Ty a = [a] -> [a]
 
-run' f nMutants nTests =
-  runM nMutants (pmap' nTests) f
+run :: String -> Bool -> Int -> Int -> IO ()
+run "int"   = run' (sort :: Ty Int)
+run "bool"  = run' (sort :: Ty Bool)
+run "bools" = run' (sort :: Ty [Bool])
+
+run' f True  nMutants nTests = runM nMutants (pmap' nTests) f
+run' f False nMutants nTests = runV (Just $ valid nTests) nMutants (pmap' nTests) f
 
 valid :: Enumerable a => Int -> ([a] -> [a]) -> ()
 valid n f = v f where

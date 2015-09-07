@@ -5,7 +5,7 @@ import Test.Check
 import Test.Check.Debug
 import Test.Types
 import Control.Monad
-import Data.List (sort,delete)
+import Data.List (sort,delete,insert)
 
 
 ordered :: Ord a => [a] -> Bool
@@ -45,19 +45,20 @@ propertyMap :: (Ord a, Listable a, Sized a)
             -> [[ ([Bool],Memo [a] [a]) ]]
 propertyMap force n sort' =
   runListate sort' $ sequence $
-    [ lholds n $ \x -> do sortlx <- lsMutateApply [x]
-                          return $ sortlx == [x]
-    , lholds n sortOrdered
+    [ lholds n sortOrdered
     , lholds n sortLength
-  --, lholds n $ \xs     -> do sortxs <- lsMutateApply xs
-  --                           sortsortxs <- lsMutateApply sortxs
-  --                           return $ sortsortxs == sortxs
     , lholds n $ \(x,xs) -> do sortxs <- lsMutateApply xs
                                return $ elem x xs == elem x sortxs
     , lholds n $ \(x,xs) -> do sortxs <- lsMutateApply xs
                                return $ count x xs == count x sortxs
     , lholds n $ \xs     -> do sortxs <- lsMutateApply xs
                                return $ permutation xs sortxs
+    , lholds n $ \xs     -> do sortxs <- lsMutateApply xs
+                               sortsortxs <- lsMutateApply sortxs
+                               return $ sortsortxs == sortxs
+    , lholds n $ \(x,xs) -> do sortxs <- lsMutateApply xs
+                               sortxxs <- lsMutateApply (x:xs)
+                               return $ Data.List.insert x sortxs == sortxxs
     ] ++ [ lholds n $ \xs -> do sortxs <- lsMutateApply xs
                                 return $ True
          | force ]
@@ -80,7 +81,7 @@ arguments = CmdArguments
   { nTests   = 256     &= help "number of tests to run"
   , nMutants = 1024    &= help "number of mutants to generate"
                        &= name "m"
-  , testType = "int"   &= help "type to use"
+  , testType = "bool"  &= help "type to use"
                        &= name "type"
                        &= name "t"
                        &= explicit
@@ -91,11 +92,14 @@ main :: IO ()
 main = do as <- cmdArgs arguments
           run (testType as) (nMutants as) (nTests as) (force as)
 
+type Ty a = [a] -> [a]
+
 run :: String -> Int -> Int -> Bool -> IO ()
-run "bool" = run' (sort :: [Bool]  -> [Bool])
-run "int"  = run' (sort :: [Int]   -> [Int])
+run "bool"  = run' (sort :: Ty Bool)
+run "int"   = run' (sort :: Ty Int)
+run "bools" = run' (sort :: Ty [Bool])
 -- run "int2" = run' (sort :: [UInt2] -> [UInt2])
-run "unit" = run' (sort :: [()]    -> [()])
+run "unit"  = run' (sort :: Ty ())
 
 run' f nmuts ntests force = reportWith sargs nmuts
                           $ propertyMap force ntests f
