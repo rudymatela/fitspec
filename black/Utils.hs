@@ -1,6 +1,7 @@
 -- | General purpose utility functions.
 module Utils
   ( uncurry3
+  , uncurry4
   , boolToMaybe
   , eithers
   , subsets
@@ -29,6 +30,9 @@ import Control.Exception ( Exception
 
 uncurry3 :: (a->b->c->d) -> (a,b,c) -> d
 uncurry3 f (x,y,z) = f x y z
+
+uncurry4 :: (a -> b -> c -> d -> e) -> (a,b,c,d) -> e
+uncurry4 f (x,y,z,w) = f x y z w
 
 -- | Given a value and a boolean, returns Just if True.
 boolToMaybe :: a -> Bool -> Maybe a

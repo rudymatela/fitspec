@@ -56,7 +56,7 @@ benchmark heaps
 
 benchmark list
   main-is:           list.hs
-  build-depends:     base,  llcheck
+  build-depends:     base,  llcheck,  cmdargs
   hs-source-dirs:    ., bench
   default-language:  Haskell2010
   type:              exitcode-stdio-1.0
