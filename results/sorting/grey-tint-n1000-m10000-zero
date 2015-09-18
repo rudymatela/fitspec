@@ -1,0 +1,24 @@
+2015-09-18 16:58:36
+zero$ ./black/dist/build/sorting/sorting --classify -tint -n1000 -m10000
+
+[7]         0                                           0                                        
+[1,5]       0                                           0                                        
+[1,2,4]     0                                           0                                        
+[5,6]       4    \xs -> case xs of  [1,0] -> [1,0]      4    \xs -> case xs of  [1,0] -> [1,0]   
+                                    _     -> sort xs                            _     -> sort xs 
+[2,4,6]     4    \xs -> case xs of  [1,0] -> [1,0]      4    \xs -> case xs of  [1,0] -> [1,0]   
+                                    _     -> sort xs                            _     -> sort xs 
+[1,2,3,6]   6    \xs -> case xs of  [0,-2] -> [0,0]     6    \xs -> case xs of  [0,-2] -> [0,0]  
+                                    _      -> sort xs                           _      -> sort xs
+[5]         10   \xs -> case xs of  [1,0] -> [1,0]      10   \xs -> case xs of  [1,0] -> [1,0]   
+                                    _     -> sort xs                            _     -> sort xs 
+[2,4]       10   \xs -> case xs of  [1,0] -> [1,0]      10   \xs -> case xs of  [1,0] -> [1,0]   
+                                    _     -> sort xs                            _     -> sort xs 
+[1,2,3]     10   \xs -> case xs of  [-2,0] -> [0,0]     10   \xs -> case xs of  [-2,0] -> [0,0]  
+                                    _      -> sort xs                           _      -> sort xs
+[2,3,6]     10   \xs -> case xs of  [1,0] -> [1,0]      10   \xs -> case xs of  [1,0] -> [1,0]   
+                                    _     -> sort xs                            _     -> sort xs 
+
+real 8.15
+user 8.11
+sys 0.02
