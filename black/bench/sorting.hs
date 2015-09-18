@@ -97,6 +97,7 @@ type Ty a = [a] -> [a]
 run :: String -> Bool -> Bool -> Int -> Int -> IO ()
 run "int"   = run' (sort :: Ty Int)
 run "int2"  = run' (sort :: Ty UInt2)
+run "int3"  = run' (sort :: Ty UInt3)
 run "bool"  = run' (sort :: Ty Bool)
 run "bools" = run' (sort :: Ty [Bool])
 run "unit"  = run' (sort :: Ty ())
