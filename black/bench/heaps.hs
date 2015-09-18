@@ -18,12 +18,17 @@ infixr 0 ==>
 instance (Ord a, Listable a) => Listable (Heap a) where
   listing = cons1 fromList
 
+-- Alias for type (they are repeated a lot)
+type Insert a    = (a, Heap a) -> Heap a
+type DeleteMin a = (Heap a -> Heap a)
+type Merge a     = (Heap a, Heap a) -> Heap a
+type Ty a        = (Insert a, DeleteMin a, Merge a)
 
 propertyMap :: (Ord a, Show a, Listable a)
             => Int
-            -> ((a,Heap a) -> Heap a)
-            -> (Heap a -> Heap a)
-            -> ((Heap a,Heap a) -> Heap a)
+            -> Insert a
+            -> DeleteMin a
+            -> Merge a
             -> [Bool]
 propertyMap n insert'' deleteMin' merge'' =
   [ holds n $ \x y h ->      insert' x (insert' y h) == insert' y (insert' x h) --  1
@@ -80,19 +85,22 @@ main = do putStrLn "Heap:"
           as <- cmdArgs arguments
           run (testType as) (method as) (nTests as) (nMutants as)
 
-run :: String -> String -> Int -> Int -> IO ()
-run "bool"  = run' (uncurry insert) (deleteMin :: Heap Bool   -> Heap Bool)   (uncurry merge)
-run "int"   = run' (uncurry insert) (deleteMin :: Heap Int    -> Heap Int)    (uncurry merge)
-run "bools" = run' (uncurry insert) (deleteMin :: Heap [Bool] -> Heap [Bool]) (uncurry merge)
+fns :: Ord a => Ty a
+fns = (uncurry insert, deleteMin, uncurry merge)
 
-run' f g h method n m =
-  do unless (and $ propertyMap n f g h) $
+run :: String -> String -> Int -> Int -> IO ()
+run "bool"  = run' (fns :: Ty Bool)
+run "int"   = run' (fns :: Ty Int)
+run "bools" = run' (fns :: Ty [Bool])
+
+run' fs method n m =
+  do unless (and $ (uncurry3 $ propertyMap n) fs) $
        putStrLn "Warning: functions being mutated *do not* follow properties"
      case method of
-       "grey" -> runGrey f g h n m
-       _      -> runBlack (f,g,h) n m
+       "grey" -> runGrey  fs n m
+       _      -> runBlack fs n m
 
-runGrey f g h n m = report3With csargs m f g h (propertyMap n)
+runGrey (f,g,h) n m = report3With csargs m f g h (propertyMap n)
 
 runBlack fs n m = reportWith sargs m fs (uncurry3 $ propertyMap n)
 
