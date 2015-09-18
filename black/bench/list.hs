@@ -7,13 +7,23 @@ import Test.Check
 import Test.Types
 import Utils (errorToFalse, uncurry4)
 
+type Cons a = (a,[a]) -> [a]
+type Head a = [a] -> a
+type Tail a = [a] -> [a]
+type Append a = ([a],[a]) -> [a]
+type Ty a = ( Cons a
+            , Head a
+            , Tail a
+            , Append a
+            )
+
 -- The property map
 pmap :: (Ord a, Show a, Listable a)
      => Int
-     -> ((a,[a]) -> [a])
-     -> ([a] -> a)
-     -> ([a] -> [a])
-     -> (([a],[a]) -> [a])
+     -> Cons a
+     -> Head a
+     -> Tail a
+     -> Append a
      -> [Bool]
 pmap n cons head tail append =
   [ holds n $ \xs -> [] ++ xs == xs && xs == xs ++ []
@@ -27,12 +37,6 @@ pmap n cons head tail append =
         (++) = curry append
         holdE n = errorToFalse . holds n
 
-
-type Ty a = ( (a,[a]) -> [a]
-            , [a] -> a
-            , [a] -> [a]
-            , ([a],[a]) -> [a]
-            )
 
 fns :: Ty a
 fns = (uncurry (:),head,tail,uncurry (++))
