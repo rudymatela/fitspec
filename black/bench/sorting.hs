@@ -35,19 +35,6 @@ pmap n sort' =
   ]
 
 
-sortI :: [Int] -> [Int]
-sortI = sort
-
--- sorts lists of two-bit integers
-sortI2 :: [UInt2] -> [UInt2]
-sortI2 = sort
-
-sortB :: [Bool] -> [Bool]
-sortB = sort
-
-sortU :: [()] -> [()]
-sortU = sort
-
 sargs :: (Listable a, Bounded a, Ord a) => Bool -> Args ([a] -> [a])
 sargs em = args
              { functionName = "sort"
