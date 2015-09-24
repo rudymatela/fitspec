@@ -46,6 +46,10 @@ sargs em = args
              { functionName = "lop"
              , variableName = "xs"
              , limitResults = Just 30
+             , extraMutants = takeWhile (const em)
+                              [ (uncurry (:),head,tail,uncurry (++-))
+                              , (uncurry (:),head,tail,uncurry (++--))
+                              ]
              }
 
 csargs = cargs { functionNames = [":","head","tail","++"]
@@ -88,3 +92,13 @@ run "bools" = run' (fns :: Ty [Bool])
 run "unit"  = run' (fns :: Ty ())
 run' f False em nm nt = reportWith (sargs em) nm f (uncurry4 $ pmap nt)
 -- run' f True  em nm nt = report1With csargs nm f (pmap nt) -- TODO
+
+
+-- Some manual mutants
+(++-) :: [a] -> [a] -> [a]
+xs ++- ys = []
+
+(++--) :: [a] -> [a] -> [a]
+xs ++-- ys = if length xs > length ys
+               then xs
+               else ys

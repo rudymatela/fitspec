@@ -1,0 +1,141 @@
+2015-09-24 14:56:34
+zero$ ./black/dist/build/list/list -tint -n1000 -m1000
+
+0      [2,3,5]                                             
+0      [2,3,6]                                             
+19     [3,6]       \x -> function x                        
+                   \x -> case x of  [0] -> 1               
+                                    _   -> function x      
+                   \x -> function x                        
+                   \x -> function x                        
+                                                           
+20     [1,2,3,4]   \x -> function x                        
+                   \x -> function x                        
+                   \x -> function x                        
+                   \x -> case x of  ([0],[0]) -> [0]       
+                                    _         -> function x
+                                                           
+23     [1,2,3]     \x -> function x                        
+                   \x -> function x                        
+                   \x -> function x                        
+                   \x -> case x of  ([0],[0]) -> []        
+                                    _         -> function x
+                                                           
+26     [2,6]       \x -> function x                        
+                   \x -> function x                        
+                   \x -> case x of  [0] -> [0]             
+                                    _   -> function x      
+                   \x -> function x                        
+                                                           
+41     [3,5]       \x -> case x of  (0,[]) -> [1]          
+                                    _      -> function x   
+                   \x -> function x                        
+                   \x -> function x                        
+                   \x -> function x                        
+                                                           
+45     [6]         \x -> function x                        
+                   \x -> case x of  [0] -> 1               
+                                    _   -> function x      
+                   \x -> function x                        
+                   \x -> function x                        
+                                                           
+61     [1,3,4]     \x -> case x of  (0,[]) -> [1]          
+                                    _      -> function x   
+                   \x -> function x                        
+                   \x -> function x                        
+                   \x -> function x                        
+                                                           
+66     [1,3]       \x -> case x of  (0,[]) -> [1]          
+                                    _      -> function x   
+                   \x -> function x                        
+                   \x -> function x                        
+                   \x -> function x                        
+                                                           
+82     [2,5]       \x -> case x of  (0,[]) -> [0,0]        
+                                    _      -> function x   
+                   \x -> function x                        
+                   \x -> function x                        
+                   \x -> function x                        
+                                                           
+87     [2,3,4]     \x -> function x                        
+                   \x -> function x                        
+                   \x -> function x                        
+                   \x -> case x of  ([0],[]) -> []         
+                                    _        -> function x 
+                                                           
+102    [1,2,4]     \x -> case x of  (0,[]) -> [0,0]        
+                                    _      -> function x   
+                   \x -> function x                        
+                   \x -> function x                        
+                   \x -> function x                        
+                                                           
+107    [1,2]       \x -> case x of  (0,[]) -> [0,0]        
+                                    _      -> function x   
+                   \x -> function x                        
+                   \x -> function x                        
+                   \x -> function x                        
+                                                           
+118    [2,3]       \x -> function x                        
+                   \x -> function x                        
+                   \x -> function x                        
+                   \x -> case x of  ([],[]) -> [0]         
+                                    _       -> function x  
+                                                           
+148    [3,4]       \x -> function x                        
+                   \x -> function x                        
+                   \x -> function x                        
+                   \x -> case x of  ([0],[]) -> []         
+                                    _        -> function x 
+                                                           
+191    [3]         \x -> function x                        
+                   \x -> function x                        
+                   \x -> function x                        
+                   \x -> case x of  ([],[]) -> [0]         
+                                    _       -> function x  
+                                                           
+193    [2,4]       \x -> function x                        
+                   \x -> function x                        
+                   \x -> function x                        
+                   \x -> case x of  ([0],[]) -> []         
+                                    _        -> function x 
+                                                           
+238    [2]         \x -> function x                        
+                   \x -> function x                        
+                   \x -> function x                        
+                   \x -> case x of  ([],[]) -> [0]         
+                                    _       -> function x  
+                                                           
+489    [5]         \x -> case x of  (0,[]) -> []           
+                                    _      -> function x   
+                   \x -> function x                        
+                   \x -> function x                        
+                   \x -> function x                        
+                                                           
+539    [1,4]       \x -> case x of  (0,[]) -> []           
+                                    _      -> function x   
+                   \x -> function x                        
+                   \x -> function x                        
+                   \x -> function x                        
+                                                           
+557    [1]         \x -> case x of  (0,[]) -> []           
+                                    _      -> function x   
+                   \x -> function x                        
+                   \x -> function x                        
+                   \x -> function x                        
+                                                           
+845    [4]         \x -> case x of  (0,[]) -> []           
+                                    _      -> function x   
+                   \x -> function x                        
+                   \x -> function x                        
+                   \x -> function x                        
+                                                           
+1000   []          \x -> case x of  (0,[]) -> []           
+                                    _      -> function x   
+                   \x -> function x                        
+                   \x -> function x                        
+                   \x -> function x                        
+                                                           
+
+real 1.03
+user 1.02
+sys 0.00

@@ -1,0 +1,141 @@
+2015-09-24 14:56:14
+zero$ ./black/dist/build/list/list -tbool -n1000 -m1000
+
+0      [2,3,5]                                                     
+0      [2,3,6]                                                     
+15     [3,6]       \x -> function x                                
+                   \x -> case x of  [False] -> True                
+                                    _       -> function x          
+                   \x -> function x                                
+                   \x -> function x                                
+                                                                   
+26     [3,5]       \x -> case x of  (False,[]) -> [True]           
+                                    _          -> function x       
+                   \x -> function x                                
+                   \x -> function x                                
+                   \x -> function x                                
+                                                                   
+26     [1,2,3,4]   \x -> function x                                
+                   \x -> function x                                
+                   \x -> function x                                
+                   \x -> case x of  ([False],[True]) -> []         
+                                    _                -> function x 
+                                                                   
+28     [2,6]       \x -> function x                                
+                   \x -> function x                                
+                   \x -> case x of  [False] -> [False]             
+                                    _       -> function x          
+                   \x -> function x                                
+                                                                   
+28     [1,2,3]     \x -> function x                                
+                   \x -> function x                                
+                   \x -> function x                                
+                   \x -> case x of  ([False],[False]) -> []        
+                                    _                 -> function x
+                                                                   
+43     [6]         \x -> function x                                
+                   \x -> case x of  [False] -> True                
+                                    _       -> function x          
+                   \x -> function x                                
+                   \x -> function x                                
+                                                                   
+52     [1,3,4]     \x -> case x of  (False,[]) -> [True]           
+                                    _          -> function x       
+                   \x -> function x                                
+                   \x -> function x                                
+                   \x -> function x                                
+                                                                   
+54     [1,3]       \x -> case x of  (False,[]) -> [True]           
+                                    _          -> function x       
+                   \x -> function x                                
+                   \x -> function x                                
+                   \x -> function x                                
+                                                                   
+96     [2,3,4]     \x -> function x                                
+                   \x -> function x                                
+                   \x -> function x                                
+                   \x -> case x of  ([False],[]) -> []             
+                                    _            -> function x     
+                                                                   
+120    [2,3]       \x -> function x                                
+                   \x -> function x                                
+                   \x -> function x                                
+                   \x -> case x of  ([],[]) -> [False]             
+                                    _       -> function x          
+                                                                   
+124    [2,5]       \x -> case x of  (False,[]) -> [False,False]    
+                                    _          -> function x       
+                   \x -> function x                                
+                   \x -> function x                                
+                   \x -> function x                                
+                                                                   
+138    [3,4]       \x -> case x of  (False,[]) -> [True]           
+                                    _          -> function x       
+                   \x -> function x                                
+                   \x -> function x                                
+                   \x -> function x                                
+                                                                   
+150    [1,2,4]     \x -> case x of  (False,[]) -> [False,False]    
+                                    _          -> function x       
+                   \x -> function x                                
+                   \x -> function x                                
+                   \x -> function x                                
+                                                                   
+152    [1,2]       \x -> case x of  (False,[]) -> [False,False]    
+                                    _          -> function x       
+                   \x -> function x                                
+                   \x -> function x                                
+                   \x -> function x                                
+                                                                   
+170    [3]         \x -> case x of  (False,[]) -> [True]           
+                                    _          -> function x       
+                   \x -> function x                                
+                   \x -> function x                                
+                   \x -> function x                                
+                                                                   
+240    [2,4]       \x -> function x                                
+                   \x -> function x                                
+                   \x -> function x                                
+                   \x -> case x of  ([False],[]) -> []             
+                                    _            -> function x     
+                                                                   
+275    [2]         \x -> function x                                
+                   \x -> function x                                
+                   \x -> function x                                
+                   \x -> case x of  ([],[]) -> [False]             
+                                    _       -> function x          
+                                                                   
+701    [5]         \x -> case x of  (False,[]) -> []               
+                                    _          -> function x       
+                   \x -> function x                                
+                   \x -> function x                                
+                   \x -> function x                                
+                                                                   
+731    [1,4]       \x -> case x of  (False,[]) -> []               
+                                    _          -> function x       
+                   \x -> function x                                
+                   \x -> function x                                
+                   \x -> function x                                
+                                                                   
+737    [1]         \x -> case x of  (False,[]) -> []               
+                                    _          -> function x       
+                   \x -> function x                                
+                   \x -> function x                                
+                   \x -> function x                                
+                                                                   
+917    [4]         \x -> case x of  (False,[]) -> []               
+                                    _          -> function x       
+                   \x -> function x                                
+                   \x -> function x                                
+                   \x -> function x                                
+                                                                   
+1000   []          \x -> case x of  (False,[]) -> []               
+                                    _          -> function x       
+                   \x -> function x                                
+                   \x -> function x                                
+                   \x -> function x                                
+                                                                   
+
+real 1.15
+user 1.06
+sys 0.00
