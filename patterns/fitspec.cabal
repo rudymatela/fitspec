@@ -46,6 +46,14 @@ benchmark sorting
   type:              exitcode-stdio-1.0
   ghc-options:       -O2
 
+benchmark list
+  main-is:           list.hs
+  build-depends:     base, sized-functors, containers, cmdargs
+  hs-source-dirs:    bench, .
+  default-language:  Haskell2010
+  type:              exitcode-stdio-1.0
+  ghc-options:       -O2
+
 benchmark avl
   main-is:           avltrees.hs
   build-depends:     base, sized-functors, containers
