@@ -18,7 +18,7 @@ type Ty a = ( Cons a
             )
 
 -- The property map
-pmap :: (Ord a, Show a, Listable a)
+pmap :: (Eq a, Show a, Listable a)
      => Int
      -> Cons a
      -> Head a
