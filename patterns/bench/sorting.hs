@@ -34,15 +34,6 @@ pmap n k sort' =
 pmap' :: (Ord a, Enumerable a) => Int -> [([a] -> [a]) -> Bool]
 pmap' n = map (pmap n) [0..6]
 
-sortI :: [Int] -> [Int]
-sortI = sort
-
-sortB :: [Bool] -> [Bool]
-sortB = sort
-
-sortU :: [()] -> [()]
-sortU = sort
-
 data CmdArguments = CmdArguments
   { nMutants :: Int
   , nTests :: Int
