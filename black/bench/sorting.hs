@@ -40,7 +40,7 @@ sargs em = args
              { functionName = "sort"
              , variableName = "xs"
              --, extraMutants = [sortCounter]
-             , extraMutants = (if em then take 100 else take 0)
+             , extraMutants = take (if em then 100 else 0)
                             -- $ mutateBySz sort (cons1 (:) \++/ cons1 (++) \++/ cons1 (flip (++)))  -- reps
                             $ mutateBySz sort
                             $ cons1 (\x    -> (x:))
