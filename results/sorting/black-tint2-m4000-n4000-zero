@@ -1,0 +1,70 @@
+2015-09-25 14:51:55
+zero$ ./black/dist/build/sorting/sorting -tint2 -m4000 -n4000
+
+0      [7]                                              
+0      [1,4]                                            
+0      [1,5]                                            
+2      [1,2,3,6]   \xs -> case xs of  [1,0,0] -> [0,1,1]
+                                      _       -> sort xs
+                                                        
+3      [1,2,3]     \xs -> case xs of  [1,0,0] -> [0,1,1]
+                                      _       -> sort xs
+                                                        
+4      [4,6]       \xs -> case xs of  [1,0] -> [1,0]    
+                                      _     -> sort xs  
+                                                        
+4      [5,6]       \xs -> case xs of  [1,0] -> [1,0]    
+                                      _     -> sort xs  
+                                                        
+6      [2,3,6]     \xs -> case xs of  [1,0] -> [1,0]    
+                                      _     -> sort xs  
+                                                        
+10     [4]         \xs -> case xs of  [1,0] -> [1,0]    
+                                      _     -> sort xs  
+                                                        
+10     [5]         \xs -> case xs of  [1,0] -> [1,0]    
+                                      _     -> sort xs  
+                                                        
+20     [2,3]       \xs -> case xs of  [1,0] -> [1,0]    
+                                      _     -> sort xs  
+                                                        
+53     [1,3,6]     \xs -> case xs of  [0] -> [0,0]      
+                                      _   -> sort xs    
+                                                        
+57     [3,6]       \xs -> case xs of  [0] -> [0,0]      
+                                      _   -> sort xs    
+                                                        
+70     [1,3]       \xs -> case xs of  [0] -> [0,0]      
+                                      _   -> sort xs    
+                                                        
+70     [1,2,6]     \xs -> case xs of  [0] -> [1]        
+                                      _   -> sort xs    
+                                                        
+74     [2,6]       \xs -> case xs of  [0] -> [1]        
+                                      _   -> sort xs    
+                                                        
+101    [1,2]       \xs -> case xs of  [0] -> [1]        
+                                      _   -> sort xs    
+                                                        
+143    [3]         \xs -> case xs of  [0] -> [0,0]      
+                                      _   -> sort xs    
+                                                        
+175    [2]         \xs -> case xs of  [0] -> [1]        
+                                      _   -> sort xs    
+                                                        
+1516   [1,6]       \xs -> case xs of  [] -> [0]         
+                                      _  -> sort xs     
+                                                        
+1524   [6]         \xs -> case xs of  [] -> [0]         
+                                      _  -> sort xs     
+                                                        
+2413   [1]         \xs -> case xs of  [] -> [0]         
+                                      _  -> sort xs     
+                                                        
+4000   []          \xs -> case xs of  [] -> [0]         
+                                      _  -> sort xs     
+                                                        
+
+real 19.17
+user 19.09
+sys 0.08
