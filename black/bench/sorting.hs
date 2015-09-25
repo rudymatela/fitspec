@@ -82,11 +82,11 @@ main = do as <- cmdArgs arguments
 type Ty a = [a] -> [a]
 
 run :: String -> Bool -> Bool -> Int -> Int -> IO ()
+run "bool"  = run' (sort :: Ty Bool)
+run "bools" = run' (sort :: Ty [Bool])
 run "int"   = run' (sort :: Ty Int)
 run "int2"  = run' (sort :: Ty UInt2)
 run "int3"  = run' (sort :: Ty UInt3)
-run "bool"  = run' (sort :: Ty Bool)
-run "bools" = run' (sort :: Ty [Bool])
 run "unit"  = run' (sort :: Ty ())
 run' f False em nm nt = reportWith (sargs em) nm f (pmap nt)
 run' f True  em nm nt = report1With csargs nm f (pmap nt)

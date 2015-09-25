@@ -4,9 +4,9 @@ import FitSpec
 import Test.Check
 import Test.Check.Debug
 import Test.Types
+import SizedTestTypes
 import Control.Monad
 import Data.List (sort,delete,insert)
-
 
 ordered :: Ord a => [a] -> Bool
 ordered [] = True
@@ -96,9 +96,10 @@ type Ty a = [a] -> [a]
 
 run :: String -> Int -> Int -> Bool -> IO ()
 run "bool"  = run' (sort :: Ty Bool)
-run "int"   = run' (sort :: Ty Int)
 run "bools" = run' (sort :: Ty [Bool])
--- run "int2" = run' (sort :: [UInt2] -> [UInt2])
+run "int"   = run' (sort :: Ty Int)
+run "int2"  = run' (sort :: Ty UInt2)
+run "int3"  = run' (sort :: Ty UInt3)
 run "unit"  = run' (sort :: Ty ())
 
 run' f nmuts ntests force = reportWith sargs nmuts
