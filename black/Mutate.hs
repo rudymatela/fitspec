@@ -89,7 +89,7 @@ showMutant_ funName varName f f' =
                 $ bindings
         bindings = take 10
                  . mapMaybe bindingFor
-                 . take 200
+                 . take 10000 -- TODO: Make this smarter
                  $ list
         bindingFor a = if errorToNothing (f a) /= errorToNothing (f' a)
                          then Just (a,f' a)
