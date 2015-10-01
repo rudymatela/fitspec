@@ -18,6 +18,7 @@ class Mutable a where
   mutants = concat . szMutants
 
 {-
+-- TODO: Make a test suite comparing both impls??
 -- Here canonicalMutation instead of proper mutation is being used: this is
 -- necessary when making the product of several mutations (in a tuple of
 -- functions there is need to mutate a single element).
