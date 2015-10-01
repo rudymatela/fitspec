@@ -33,28 +33,6 @@ instance (Mutable a, Mutable b, Mutable c) => Mutable (a,b,c) where
 instance (Mutable a, Mutable b, Mutable c, Mutable d) => Mutable (a,b,c,d) where
   szMutants (f,g,h,i) = lsProductWith (\f' (g',h',i') -> (f',g',h',i')) (szMutants f) (szMutants (g,h,i))
 
-ifNothing :: (a -> b) -> (a -> Maybe b) -> a -> b
-ifNothing f g x = fromMaybe (f x) (g x)
-
--- NOTE: use tail to exclude "id" mutant
--- if a==b, this function will enumerate several id mutants, starting with the second:
--- [], [(0,0)], <--- here, then:   [(0,1)], [(0,0),(1,0)], [(0,2)], ...
--- [(0,1)] and [(0,0) and (1,0)] are the same funct.
--- use a specialized mutator??  I think it is not necessary
-repeatedMutants :: (Eq a, Listable a, Listable b) => (a -> b) -> [a -> b]
-repeatedMutants f = map (defaultFunPairsToFunction f) (functionPairs listing listing)
-
-strictMutants :: (Eq a, Eq b, Listable a, Listable b) => (a->b) -> [a->b]
-strictMutants f = map (defaultFunPairsToFunction f) (mutantBindings f)
-
--- TODO: mutantBindings can be better. Move into partialFunctions? custom enum?
-mutantBindings :: (Eq a, Eq b, Listable a, Listable b) => (a->b) -> [[(a,b)]]
-mutantBindings f = filter (properMutation f) (functionPairs listing listing)
-
-properMutation :: Eq b => (a -> b) -> [(a, b)] -> Bool
-properMutation f [] = False
-properMutation f bs = all (\(a,r) -> f a /= r) bs
-
 canonicalMutation :: Eq b => (a -> b) -> [(a, b)] -> Bool
 -- This simple version on the line below
 -- is one that does not deal with partially undefined functions.
