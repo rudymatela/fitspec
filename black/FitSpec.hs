@@ -28,7 +28,7 @@
 module FitSpec where
 
 import Test.Check
-import Test.Check.Function
+import Test.Check.Utils
 import Data.List
 import Data.Ord
 import Data.Monoid
