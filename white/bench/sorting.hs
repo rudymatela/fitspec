@@ -2,7 +2,6 @@
 import System.Console.CmdArgs hiding (args)
 import FitSpec
 import Test.Check
-import Test.Check.Debug
 import Test.Types
 import SizedTestTypes
 import Control.Monad

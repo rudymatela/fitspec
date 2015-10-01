@@ -2,7 +2,6 @@
 import System.Console.CmdArgs hiding (args)
 import FitSpec hiding (insert,toList)
 import Test.Check
-import Test.Check.Debug
 import Control.Monad
 import Data.Functor.Compose
 import Prelude hiding (null,toList)

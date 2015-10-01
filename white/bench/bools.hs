@@ -1,6 +1,5 @@
 import FitSpec
 import Test.Check
-import Test.Check.Debug
 import Control.Monad
 
 
@@ -52,3 +51,6 @@ main = do putStrLn "Not results:"
           checknot
           putStrLn "And results:"
           checkand
+
+putLL :: Show a => Int -> [[a]] -> IO ()
+putLL n = putStr . unlines . map (unlines . map show) . take n

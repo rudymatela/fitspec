@@ -1,6 +1,5 @@
 import FitSpec
 import Test.Check
-import Test.Check.Debug
 import Control.Monad
 import Data.Functor.Compose
 
@@ -59,3 +58,5 @@ main :: IO ()
 main = do putLL 5 $ propertyMap 5 (head :: [Bool] -> Bool) tail
           report2With sargs 8 $ propertyMap 8 (head :: [Bool] -> Bool) tail
 
+putLL :: Show a => Int -> [[a]] -> IO ()
+putLL n = putStr . unlines . map (unlines . map show) . take n

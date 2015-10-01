@@ -35,3 +35,6 @@ main = do putStrLn "Properties over sum:"
           reportWith sargs 256 $ propertyMap 5 (uncurry (+))
 
           putLL 4 $ propertyMap 4 (uncurry (+))
+
+putLL :: Show a => Int -> [[a]] -> IO ()
+putLL n = putStr . unlines . map (unlines . map show) . take n
