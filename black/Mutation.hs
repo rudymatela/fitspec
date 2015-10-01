@@ -2,7 +2,7 @@
 module Mutation where
 
 import Test.Check
-import Test.Check.Function
+import Test.Check.Utils
 import Data.List (intercalate)
 import Data.Maybe
 import Table
@@ -30,7 +30,7 @@ canonicalMutation f = all different
 szMutations :: (Eq b, Listable a, Listable b)
             => (a -> b) -> [[Mutation a b]]
 szMutations f = lsfilter (canonicalMutation f)
-              $ lsPartialFunctions listing listing
+              $ lsFunctionPairs listing listing
 
 szMutations2 :: ( Eq b, Eq d
                 , Listable a, Listable b
@@ -69,13 +69,10 @@ mutations3 :: ( Eq b, Eq d, Eq f
            -> [(Mutation a b, Mutation c d, Mutation e f)]
 mutations3 f g h = concat (szMutations3 f g h)
 
-ifNothing :: (a -> b) -> (a -> Maybe b) -> a -> b
-ifNothing f g x = fromMaybe (f x) (g x)
-
 makeMutant :: Eq a
            => (a -> b) -> Mutation a b
            -> a -> b
-makeMutant f = ifNothing f . bindingsToFunction'
+makeMutant = defaultFunPairsToFunction
 
 makeMutantTraps :: Eq a
                 => (a -> b) -> Mutation a b

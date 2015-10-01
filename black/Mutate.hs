@@ -2,7 +2,7 @@
 module Mutate where
 
 import Test.Check
-import Test.Check.Function
+import Test.Check.Utils
 import Data.List (intercalate)
 import Data.Maybe
 import Table
@@ -20,9 +20,9 @@ class Mutable a where
 -- necessary when making the product of several mutations (in a tuple of
 -- functions there is need to mutate a single element).
 instance (Eq a, Eq b, Listable a, Listable b) => Mutable (a -> b) where
-  szMutants f = lsmap (bindingsToFunction'' f)
-              $ map (filter $ canonicalMutation f)
-              $ lsPartialFunctions listing listing
+  szMutants f = lsmap (defaultFunPairsToFunction f)
+              $ lsfilter (canonicalMutation f)
+              $ lsFunctionPairs listing listing
 
 instance (Mutable a, Mutable b) => Mutable (a,b) where
   szMutants (f,g) = szMutants f `lsProduct` szMutants g
@@ -36,23 +36,20 @@ instance (Mutable a, Mutable b, Mutable c, Mutable d) => Mutable (a,b,c,d) where
 ifNothing :: (a -> b) -> (a -> Maybe b) -> a -> b
 ifNothing f g x = fromMaybe (f x) (g x)
 
-bindingsToFunction'' :: Eq a => (a -> b) -> [(a,b)] -> a -> b
-bindingsToFunction'' f bs = ifNothing f . bindingsToFunction' $ bs
-
 -- NOTE: use tail to exclude "id" mutant
 -- if a==b, this function will enumerate several id mutants, starting with the second:
 -- [], [(0,0)], <--- here, then:   [(0,1)], [(0,0),(1,0)], [(0,2)], ...
 -- [(0,1)] and [(0,0) and (1,0)] are the same funct.
 -- use a specialized mutator??  I think it is not necessary
 repeatedMutants :: (Eq a, Listable a, Listable b) => (a -> b) -> [a -> b]
-repeatedMutants f = map (bindingsToFunction'' f) (partialFunctions listing listing)
+repeatedMutants f = map (defaultFunPairsToFunction f) (functionPairs listing listing)
 
 strictMutants :: (Eq a, Eq b, Listable a, Listable b) => (a->b) -> [a->b]
-strictMutants f = map (bindingsToFunction'' f) (mutantBindings f)
+strictMutants f = map (defaultFunPairsToFunction f) (mutantBindings f)
 
 -- TODO: mutantBindings can be better. Move into partialFunctions? custom enum?
 mutantBindings :: (Eq a, Eq b, Listable a, Listable b) => (a->b) -> [[(a,b)]]
-mutantBindings f = filter (properMutation f) (partialFunctions listing listing)
+mutantBindings f = filter (properMutation f) (functionPairs listing listing)
 
 properMutation :: Eq b => (a -> b) -> [(a, b)] -> Bool
 properMutation f [] = False
@@ -70,9 +67,6 @@ canonicalMutation f = all different
                         Just r' -> r' /= r
                         Nothing -> False -- for our purposes,
                                          -- undefined is equal to anything
-
-nePartialFunctions :: [[a]] -> [[b]] -> [[(a,b)]]
-nePartialFunctions ass = tail . partialFunctions ass
 
 -- TODO: make this prettier
 showMutant_ :: (Listable a, Show a, Show b, Eq b)
