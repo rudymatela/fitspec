@@ -1,6 +1,7 @@
 import FitSpec
 import FitSpecC
 import Test.Check
+import Mutate
 import AVLTree
 import Utils (errorToFalse)
 import Prelude hiding (insert,find)
@@ -8,6 +9,9 @@ import Prelude hiding (insert,find)
 
 instance (Ord a, Listable a) => Listable (Tree a) where
   listing = cons1 fromList
+
+instance (Ord a, Listable a) => Mutable (Tree a) where
+  szMutants = lsMutantsEq
 
 
 -- * Tree Invariants:

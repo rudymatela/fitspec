@@ -3,7 +3,8 @@ module Mutate where
 
 import Test.Check
 import Test.Check.Utils
-import Data.List (intercalate)
+import Test.Check.Function.Show
+import Data.List (intercalate, delete, sort)
 import Data.Maybe
 import Table
 import Utils (errorToNothing)
@@ -16,6 +17,7 @@ class Mutable a where
   szMutants = map (:[]) . mutants
   mutants = concat . szMutants
 
+{-
 -- Here canonicalMutation instead of proper mutation is being used: this is
 -- necessary when making the product of several mutations (in a tuple of
 -- functions there is need to mutate a single element).
@@ -23,6 +25,38 @@ instance (Eq a, Eq b, Listable a, Listable b) => Mutable (a -> b) where
   szMutants f = lsmap (defaultFunPairsToFunction f)
               $ lsfilter (canonicalMutation f)
               $ lsFunctionPairs listing listing
+-}
+
+instance (Eq a, Listable a, Mutable b) => Mutable (a -> b) where
+  szMutants f = lsmap (defaultFunPairsToFunction f)
+              $ lsConcatMap (\as -> associations' as (tail . szMutants . f))
+              $ lsCrescListsOf listing
+
+
+lsdelete :: Eq a => a -> [[a]] -> [[a]]
+lsdelete x = map (delete x)
+
+-- TODO: Possible Optimization: (deleteOnce x)
+lsMutantsEq :: (Listable a, Eq a) => a -> [[a]]
+lsMutantsEq x = [x] : lsdelete x listing
+
+instance Mutable () where
+  szMutants = lsMutantsEq
+
+instance Mutable Int where
+  szMutants = lsMutantsEq
+
+instance Mutable Char where
+  szMutants = lsMutantsEq
+
+instance Mutable Bool where
+  szMutants = lsMutantsEq
+
+instance (Eq a, Listable a) => Mutable [a] where
+  szMutants = lsMutantsEq
+
+instance (Eq a, Listable a) => Mutable (Maybe a) where
+  szMutants = lsMutantsEq
 
 instance (Mutable a, Mutable b) => Mutable (a,b) where
   szMutants (f,g) = szMutants f `lsProduct` szMutants g

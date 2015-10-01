@@ -3,6 +3,7 @@ import System.Console.CmdArgs hiding (args)
 import FitSpec
 import FitSpecC
 import Test.Check
+import Mutate
 import Prelude hiding (null)
 import qualified Data.List as L
 import Data.Maybe (listToMaybe)
@@ -17,6 +18,9 @@ infixr 0 ==>
 
 instance (Ord a, Listable a) => Listable (Heap a) where
   listing = cons1 fromList
+
+instance (Ord a, Listable a) => Mutable (Heap a) where
+  szMutants = lsMutantsEq
 
 -- Alias for type (they are repeated a lot)
 type Insert a    = (a, Heap a) -> Heap a

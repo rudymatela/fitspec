@@ -5,6 +5,7 @@ import FitSpec
 import FitSpecC
 import Test.Check
 import Test.Types
+import Test.Types.Mutate
 
 type Ty a = a -> a
 

@@ -5,6 +5,7 @@ import FitSpecC
 import Data.List
 import Test.Check
 import Test.Types
+import Test.Types.Mutate
 import Utils (errorToFalse, uncurry4)
 
 type Cons a = (a,[a]) -> [a]

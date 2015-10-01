@@ -1,10 +1,14 @@
 import FitSpec
 import FitSpecC
 import Test.Check
+import Mutate
 import Text.PrettyPrint
 
 instance Listable Doc where
   listing = cons1 text  -- TODO: Improve this
+
+instance Mutable Doc where
+  szMutants = lsMutantsEq
 
 propertyMap :: Int -> ((Doc,Doc) -> Doc) -> ((Doc,Doc) -> Doc) -> ((Int,Doc) -> Doc) -> [Bool]
 propertyMap n beside' above' nest'' =
