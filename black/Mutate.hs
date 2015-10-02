@@ -3,8 +3,7 @@ module Mutate where
 
 import Test.Check
 import Test.Check.Utils
-import Test.Check.Function.Show
-import Data.List (intercalate, delete, sort)
+import Data.List (intercalate, delete)
 import Data.Maybe
 import Table
 import Utils (errorToNothing)
