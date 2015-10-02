@@ -83,7 +83,7 @@ showOldMutants2 f = showOldMutants1 (uncurry f)
 -- Maybe it is easier to fix the llcheck tuple/list consistency problem?
 showNewMutants2 :: ( Eq a, Eq b, Eq c
                    , Show a, Show b, Show c
-                   , Listable a, Listable b, Mutable c)
+                   , Listable a, Listable b, Mutable c )
                 => (a -> b -> c) -> Int -> String
 showNewMutants2 f n = unlines
                     $ map concat
