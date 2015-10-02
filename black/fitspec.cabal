@@ -81,3 +81,10 @@ benchmark id
   hs-source-dirs:    ., bench
   default-language:  Haskell2010
   type:              exitcode-stdio-1.0
+
+test-suite mutate
+  type:                exitcode-stdio-1.0
+  main-is:             test-mutate.hs
+  hs-source-dirs:      ., tests
+  build-depends:       base, llcheck
+  default-language:    Haskell2010
