@@ -78,6 +78,9 @@ showOldMutants2 f = showOldMutants1 (uncurry f)
 -- A similar thing happened somewhere on llcheck I think, where the
 -- left-right-handedness of lists was different from tuples (I had to use
 -- reverse in that case).  That is also still not fixed as of 2015-10-02.
+--
+-- NOTE: The return values are also affected in the enumeration order.
+-- Maybe it is easier to fix the llcheck tuple/list consistency problem?
 showNewMutants2 :: ( Eq a, Eq b, Eq c
                    , Show a, Show b, Show c
                    , Listable a, Listable b, Mutable c)
