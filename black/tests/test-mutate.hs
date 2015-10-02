@@ -26,6 +26,10 @@ tests =
   , lsMutantsEqOld (uncurry (++) :: ([Int],[Int]) -> [Int]) 4
   , lsMutantsEqOld (uncurry (++) :: ([Bool],[Bool]) -> [Bool]) 4
   , lsMutantsEqOld (uncurry (++) :: ([Char],[Char]) -> [Char]) 4
+
+  , lsMutants2EqOld ((++) :: [Int] -> [Int] -> [Int]) 3
+  , lsMutants2EqOld ((++) :: [Bool] -> [Bool] -> [Bool]) 3
+  , lsMutants2EqOld ((++) :: [Char] -> [Char] -> [Char]) 3
   ]
 
 
@@ -37,6 +41,17 @@ lsMutantsEqOld :: ( Show a, Show b
 lsMutantsEqOld f n = oldMutants == newMutants
   where oldMutants = lsmap (showMutant f) $ take n $ lsMutantsOld f
         newMutants = lsmap (showMutant f) $ take n $ szMutants f
+
+
+lsMutants2EqOld :: ( Eq a, Eq b, Eq c
+                   , Show a, Show b, Show c
+                   , Listable a, Listable b, Listable c
+                   , Mutable c)
+                => (a -> b -> c) -> Int -> Bool
+lsMutants2EqOld f n = oldMutants == newMutants
+  where oldMutants = lsmap (showMutant uf) $ take n $ lsMutantsOld uf
+        newMutants = lsmap (showMutant uf . uncurry) $ take n $ szMutants f
+        uf = uncurry f
 
 
 lsMutantsOld :: (Eq a, Eq b, Listable a, Listable b)
