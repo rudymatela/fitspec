@@ -55,34 +55,28 @@ lsMutants2EqOld f n = showOldMutants2 f n == showNewMutants2 f n
 showOldMutants1 :: ( Eq a, Eq b
                    , Show a, Show b
                    , Listable a, Listable b )
-                => (a -> b) -> Int -> String
-showOldMutants1 f n = unlines
-                    $ map concat
-                    $ lsmap (showMutant f)
+                => (a -> b) -> Int -> [[String]]
+showOldMutants1 f n = lsmap (showMutant f)
                     $ take n
                     $ lsMutantsOld f
 
 showNewMutants1 :: (ShowMutable a, Mutable a)
-                => a -> Int -> String
-showNewMutants1 f n = unlines
-                    $ map concat
-                    $ lsmap (showMutant f)
+                => a -> Int -> [[String]]
+showNewMutants1 f n = lsmap (showMutant f)
                     $ take n
                     $ szMutants f
 
 showOldMutants2 :: ( Eq a, Eq b, Eq c
                    , Show a, Show b, Show c
                    , Listable a, Listable b, Listable c )
-                => (a -> b -> c) -> Int -> String
+                => (a -> b -> c) -> Int -> [[String]]
 showOldMutants2 f = showOldMutants1 (uncurry f)
 
 showNewMutants2 :: ( Eq a, Eq b, Eq c
                    , Show a, Show b, Show c
                    , Listable a, Listable b, Mutable c )
-                => (a -> b -> c) -> Int -> String
-showNewMutants2 f n = unlines
-                    $ map concat
-                    $ lsmap (showMutant uf . uncurry)
+                => (a -> b -> c) -> Int -> [[String]]
+showNewMutants2 f n = lsmap (showMutant uf . uncurry)
                     $ take n
                     $ szMutants f
   where uf = uncurry f
