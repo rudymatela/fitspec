@@ -33,6 +33,11 @@ tests =
   , lsMutants2EqOld ((++) :: [Int] -> [Int] -> [Int]) 4
   , lsMutants2EqOld ((++) :: [Bool] -> [Bool] -> [Bool]) 3
   , lsMutants2EqOld ((++) :: [Char] -> [Char] -> [Char]) 4
+
+  , allUnique $ concat $ showOldMutants1 (sort :: [Int] -> [Int]) 7
+  , allUnique $ concat $ showNewMutants1 (sort :: [Int] -> [Int]) 7
+  , allUnique $ concat $ showOldMutants2 ((++) :: [Int] -> [Int] -> [Int]) 7
+  , allUnique $ concat $ showNewMutants2 ((++) :: [Int] -> [Int] -> [Int]) 7
   ]
 
 
@@ -86,3 +91,11 @@ lsMutantsOld :: (Eq a, Eq b, Listable a, Listable b)
 lsMutantsOld f = lsmap (defaultFunPairsToFunction f)
                $ lsfilter (canonicalMutation f)
                $ lsFunctionPairs listing listing
+
+allUnique :: Ord a => [a] -> Bool
+allUnique [] = True
+allUnique (x:xs) = x `notElem` xs
+                && allUnique (lesser)
+                && allUnique (greater)
+  where lesser  = filter (< x) xs
+        greater = filter (> x) xs
