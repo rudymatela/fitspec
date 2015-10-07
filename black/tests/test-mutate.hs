@@ -27,8 +27,11 @@ tests =
   , lsMutantsEqOld (uncurry (++) :: ([Bool],[Bool]) -> [Bool]) 4
   , lsMutantsEqOld (uncurry (++) :: ([Char],[Char]) -> [Char]) 4
 
+  -- These actually do not hold for later values in the enumeration
+  -- The actual way in which values are enumerated makes the enumerations
+  -- inherently different.
   , lsMutants2EqOld ((++) :: [Int] -> [Int] -> [Int]) 4
-  , lsMutants2EqOld ((++) :: [Bool] -> [Bool] -> [Bool]) 4
+  , lsMutants2EqOld ((++) :: [Bool] -> [Bool] -> [Bool]) 3
   , lsMutants2EqOld ((++) :: [Char] -> [Char] -> [Char]) 4
   ]
 
@@ -73,23 +76,15 @@ showOldMutants2 :: ( Eq a, Eq b, Eq c
                 => (a -> b -> c) -> Int -> String
 showOldMutants2 f = showOldMutants1 (uncurry f)
 
--- TODO: Remove flip occurrence on showNewMutants2
--- make enumeration actually consistent with tupled functions.
--- A similar thing happened somewhere on llcheck I think, where the
--- left-right-handedness of lists was different from tuples (I had to use
--- reverse in that case).  That is also still not fixed as of 2015-10-02.
---
--- NOTE: The return values are also affected in the enumeration order.
--- Maybe it is easier to fix the llcheck tuple/list consistency problem?
 showNewMutants2 :: ( Eq a, Eq b, Eq c
                    , Show a, Show b, Show c
                    , Listable a, Listable b, Mutable c )
                 => (a -> b -> c) -> Int -> String
 showNewMutants2 f n = unlines
                     $ map concat
-                    $ lsmap (showMutant uf . uncurry . flip)
+                    $ lsmap (showMutant uf . uncurry)
                     $ take n
-                    $ szMutants (flip f)
+                    $ szMutants f
   where uf = uncurry f
 
 lsMutantsOld :: (Eq a, Eq b, Listable a, Listable b)
