@@ -40,23 +40,12 @@ lsdelete x = map (delete x)
 lsMutantsEq :: (Listable a, Eq a) => a -> [[a]]
 lsMutantsEq x = [x] : lsdelete x listing
 
-instance Mutable () where
-  szMutants = lsMutantsEq
-
-instance Mutable Int where
-  szMutants = lsMutantsEq
-
-instance Mutable Char where
-  szMutants = lsMutantsEq
-
-instance Mutable Bool where
-  szMutants = lsMutantsEq
-
-instance (Eq a, Listable a) => Mutable [a] where
-  szMutants = lsMutantsEq
-
-instance (Eq a, Listable a) => Mutable (Maybe a) where
-  szMutants = lsMutantsEq
+instance Mutable ()   where szMutants = lsMutantsEq
+instance Mutable Int  where szMutants = lsMutantsEq
+instance Mutable Char where szMutants = lsMutantsEq
+instance Mutable Bool where szMutants = lsMutantsEq
+instance (Eq a, Listable a) => Mutable [a]       where szMutants = lsMutantsEq
+instance (Eq a, Listable a) => Mutable (Maybe a) where szMutants = lsMutantsEq
 
 instance (Mutable a, Mutable b) => Mutable (a,b) where
   szMutants (f,g) = szMutants f `lsProduct` szMutants g
