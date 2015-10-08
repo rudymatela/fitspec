@@ -1,5 +1,9 @@
 -- Enumeration of function mutations
-module Mutate where
+module Mutate
+  ( module Mutate.Show
+  , Mutable (..)
+  )
+where
 
 import Test.Check
 import Test.Check.Utils
@@ -7,6 +11,7 @@ import Data.List (intercalate, delete)
 import Data.Maybe
 import Table
 import Utils (errorToNothing)
+import Mutate.Show
 
 -- The first mutant returned by szMutants and mutants is the actual function
 -- without mutation.
@@ -68,42 +73,3 @@ canonicalMutation f = all different
                         Just r' -> r' /= r
                         Nothing -> False -- for our purposes,
                                          -- undefined is equal to anything
-
--- TODO: make this prettier
-showMutant_ :: (Listable a, Show a, Show b, Eq b)
-            => String -> String -> (a -> b) -> (a -> b) -> String
-showMutant_ funName varName f f' =
-  case bindings of
-    [] -> "\\" ++ varName ++ " -> " ++ funName ++ " " ++ varName ++ "\n"
-    _  -> columns " " [ "\\" ++ varName ++ " -> case " ++ varName ++ " of ", caseExp ]
-  where caseExp = table " -> "
-                . (++ if length bindings == 10 -- probably infinite ;-P  FIXME
-                        then [["...", "..."]]
-                        else [["_", funName ++ " " ++ varName]])
-                . map (\(a,r) -> [show a, show r])
-                $ bindings
-        bindings = take 10
-                 . mapMaybe bindingFor
-                 . take 10000 -- TODO: Make this smarter
-                 $ list
-        bindingFor a = if errorToNothing (f a) /= errorToNothing (f' a)
-                         then Just (a,f' a)
-                         else Nothing
-
-class ShowMutable a where
-  showMutant :: a -> a -> String
-  showMutant = showMutantN "function" "x"
-  showMutantN :: String -> String -> a -> a -> String
-  showMutantN _ _ = showMutant
-
-instance (Listable a, Show a, Show b, Eq b) => ShowMutable (a->b) where
-  showMutantN = showMutant_
-
-instance (ShowMutable a, ShowMutable b) => ShowMutable (a,b) where
-  showMutant (f,g) (f',g') = showMutant f f' ++ showMutant g g'
-
-instance (ShowMutable a, ShowMutable b, ShowMutable c) => ShowMutable (a,b,c) where
-  showMutant (f,g,h) (f',g',h') = showMutant f f' ++ showMutant g g' ++ showMutant h h'
-
-instance (ShowMutable a, ShowMutable b, ShowMutable c, ShowMutable d) => ShowMutable (a,b,c,d) where
-  showMutant (f,g,h,i) (f',g',h',i') = showMutant f f' ++ showMutant g g' ++ showMutant h h' ++ showMutant i i'
