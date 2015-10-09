@@ -2,6 +2,7 @@
 module Mutate
   ( module Mutate.Show
   , Mutable (..)
+  , lsMutantsEq
   )
 where
 

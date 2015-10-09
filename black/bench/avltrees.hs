@@ -13,6 +13,9 @@ instance (Ord a, Listable a) => Listable (Tree a) where
 instance (Ord a, Listable a) => Mutable (Tree a) where
   szMutants = lsMutantsEq
 
+instance (Ord a, Show a, Listable a) => ShowMutable (Tree a) where
+  showMutant = showMutantEq
+
 
 -- * Tree Invariants:
 

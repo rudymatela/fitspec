@@ -10,6 +10,9 @@ instance Listable Doc where
 instance Mutable Doc where
   szMutants = lsMutantsEq
 
+instance ShowMutable Doc where
+  showMutant = showMutantEq
+
 propertyMap :: Int -> ((Doc,Doc) -> Doc) -> ((Doc,Doc) -> Doc) -> ((Int,Doc) -> Doc) -> [Bool]
 propertyMap n beside' above' nest'' =
   [ holds n $ \x y z ->       (x <> y) <> z == x <> (y <> z)

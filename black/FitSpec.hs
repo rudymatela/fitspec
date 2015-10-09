@@ -91,7 +91,7 @@ reportWith args nf f propMap = putStrLn
                              $ getResultsWith args nf f propMap
   where showResult (x,y,mm) = [ show x, show y, showM mm ]
         showM (Nothing) = ""
-        showM (Just m)  = showMutantN (functionName args) (variableName args) f m ++ "\n"
+        showM (Just m)  = showMutantN [(functionName args,repeat $ variableName args)] f m ++ "\n"
 
 -- | 'nSurv' @props fs@ returns the number of values that match
 --   compositions of properties on the property map.

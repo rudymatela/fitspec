@@ -1,6 +1,7 @@
 module Mutate.Show
   ( ShowMutable (..)
   , showShowTree -- TODO: hide this export
+  , showMutantEq
   )
 where
 
@@ -40,12 +41,9 @@ showShowTree (fn,vn:vns) t =
 
 class ShowMutable a where
   showMutant :: a -> a -> String
-  showMutant = showMutantN "function" "x"
-  showMutantN :: String -> String -> a -> a -> String
-  showMutantN _ _ = showMutant
-  -- Pairs represent names and parameters
-  showMutant' :: [(String,[String])] -> a -> a -> String
-  showMutant' = undefined
+  showMutant = showMutantN []
+  showMutantN :: [(String,[String])] -> a -> a -> String
+  showMutantN _ = showMutant
   showTreeMutant :: a -> a -> [ShowTree]
   showTreeMutant f f' = case showMutant f f' of
                           "" -> []
@@ -64,22 +62,8 @@ instance (Eq a, Show a) => ShowMutable [a]       where showMutant = showMutantEq
 instance (Eq a, Show a) => ShowMutable (Maybe a) where showMutant = showMutantEq
 
 instance (Listable a, Show a, ShowMutable b) => ShowMutable (a->b) where
-  showMutant f f' = case bindings of
-                      [] -> ""
-                      _  -> beside "\\x -> "
-                          $ "case x of\n" ++
-                            "  " `beside` (concat bindings ++ "_ -> original\n")
-    where bindings = take 10
-                   . filter (not . null)
-                   . map bindingFor
-                   . take 100
-                   $ list
-          bindingFor x = case errorToNothing $ showMutant (f x) (f' x) of
-                           Nothing -> ""
-                           Just "" -> ""
-                           Just s  -> show x `beside` " -> " `beside` s
-  showMutant' []       f f' = showMutant' [(defFn, defVns)] f f'
-  showMutant' (fvns:_) f f' =
+  showMutantN []       f f' = showMutantN [(defFn, defVns)] f f'
+  showMutantN (fvns:_) f f' =
     case showTreeMutant f f' of
       []  -> fst fvns
       [t] -> showShowTree fvns t
