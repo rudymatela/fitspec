@@ -21,17 +21,6 @@ class Mutable a where
   szMutants = map (:[]) . mutants
   mutants = concat . szMutants
 
-{-
--- TODO: Make a test suite comparing both impls??
--- Here canonicalMutation instead of proper mutation is being used: this is
--- necessary when making the product of several mutations (in a tuple of
--- functions there is need to mutate a single element).
-instance (Eq a, Eq b, Listable a, Listable b) => Mutable (a -> b) where
-  szMutants f = lsmap (defaultFunPairsToFunction f)
-              $ lsfilter (canonicalMutation f)
-              $ lsFunctionPairs listing listing
--}
-
 instance (Eq a, Listable a, Mutable b) => Mutable (a -> b) where
   szMutants f = lsmap (defaultFunPairsToFunction f)
               $ lsConcatMap (\as -> associations' as (tail . szMutants . f))
@@ -61,15 +50,3 @@ instance (Mutable a, Mutable b, Mutable c) => Mutable (a,b,c) where
 instance (Mutable a, Mutable b, Mutable c, Mutable d) => Mutable (a,b,c,d) where
   szMutants (f,g,h,i) = lsProductWith (\f' (g',h',i') -> (f',g',h',i')) (szMutants f) (szMutants (g,h,i))
 
-canonicalMutation :: Eq b => (a -> b) -> [(a, b)] -> Bool
--- This simple version on the line below
--- is one that does not deal with partially undefined functions.
--- canonicalMutation f = all (\(a,r) -> f a /= r)
-canonicalMutation f = all different
-  where
-    -- the errorToNothing here deals partial functions (error/undefined)
-    -- We define that mutating undefined values is noncanonical
-    different (a,r) = case errorToNothing $ f a of
-                        Just r' -> r' /= r
-                        Nothing -> False -- for our purposes,
-                                         -- undefined is equal to anything

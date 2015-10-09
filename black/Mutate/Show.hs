@@ -12,6 +12,9 @@ class ShowMutable a where
   showMutant = showMutantN "function" "x"
   showMutantN :: String -> String -> a -> a -> String
   showMutantN _ _ = showMutant
+  -- Pairs represent names and parameters
+  showMutant' :: [(String,[String])] -> a -> a -> String
+  showMutant' = undefined
 
 showMutantEq :: (Show a, Eq a) => a -> a -> String
 showMutantEq x x' = if x == x'
