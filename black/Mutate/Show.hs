@@ -65,7 +65,7 @@ instance (Listable a, Show a, ShowMutable b) => ShowMutable (a->b) where
   showMutantN []       f f' = showMutantN [(defFn, defVns)] f f'
   showMutantN (fvns:_) f f' =
     case showTreeMutant f f' of
-      []  -> fst fvns
+      []  -> fst fvns ++ "\n"
       [t] -> showShowTree fvns t
       _   -> error "The impossible happened" -- TODO: Improve error message
   showTreeMutant f f' = case bindings of
@@ -86,10 +86,14 @@ instance (Listable a, Show a, ShowMutable b) => ShowMutable (a->b) where
                                             )
 
 instance (ShowMutable a, ShowMutable b) => ShowMutable (a,b) where
-  showMutant (f,g) (f',g') = showMutant f f' ++ showMutant g g'
+  showMutantN [] p p' = showMutantN [(defFn,defVns)] p p'
+  showMutantN ns (f,g) (f',g') = showMutantN ns f f' ++ showMutantN (tail ns) g g'
 
 instance (ShowMutable a, ShowMutable b, ShowMutable c) => ShowMutable (a,b,c) where
-  showMutant (f,g,h) (f',g',h') = showMutant f f' ++ showMutant g g' ++ showMutant h h'
+  showMutantN [] p p' = showMutantN [(defFn,defVns)] p p'
+  showMutantN ns (f,g,h) (f',g',h') = showMutantN ns f f' ++ showMutantN (tail ns) (g,h) (g',h')
 
 instance (ShowMutable a, ShowMutable b, ShowMutable c, ShowMutable d) => ShowMutable (a,b,c,d) where
-  showMutant (f,g,h,i) (f',g',h',i') = showMutant f f' ++ showMutant g g' ++ showMutant h h' ++ showMutant i i'
+  showMutantN [] p p' = showMutantN [(defFn,defVns)] p p'
+  showMutantN ns (f,g,h,i) (f',g',h',i') = showMutantN ns f f' ++ showMutantN (tail ns) (g,h,i) (g',h',i')
+
