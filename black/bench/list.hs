@@ -8,10 +8,10 @@ import Test.Types
 import Test.Types.Mutate
 import Utils (errorToFalse, uncurry4)
 
-type Cons a = (a,[a]) -> [a]
+type Cons a = a -> [a] -> [a]
 type Head a = [a] -> a
 type Tail a = [a] -> [a]
-type Append a = ([a],[a]) -> [a]
+type Append a = [a] -> [a] -> [a]
 type Ty a = ( Cons a
             , Head a
             , Tail a
@@ -26,7 +26,7 @@ pmap :: (Eq a, Show a, Listable a)
      -> Tail a
      -> Append a
      -> [Bool]
-pmap n cons head tail append =
+pmap n (-:) head tail (++) =
   [ holds n $ \xs -> [] ++ xs == xs && xs == xs ++ []
   , holdE n $ \x xs -> head (x-:xs) == x  -- mutated (:) might return an empty list
   , holdE n $ \x xs -> tail (x-:xs) == xs -- mutated (:) might return an empty list
@@ -34,21 +34,19 @@ pmap n cons head tail append =
   , holds n $ \xs ys zs -> (xs ++ ys) ++ zs == xs ++ (ys ++ zs)
   , holds n $ \x xs ys -> x-:(xs ++ ys) == (x-:xs) ++ ys
   ]
-  where (-:) = curry cons
-        (++) = curry append
-        holdE n = errorToFalse . holds n
+  where holdE n = errorToFalse . holds n
 
 
 fns :: Ty a
-fns = (uncurry (:),head,tail,uncurry (++))
+fns = ((:),head,tail,(++))
 
 sargs :: Listable a => Bool -> Args (Ty a)
 sargs em = args
              { callNames = ["(:) x xs","head xs","tail xs","(++) xs ys"]
              , limitResults = Just 30
              , extraMutants = takeWhile (const em)
-                              [ (uncurry (:),head,tail,uncurry (++-))
-                              , (uncurry (:),head,tail,uncurry (++--))
+                              [ ((:),head,tail,(++-))
+                              , ((:),head,tail,(++--))
                               ]
              }
 
