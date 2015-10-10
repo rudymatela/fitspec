@@ -25,7 +25,6 @@ tests =
 -- TODO: Find out why and when the following does not terminate:
 --, lsMutantsEqOld (sort :: [()] -> [()]) 5
 
--- TODO: The following should work
   , lsMutantsEqOld (head :: [Int] -> Int) 6
   , lsMutantsEqOld (head :: [Bool] -> Bool) 6
   , lsMutantsEqOld (tail :: [Int] -> [Int]) 6
