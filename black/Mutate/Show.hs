@@ -28,6 +28,12 @@ data ShowTree = Val String -- Change this to Vals [String]?
               | Bns [(String,ShowTree)]
   deriving (Show, Eq) -- Derivation only needed for debug and tests
 
+showShowTrees' :: [ShowTree] -> String
+showShowTrees' = concatMap showShowTree'
+
+showShowTrees :: [(String,[String])] -> [ShowTree] -> String
+showShowTrees ns = concat . zipWith showShowTree ns
+
 -- Use default function and variable names
 showShowTree' :: ShowTree -> String
 showShowTree' = showShowTree (defFn,defVns)
@@ -83,11 +89,7 @@ instance (Listable a, Show a, ShowMutable b) => ShowMutable (a->b) where
                            Nothing  -> Nothing
                            Just []  -> Nothing
                            Just [y] -> Just (show x,y)
-                           Just ys  -> Just ( show x
-                                            , Val $ "("
-                                                 ++ intercalate "," (map showShowTree' ys)
-                                                 ++ ")"
-                                            )
+                           Just ys  -> Just (show x,Val $ showShowTrees' ys)
 
 instance (ShowMutable a, ShowMutable b) => ShowMutable (a,b) where
   showMutantN [] p p' = showMutant p p'
@@ -100,14 +102,3 @@ instance (ShowMutable a, ShowMutable b, ShowMutable c) => ShowMutable (a,b,c) wh
 instance (ShowMutable a, ShowMutable b, ShowMutable c, ShowMutable d) => ShowMutable (a,b,c,d) where
   showMutantN [] p p' = showMutant p p'
   showMutantN ns (f,g,h,i) (f',g',h',i') = showMutantN ns f f' ++ showMutantN (tail ns) (g,h,i) (g',h',i')
-
--- showTuple ["asdf\nqwer\n","zxvc\nasdf\n"] ==
---   "( asdf
---   "  qwer
---   ", zxvc
---   "  asdf )
--- showTuple ["asdf","qwer"] == "(asdf,qwer)"
---
--- Use this to know when I'm showing functions or simple values
-showTuple :: [String] -> String
-showTuple = undefined
