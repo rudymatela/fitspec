@@ -89,7 +89,6 @@ reportWith args nf f propMap = putStrLn
                              $ getResultsWith args nf f propMap
   where showResult (x,y,mm) = [ show x, show y, showM mm ]
         showM (Nothing) = ""
-        -- TODO: Fix line below, use new interface for function names
         showM (Just m)  = showMutantN (callNames args) f m ++ "\n"
 
 -- | 'nSurv' @props fs@ returns the number of values that match
