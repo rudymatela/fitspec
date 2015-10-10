@@ -22,8 +22,12 @@ tests =
   , lsMutantsEqOld (sort :: [Int]  -> [Int]) 5
   , lsMutantsEqOld (sort :: [Bool] -> [Bool]) 5
   , lsMutantsEqOld (sort :: [Char] -> [Char]) 5
--- TODO: Find out why and when the following loops:
+-- TODO: Find out why and when the following does not terminate:
 --, lsMutantsEqOld (sort :: [()] -> [()]) 5
+
+-- TODO: The following should work
+  , lsMutantsEqOld (head :: [Int] -> Int) 6
+  , lsMutantsEqOld (head :: [Bool] -> Bool) 6
 
   , lsMutantsEqOld (uncurry (++) :: ([Int],[Int]) -> [Int]) 4
   , lsMutantsEqOld (uncurry (++) :: ([Bool],[Bool]) -> [Bool]) 4
