@@ -40,15 +40,13 @@ import Utils
 -- | Extra arguments for 'getResultsWith' and 'reportWith'
 data Args a = Args
             { extraMutants :: [a]
-            , functionName :: String
-            , variableName :: String
+            , callNames :: [String]
             , limitResults :: Maybe Int -- maximum number of results
             }
 
 -- | Default arguments
 args = Args { extraMutants = []
-            , functionName = "function"
-            , variableName = "x"
+            , callNames = []
             , limitResults = Nothing    -- show everything
             }
 
@@ -91,7 +89,8 @@ reportWith args nf f propMap = putStrLn
                              $ getResultsWith args nf f propMap
   where showResult (x,y,mm) = [ show x, show y, showM mm ]
         showM (Nothing) = ""
-        showM (Just m)  = showMutantN [(functionName args,repeat $ variableName args)] f m ++ "\n"
+        -- TODO: Fix line below, use new interface for function names
+        showM (Just m)  = showMutantN (callNames args) f m ++ "\n"
 
 -- | 'nSurv' @props fs@ returns the number of values that match
 --   compositions of properties on the property map.

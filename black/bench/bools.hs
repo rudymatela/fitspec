@@ -49,16 +49,17 @@ pMapNAO n (not',and',or') =
 main = do putStrLn "### Strict mutant enumerations ###"
 
           putStrLn "Not:";
-          reportWith args { functionName = "not"
-                          , variableName = "p" }
+          reportWith args { callNames = ["not p"] }
                      500 not (pMapN 500)
 
           putStrLn "Not, and:"
-          reportWith args { limitResults = Just 9 }
+          reportWith args { limitResults = Just 9
+                          , callNames = ["not p","(&&) p q"] }
                      500 (not,uncurry (&&)) (pMapNA 500)
 
           putStrLn "Not, and, or:"
-          reportWith args { limitResults = Just 9 }
+          reportWith args { limitResults = Just 9
+                          , callNames = ["not p","(&&) p q","(||) p q"] }
                      100 (not,uncurry (&&),uncurry (||)) (pMapNAO 100)
 
           putStrLn "Not, and (filtered):"

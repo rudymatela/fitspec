@@ -2,6 +2,7 @@
 
 module PPP
   ( beside
+  , showTuple
   )
 where
 
@@ -44,6 +45,6 @@ showTuple [s] = s
 showTuple (s:ss) =
   if any ('\n' `elem`) (s:ss)
     then "( " `beside` s
-      ++ concatMap (", " `beside`) ss
-      ++ ") "
+      ++ init (concatMap (", " `beside`) ss)
+      ++ " )\n"
     else "(" ++ intercalate "," (s:ss) ++ ")"

@@ -1,104 +1,134 @@
 module Mutate.Show
   ( ShowMutable (..)
-  , showShowTree -- TODO: hide this export
-  , showMutantEq
+  , flatLambda, flatLambdas
   )
 where
 
 import PPP
 import Utils (errorToNothing)
 import Test.Check
-import Data.Maybe (mapMaybe)
+import Data.Maybe (mapMaybe,isNothing)
 import Control.Monad (join)
 import Data.List (intercalate)
 
 -- | Default function name, when none given
 defFn :: String
-defFn  = "fn"
+defFn  = head defFns
+
+defFns :: [String]
+defFns = ["f","g","h","i"] ++ map (++"'") defFns
+
+defVn :: String
+defVn = head defVns
 
 -- | Default variable names, when none given
 defVns :: [String]
 defVns = ["x","y","z","w"] ++ map (++"'") defVns
 
+
+{-
+  Atomic value mutants:
+    Int, mutated:     [[([],10)]] 
+    Int, not mutated: [[]]
+    (),  not mutated: [[]]
+
+  Functional value mutants:
+    Int -> Int, not mutated:  [[]]
+    Int -> Int, mutated:      [[([10],10)]]
+    Int -> Int -> Int, mutated:  [[([10,10,10],10)]]
+
+  Paired mutants:
+    (Int,Int):    [[([],10)],[]]
+
+  invalid:
+    []
+-}
+flatLambdas :: [String] -> [[([String],String)]] -> String
+flatLambdas names = showTuple . zipWith flatLambda (names ++ defFns)
+
+flatLambda :: String -> [([String],String)] -> String
+flatLambda name []       = head (words name)
+flatLambda _    [([],s)] = s
+flatLambda name bs = (("\\" ++ (unwords varnames) ++ " -> ") `beside`)
+                   $ "case " ++ (showTuple varnames) ++ " of\n"
+                  ++ "  " `beside` cases
+  where
+    cases = unlines (map (\(as,r) -> showTuple as ++ " -> " ++ r) bs)
+         ++ "_ -> " ++ name
+    varnames = zipWith const
+                       (drop 1 (words name) ++ defVns)
+                       (fst $ head bs)
+
+
+class ShowMutable a where
+  mutantS :: a -> a -> [[([String],String)]]
+
+  showMutantN :: [String] -> a -> a -> String
+  showMutantN ns f = flatLambdas ns . mutantS f
+
+  showMutant :: a -> a -> String
+  showMutant = showMutantN []
+
+mutantSEq :: (Eq a, Show a)
+          => a -> a -> [[([String],String)]]
+mutantSEq x x' = if x == x'
+                   then [ [] ]
+                   else [ [([],show x')] ]
+
+instance ShowMutable ()   where mutantS = mutantSEq; showMutant _ = show
+instance ShowMutable Int  where mutantS = mutantSEq; showMutant _ = show
+instance ShowMutable Char where mutantS = mutantSEq; showMutant _ = show
+instance ShowMutable Bool where mutantS = mutantSEq; showMutant _ = show
+instance (Eq a, Show a) => ShowMutable [a]       where mutantS = mutantSEq; showMutant _ = show
+instance (Eq a, Show a) => ShowMutable (Maybe a) where mutantS = mutantSEq; showMutant _ = show
+
+
+instance (Listable a, Show a, ShowMutable b) => ShowMutable (a->b) where
+  mutantS f f' = (:[])
+               . take 10
+               . concat
+               . mapMaybe bindingsFor
+               . take 200
+               $ list
+    where
+   -- bindingsFor :: a -> Maybe [([String],String)]
+      bindingsFor x =
+        case errorToNothing $ mutantS (f x) (f' x) of
+          Nothing   -> Nothing -- error
+          Just []   -> Nothing -- returned (), null mutant
+          Just [[]] -> Nothing -- null mutant
+          Just [bs] -> Just $ map (\(xs,y) -> (show x:xs,y)) bs -- valid mutant, prepend x arg
+          Just ys  ->  if all null ys
+                         then Nothing
+                         else Just $ [([show x],showMutant (f x) (f' x))] -- tuple
+                          -- in the above else clause, no error should be raised,
+                          -- it is already catched by the enclosing case expression
+
+instance (ShowMutable a, ShowMutable b) => ShowMutable (a,b) where
+  mutantS (f,g) (f',g') = mutantS f f'
+                       ++ mutantS g g'
+  showMutant (f,g) (f',g') = showTuple [ showMutant f f'
+                                       , showMutant g g' ]
+
+instance (ShowMutable a, ShowMutable b, ShowMutable c) => ShowMutable (a,b,c) where
+  mutantS (f,g,h) (f',g',h') = mutantS f f'
+                            ++ mutantS g g'
+                            ++ mutantS h h'
+  showMutant (f,g,h) (f',g',h') = showTuple [ showMutant f f'
+                                            , showMutant g g'
+                                            , showMutant h h' ]
+
+instance (ShowMutable a, ShowMutable b, ShowMutable c, ShowMutable d) => ShowMutable (a,b,c,d) where
+  mutantS (f,g,h,i) (f',g',h',i') = mutantS f f'
+                                 ++ mutantS g g'
+                                 ++ mutantS h h'
+                                 ++ mutantS i i'
+  showMutant (f,g,h,i) (f',g',h',i') = showTuple [ showMutant f f'
+                                                 , showMutant g g'
+                                                 , showMutant h h'
+                                                 , showMutant i i' ]
+
 (+-+) :: String -> String -> String
 cs +-+ ds = cs ++ " " ++ ds
 infixr 5 +-+
 
-data ShowTree = Val String -- Change this to Vals [String]?
-              | Bns [(String,ShowTree)]
-  deriving (Show, Eq) -- Derivation only needed for debug and tests
-
-showShowTrees' :: [ShowTree] -> String
-showShowTrees' = showTuple . map showShowTree'
-
-showShowTrees :: [(String,[String])] -> [ShowTree] -> String
-showShowTrees ns = showTuple . zipWith showShowTree ns
-
--- Use default function and variable names
-showShowTree' :: ShowTree -> String
-showShowTree' = showShowTree (defFn,defVns)
-
-showShowTree :: (String,[String]) -> ShowTree -> String
-showShowTree (fn,[])     t = showShowTree (fn,defVns) t
-showShowTree (fn,vn:vns) t =
-  case t of
-    Val s  -> s
-    Bns bs -> (("\\" ++ vn ++ " -> ") `beside`)
-            $ "case " ++ vn ++ " of\n"
-           ++ "  " `beside` (concatMap showb bs ++ "_ -> " ++ fn +-+ vn ++ "\n")
-  where showb (x,xt) = x `beside` " -> " `beside` showShowTree (fn +-+ vn,vns) xt
-
-
-class ShowMutable a where
-  showMutant :: a -> a -> String
-  showMutant = showMutantN $ repeat (defFn,defVns)
-  showMutantN :: [(String,[String])] -> a -> a -> String
-  showMutantN _ = showMutant
-  showTreeMutant :: a -> a -> [ShowTree]
-  showTreeMutant f f' = case showMutant f f' of
-                          "" -> []
-                          s  -> [Val s]
-
-showMutantEq :: (Show a, Eq a) => a -> a -> String
-showMutantEq x x' = if x == x'
-                      then ""
-                      else show x'
-
-instance ShowMutable ()   where showMutant = showMutantEq
-instance ShowMutable Int  where showMutant = showMutantEq
-instance ShowMutable Char where showMutant = showMutantEq
-instance ShowMutable Bool where showMutant = showMutantEq
-instance (Eq a, Show a) => ShowMutable [a]       where showMutant = showMutantEq
-instance (Eq a, Show a) => ShowMutable (Maybe a) where showMutant = showMutantEq
-
-instance (Listable a, Show a, ShowMutable b) => ShowMutable (a->b) where
-  showMutantN []       f f' = showMutant f f'
-  showMutantN (fvns:_) f f' =
-    case showTreeMutant f f' of
-      []  -> fst fvns ++ "\n"
-      [t] -> showShowTree fvns t
-      _   -> error "The impossible happened" -- TODO: Improve error message
-  showTreeMutant f f' = case bindings of
-                          [] -> []
-                          _  -> [Bns bindings]
-    where bindings = take 10
-                   . mapMaybe bindingFor
-                   . take 100
-                   $ list
-          bindingFor x = case errorToNothing $ showTreeMutant (f x) (f' x) of
-                           Nothing  -> Nothing
-                           Just []  -> Nothing
-                           Just [y] -> Just (show x,y)
-                           Just ys  -> Just (show x,Val $ showShowTrees' ys)
-
-instance (ShowMutable a, ShowMutable b) => ShowMutable (a,b) where
-  showMutantN [] p p' = showMutant p p'
-  showMutantN ns (f,g) (f',g') = showMutantN ns f f' ++ showMutantN (tail ns) g g'
-
-instance (ShowMutable a, ShowMutable b, ShowMutable c) => ShowMutable (a,b,c) where
-  showMutantN [] p p' = showMutant p p'
-  showMutantN ns (f,g,h) (f',g',h') = showMutantN ns f f' ++ showMutantN (tail ns) (g,h) (g',h')
-
-instance (ShowMutable a, ShowMutable b, ShowMutable c, ShowMutable d) => ShowMutable (a,b,c,d) where
-  showMutantN [] p p' = showMutant p p'
-  showMutantN ns (f,g,h,i) (f',g',h',i') = showMutantN ns f f' ++ showMutantN (tail ns) (g,h,i) (g',h',i')

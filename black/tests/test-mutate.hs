@@ -4,6 +4,7 @@ import Data.List (elemIndices, sort)
 import Test.Check
 import Test.Check.Utils
 import Utils (errorToNothing)
+import Data.Tuple (swap)
 
 import Mutate
 
@@ -39,7 +40,34 @@ tests =
   , allUnique $ concat $ showNewMutants1 (sort :: [Int] -> [Int]) 7
   , allUnique $ concat $ showOldMutants2 ((++) :: [Int] -> [Int] -> [Int]) 7
   , allUnique $ concat $ showNewMutants2 ((++) :: [Int] -> [Int] -> [Int]) 7
+
+  , allUnique $ concat $ showOldMutants1 (swap :: (Int,Int) -> (Int,Int)) 7
+  , allUnique $ concat $ showNewMutants1 (swap :: (Int,Int) -> (Int,Int)) 7
+  , allUnique $ concat $ showOldMutants1 (swap :: (Bool,Bool) -> (Bool,Bool)) 7
+  , allUnique $ concat $ showNewMutants1 (swap :: (Bool,Bool) -> (Bool,Bool)) 7
+
+  , allUnique $ concat $ showOldMutants2 ((,) :: Int -> Bool -> (Int,Bool)) 7
+  , allUnique $ concat $ showNewMutants2 ((,) :: Int -> Bool -> (Int,Bool)) 7
+  , allUnique $ concat $ showNewMutants2 ((,) :: Bool -> Int -> (Bool,Int)) 7
+
+  , checkBindingsOfLength 7 2 ((,) :: Bool -> Bool -> (Bool,Bool))
+  , checkBindingsOfLength 7 2 ((,) :: Int -> Int -> (Int,Int))
+  , checkBindingsOfLength 7 1 (swap :: (Bool,Bool) -> (Bool,Bool))
+  , checkBindingsOfLength 4 1 (swap :: (Bool,Bool) -> (Bool,Bool),sort :: [Int] -> [Int])
   ]
+
+
+checkBindingsOfLength :: (Mutable a, ShowMutable a)
+                      => Int -> Int -> a -> Bool
+checkBindingsOfLength n len f = (all . all) (bindingsOfLength len)
+                              . concat
+                              . take n
+                              . lsmap (mutantS f)
+                              $ szMutants f
+
+
+bindingsOfLength :: Int -> [([String],String)] -> Bool
+bindingsOfLength n = all ((== n) . length . fst)
 
 
 lsMutantsEqOld :: ( Show a, Show b

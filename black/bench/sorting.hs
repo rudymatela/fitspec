@@ -37,8 +37,7 @@ pmap n sort' =
 
 sargs :: (Listable a, Bounded a, Ord a) => Bool -> Args ([a] -> [a])
 sargs em = args
-             { functionName = "sort"
-             , variableName = "xs"
+             { callNames = ["sort xs"]
              --, extraMutants = [sortCounter]
              , extraMutants = take (if em then 100 else 0)
                             -- $ mutateBySz sort (cons1 (:) \++/ cons1 (++) \++/ cons1 (flip (++)))  -- reps
