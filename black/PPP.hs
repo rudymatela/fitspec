@@ -33,9 +33,9 @@ beside cs ds = unlines $ zipWith (++) (normalize ' ' css) dss
 --
 -- > showTuple ["asdf\nqwer\n","zxvc\nasdf\n"] ==
 -- >   "( asdf
--- >   "  qwer
--- >   ", zxvc
--- >   "  asdf )
+-- >      qwer
+-- >    , zxvc
+-- >      asdf )"
 --
 -- > showTuple ["asdf","qwer"] == "(asdf,qwer)"
 showTuple :: [String] -> String
