@@ -28,6 +28,8 @@ tests =
 -- TODO: The following should work
   , lsMutantsEqOld (head :: [Int] -> Int) 6
   , lsMutantsEqOld (head :: [Bool] -> Bool) 6
+  , lsMutantsEqOld (tail :: [Int] -> [Int]) 6
+  , lsMutantsEqOld (tail :: [Bool] -> [Bool]) 6
 
   , lsMutantsEqOld (uncurry (++) :: ([Int],[Int]) -> [Int]) 4
   , lsMutantsEqOld (uncurry (++) :: ([Bool],[Bool]) -> [Bool]) 4

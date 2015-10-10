@@ -24,8 +24,11 @@ class Mutable a where
 
 instance (Eq a, Listable a, Mutable b) => Mutable (a -> b) where
   szMutants f = lsmap (defaultFunPairsToFunction f)
-              $ lsConcatMap (\as -> associations' as (tail . szMutants . f))
+              $ lsConcatMap (`associations'` mutantsFor)
               $ lsCrescListsOf listing
+    where mutantsFor x = case errorToNothing (f x) of
+                           Nothing -> [[]]
+                           Just fx -> tail (szMutants fx)
 
 
 lsdelete :: Eq a => a -> [[a]] -> [[a]]
