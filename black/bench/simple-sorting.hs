@@ -38,8 +38,7 @@ sortI = sort
 sortB :: [Bool] -> [Bool]
 sortB = sort
 
-sargs = args { functionName = "sort"
-             , variableName = "xs"
+sargs = args { callNames = ["sort xs"]
              }
 
 main :: IO ()

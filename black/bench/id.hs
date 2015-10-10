@@ -19,8 +19,7 @@ pmap n id =
 
 
 sargs :: Args (Ty a)
-sargs = args { functionName = "id"
-             , variableName = "x"
+sargs = args { callNames = ["id x"]
              , limitResults = Just 10
              }
 

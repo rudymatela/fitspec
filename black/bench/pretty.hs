@@ -11,7 +11,8 @@ instance Mutable Doc where
   szMutants = lsMutantsEq
 
 instance ShowMutable Doc where
-  showMutant = showMutantEq
+  mutantS = mutantSEq
+  showMutant _ = show
 
 propertyMap :: Int -> ((Doc,Doc) -> Doc) -> ((Doc,Doc) -> Doc) -> ((Int,Doc) -> Doc) -> [Bool]
 propertyMap n beside' above' nest'' =

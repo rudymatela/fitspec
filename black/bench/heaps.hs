@@ -23,7 +23,8 @@ instance (Ord a, Listable a) => Mutable (Heap a) where
   szMutants = lsMutantsEq
 
 instance (Ord a, Show a, Listable a) => ShowMutable (Heap a) where
-  showMutant = showMutantEq
+  mutantS = mutantSEq
+  showMutant _ = show
 
 -- Alias for type (they are repeated a lot)
 type Insert a    = (a, Heap a) -> Heap a

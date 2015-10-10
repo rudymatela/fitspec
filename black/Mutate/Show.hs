@@ -1,6 +1,7 @@
 module Mutate.Show
   ( ShowMutable (..)
-  , flatLambda, flatLambdas
+  , flatLambda, flatLambdas -- TODO: Hide those calls
+  , mutantSEq
   )
 where
 

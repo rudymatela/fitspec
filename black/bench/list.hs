@@ -44,8 +44,7 @@ fns = (uncurry (:),head,tail,uncurry (++))
 
 sargs :: Listable a => Bool -> Args (Ty a)
 sargs em = args
-             { functionName = "lop"
-             , variableName = "xs"
+             { callNames = ["(:) x xs","head xs","tail xs","(++) xs ys"]
              , limitResults = Just 30
              , extraMutants = takeWhile (const em)
                               [ (uncurry (:),head,tail,uncurry (++-))
