@@ -10,7 +10,6 @@ import Test.Check
 import Test.Check.Utils
 import Data.List (intercalate, delete)
 import Data.Maybe
-import Table
 import Utils (errorToNothing)
 import Mutate.Show
 
