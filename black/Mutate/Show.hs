@@ -29,10 +29,10 @@ data ShowTree = Val String -- Change this to Vals [String]?
   deriving (Show, Eq) -- Derivation only needed for debug and tests
 
 showShowTrees' :: [ShowTree] -> String
-showShowTrees' = concatMap showShowTree'
+showShowTrees' = showTuple . map showShowTree'
 
 showShowTrees :: [(String,[String])] -> [ShowTree] -> String
-showShowTrees ns = concat . zipWith showShowTree ns
+showShowTrees ns = showTuple . zipWith showShowTree ns
 
 -- Use default function and variable names
 showShowTree' :: ShowTree -> String
