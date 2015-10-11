@@ -40,7 +40,7 @@ You should clone the [llcheck] repository:
 
 ### Via Cabal
 
-*If you don't want to use Cabal, you can skip to the next section*
+*If you don't want to use Cabal, you can skip to the next section.*
 
 A [cabal file] is provided.  If you would like to use cabal sandboxes,
 install [llcheck] like this:
@@ -64,7 +64,7 @@ You can build then run one of the provided benchmarks:
 
 ### Via GHC Directly
 
-*If you prefer to use cabal, see the previous section*
+*If you prefer to use cabal, see the previous section.*
 
 The general rule, if you want to compile a file that uses FitSpec on GHC, you do:
 
