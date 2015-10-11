@@ -96,7 +96,7 @@ We first import what is needed:
 	import Data.List (sort)
 
 
-Then we need a property map, that given the number of tests and a sorting
+Then we need a property map: given the number of tests and a sorting
 implementation, return whether each property holds.  Since we don't have any
 properties, we will start by returning and empty list:
 
@@ -132,9 +132,12 @@ we then compile and run:
 
 What does that output mean?
 
-* The first column   indicates the number of surviving mutants -- 100
-* The second column  indicates our empty property set
-* The third column   shows the smallest surviving mutant for our empty property set
+* The first column  (`100`)
+  indicates the number of surviving mutants
+* The second column (`[]`)
+  indicates our empty property set
+* The third column  (`\xs -> ...`)
+  shows the smallest surviving mutant for our empty property set
 
 The surviving mutant shown, is clearly not a valid implementation of sort.  For
 the empty list, it returns `[0]`.  We should improve our property set by killing
