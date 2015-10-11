@@ -140,9 +140,9 @@ What does that output mean?
   shows the smallest surviving mutant for our empty property set
 
 The surviving mutant shown, is clearly not a valid implementation of sort.  For
-the empty list, it returns `[0]`.  We should improve our property set by killing
-that mutant, lets start very simple: sorting an empty list must yield an empty
-list:
+the empty list, it returns `[0]`.  We should improve our property set by
+killing that mutant.  Lets start very simple: sorting an empty list must yield
+an empty list:
 
 	pmap n sort' =
 	  [ sort' [] == []
@@ -160,7 +160,7 @@ Now:
 	                     _ -> sort xs
 
 The last lines are the same as before (all mutants obviously survive the empty
-property set).  The *first lines* show that there are *52 surviving mutants*
+property set).  The *first lines* show that there are `52` *surviving mutants*
 for the first property `[1]`: the smallest one is shown on the third column.
 It sorts `[0]` to `[]`, which is not valid.  Lets still be very simple --
 sorting a list with one value must yield a list with the same value:
@@ -170,9 +170,9 @@ sorting a list with one value must yield a list with the same value:
 	  , holds n $ \x -> sort' [x] == [x]
 	  ]
 
-Note that our new property (2), has a free variable, that is why `holds` is
-needed: it checks whether a property holds for a given number of tests: we use
-one of the parameters of our property set, `n`.  Now:
+Note that, our new property (2) has a free variable, that is why `holds` is
+needed: it checks whether a property holds for a given number of tests (`n`)
+Now:
 
 	$ ./sorting
 	25    [1,2]   \xs -> case xs of
@@ -198,7 +198,7 @@ Now:
 	...
 
 The first lines show that the current candidate minimal-complete propety-set
-kills all but 4 mutants and is composed only by properties 2 and 3 (`[2,3]`).
+kills all but `4` mutants and is composed only by properties 2 and 3 (`[2,3]`).
 We can safely remove property `sort' [] == []` as it is not needed (it follows
 from the length property).  We should also add a property to kill that mutant:
 elements of the list should not change.
@@ -216,8 +216,8 @@ Now:
 	...
 
 The first line shows that, now, there are no surviving mutants for properties 2
-and 3.  But, it is not over, we can now update our `reportWith` call to check
-more mutants (e.g.: 500 instead of 100).  After that:
+and 3.  But, it is not over!  We can now update our `reportWith` call to check
+more mutants (e.g.: `500` instead of `100`).  After that:
 
 	$ ./sorting
 	2     [2,3]   \xs -> case xs of
@@ -225,8 +225,9 @@ more mutants (e.g.: 500 instead of 100).  After that:
 	                       _ -> sort xs
 	...
 
-I could go on, but at this point you get the point.  As an exercise you can try
-to improve our property-set over `sort` by killing the above mutant.
+We could go on, but *at this point, you got the point*.  As an exercise you can
+try to improve our property-set over `sort` by killing the above mutant by
+adding a new property.
 
 
 ### To analyse minimality and completeness of property-sets
