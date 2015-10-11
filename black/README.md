@@ -63,8 +63,12 @@ You can build then run one of the provided benchmarks:
 
 ### Via GHC Directly
 
-Supposing llcheck and fitspec have been cloned in the same directory, you can
-follow the following steps, to run a benchmark example:
+The general rule, if you want to compile a file that uses FitSpec on GHC, you do:
+
+	$ ghc -ipath/to/llcheck:path/to/fitspec file.hs
+
+**Example:** suppose llcheck and fitspec have been cloned in the same
+directory, you can follow the following steps, to run a benchmark example:
 
 	$ ls
 	fitspec llcheck
