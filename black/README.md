@@ -33,13 +33,14 @@ It is also fine to install them on a sandbox (cabal >= 1.18 is needed)
 
 You will also need [llcheck] to run this.
 Later sections describe the ways you can install it.
-You should clone the [llcheck] repository
-preferentially on the same folder as the [fitspec] repository:
+You should clone the [llcheck] repository:
 
 	git clone ssh://git@github.com/rudymatela/llcheck
 
 
 ### Via Cabal
+
+*If you don't want to use Cabal, you can skip to the next section*
 
 A [cabal file] is provided.  If you would like to use cabal sandboxes,
 install [llcheck] like this:
@@ -62,6 +63,8 @@ You can build then run one of the provided benchmarks:
 
 
 ### Via GHC Directly
+
+*If you prefer to use cabal, see the previous section*
 
 The general rule, if you want to compile a file that uses FitSpec on GHC, you do:
 
@@ -236,7 +239,12 @@ adding a new property.
 
 ### To analyse minimality and completeness of property-sets
 
-TODO
+If you are new to the tool,
+I recommend reading the [previous section](#to-guide-property-creation)
+of this README file.
+
+Then, just look at one of the [example programs on the bench folder](bench).
+
 
 
 
