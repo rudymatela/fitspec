@@ -16,8 +16,8 @@ following section.
 
 Then, you can choose how you can compile and run the tools:
 
-	* via Cabal
-	* via GHC directly
+* via Cabal
+* via GHC directly
 
 
 ### Needed Packages
