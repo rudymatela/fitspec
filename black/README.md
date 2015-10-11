@@ -186,6 +186,8 @@ list should not change?
 	  , holds n $ \xs -> length (sort' xs) == length xs
 	  ]
 
+Now:
+
 	$ ./sorting
 	4     [2,3]   \xs -> case xs of
 	                       [0,0] -> [0,1]
@@ -203,6 +205,8 @@ elements of the list should not change.
 	  , holds n $ \xs   -> length (sort' xs) == length xs
 	  , holds n $ \x xs -> elem x (sort' xs) == elem x xs
 	  ]
+
+Now:
 
 	$ ./sorting
 	0     [2,3]
