@@ -7,11 +7,19 @@ using black-box mutation testing.
 
 **This a work in progress: currently in very early stage**
 
-Two versions are being developed in parallel
-(I haven't decided which is the best yet):
+Four different versions are being developed in parallel:
 
-* black-box functions under test, black-box properties: see the [black](black) folder;
-* black-box functions under test, white-box properties -- mutation by demand: see the [white](white) folder.
+* black-box functions under test, black-box properties:
+  see the [black](black) folder;
+
+* grey-box functions under test, black-box properties:
+  see also the [black](black) folder (`FitSpecC` file);
+
+* black-box functions under test, white-box properties -- mutation by demand:
+  see the [white](white) folder;
+
+* mutation via patterns:
+  see the [patterns](patterns) folder.
 
 See each respective folder.
 
