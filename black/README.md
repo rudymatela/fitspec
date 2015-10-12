@@ -83,6 +83,12 @@ create a new section in the [cabal file].
 
 *If you prefer to use cabal, see the previous sections.*
 
+
+If needed, install [cmdargs] and [pretty]:
+
+	$ cabal install cmdargs pretty
+
+
 Clone both llcheck and fitspec:
 
 	$ git clone git@github.com:rudymatela/llcheck
