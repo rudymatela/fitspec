@@ -34,7 +34,7 @@ Clone then install llcheck:
 	$ cabal install
 
 
-Clone then run a FitSpec example benchmark, in this example, sorting:
+Clone then run a FitSpec example benchmark, in this case, sorting:
 
 	$ git clone git@github.com:rudymatela/fitspec
 	$ cd fitspec/black
@@ -76,16 +76,23 @@ An advantage of this solution is that llcheck is recompiled automatically if
 there is an update.
 
 To create a new benchmark, you should create a file in the bench folder and
-create a new section in the [fitspec.cabal] file.
+create a new section in the [cabal file].
 
 
 ### Via GHC directly
 
 *If you prefer to use cabal, see the previous sections.*
 
+Clone both llcheck and fitspec:
+
+	$ git clone git@github.com:rudymatela/llcheck
+	$ git clone git@github.com:rudymatela/fitspec
+
+
 The general rule, if you want to compile a file that uses FitSpec on GHC, you do:
 
 	$ ghc -ipath/to/llcheck:path/to/fitspec file.hs
+
 
 **Example:** suppose llcheck and fitspec have been cloned in the same
 directory, you can follow the following steps, to run the sorting benchmark
@@ -261,8 +268,6 @@ I recommend reading the [previous section](#to-guide-property-creation)
 of this README file.
 
 Then, just look at one of the [example programs on the bench folder](bench).
-
-
 
 
 [llcheck]: https://github.com/rudymatela/llcheck
