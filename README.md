@@ -12,7 +12,7 @@ Four different versions are being developed in parallel:
 * black-box functions under test, black-box properties:
   see the [black](black) folder;
 
-* grey-box functions under test, black-box properties:
+* grey-box functions under test, grey-box properties:
   see also the [black](black) folder (`FitSpecC` file);
 
 * black-box functions under test, white-box properties -- mutation by demand:
@@ -22,6 +22,7 @@ Four different versions are being developed in parallel:
   see the [patterns](patterns) folder.
 
 See each respective folder.
+
 
 Running
 -------
@@ -34,5 +35,12 @@ You'll need [llcheck] to run this.  To run using cabal sandboxes:
 	cabal install --only-dependencies
 	cabal build
 	cabal bench example-name
+
+
+Tutorial
+--------
+
+For a tutorial on using the black-box version, see the [README
+file](black/README.md) on the [black folder](black).
 
 [llcheck]: https://github.com/rudymatela/llcheck
