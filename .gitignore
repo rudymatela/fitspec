@@ -9,3 +9,7 @@
 # ctags stuff
 **/TAGS
 **/tags
+
+# ghc object (when compiled directly)
+**/*.o
+**/*.hi
