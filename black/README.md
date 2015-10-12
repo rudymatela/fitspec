@@ -11,76 +11,93 @@ using black-box mutation testing.
 Compiling and Running
 ---------------------
 
-You should install the needed packages [cmdargs] and [pretty], see the
-following section.
+You can compile and run in several different ways.
+This README provides a few options:
 
-Then, you can choose how you can compile and run the tools:
+* via Cabal, without sandboxes (*for now, not recommended*)
+* via Cabal, with sandboxes (recommended)
+* via GHC directly (recommended)
 
-* via Cabal
-* via GHC directly
+For details, see each subsection.
 
+### Via Cabal, without sandboxes
 
-### Needed Packages
+If needed, install [cmdargs] and [pretty]:
 
-To run some of the benchmarks you'll need to install [cmdargs] and [pretty].
-You can install them using cabal:
-
-	cabal install cmdargs
-	cabal install pretty
+	$ cabal install cmdargs pretty
 
 
-It is also fine to install them on a sandbox (cabal >= 1.18 is needed)
+Clone then install llcheck:
 
-You will also need [llcheck] to run this.
-Later sections describe the ways you can install it.
-You should clone the [llcheck] repository:
-
-	git clone git@github.com:rudymatela/llcheck
+	$ git clone git@github.com:rudymatela/llcheck
+	$ cd llcheck
+	$ cabal install
 
 
-### Via Cabal
+Clone then run a FitSpec example benchmark, in this example, sorting:
 
-*If you don't want to use Cabal, you can skip to the next section.*
-
-A [cabal file] is provided.  If you would like to use cabal sandboxes,
-install [llcheck] like this:
-
-	cabal sandbox init
-	cabal sandbox add-source ../../llcheck  # or other folder
-	cabal install --only-dependencies
+	$ git clone git@github.com:rudymatela/fitspec
+	$ cd fitspec/black
+	$ cabal bench sorting
 
 
-If you are not using sandboxes, install [llcheck] like this:
-
-	cd path/to/llcheck
-	cabal install
+The drawback of this solution is that everytime there is an update in llcheck,
+you have to reinstall it after pulling.
 
 
-You can build then run one of the provided benchmarks:
+### Via Cabal, with sandboxes
 
-	cabal build
-	cabal bench example-name
+*Cabal > 1.18 is needed*
+
+Clone llcheck and fitspec
+
+	$ git clone git@github.com:rudymatela/llcheck
+	$ git clone git@github.com:rudymatela/fitspec
 
 
-### Via GHC Directly
+Enter FitSpec black-box version folder:
 
-*If you prefer to use cabal, see the previous section.*
+	$ cd fitspec/black
+
+
+Initialize a sandbox, add llcheck as a source, then install dependencies:
+
+	$ cabal sandbox init
+	$ cabal sandbox add-source ../../llcheck
+	$ cabal install --only-dependencies
+
+
+Run the sorting example:
+
+	$ cabal bench sorting
+
+
+An advantage of this solution is that llcheck is recompiled automatically if
+there is an update.
+
+To create a new benchmark, you should create a file in the bench folder and
+create a new section in the [fitspec.cabal] file.
+
+
+### Via GHC directly
+
+*If you prefer to use cabal, see the previous sections.*
 
 The general rule, if you want to compile a file that uses FitSpec on GHC, you do:
 
 	$ ghc -ipath/to/llcheck:path/to/fitspec file.hs
 
 **Example:** suppose llcheck and fitspec have been cloned in the same
-directory, you can follow the following steps, to run a benchmark example:
+directory, you can follow the following steps, to run the sorting benchmark
+example:
 
 	$ ls
 	fitspec llcheck
 	$ cd fitspec/black/bench
-	$ ghc -i..:../../../llcheck example-benchmark.hs
-	$ ./example-benchmark
+	$ ghc -i..:../../../llcheck sorting.hs
+	$ ./sorting
 	...
 	...
-
 
 Some of the benchmarks have command line parameters:
 use `--help` for instructions.
