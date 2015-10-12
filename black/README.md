@@ -275,6 +275,32 @@ of this README file.
 Then, just look at one of the [example programs on the bench folder](bench).
 
 
+Important modules
+-----------------
+
+* [FitSpec](FitSpec.hs):
+  the entry point, implements the calculations behind minimality and completeness
+
+* [Mutate](Mutate.hs):
+  list mutations of a given function without repetitions
+
+* [Mutate.Show](Mutate/Show.hs):
+  show mutations
+
+* [example benchmarks](bench):
+  example use cases for FitSpec,
+  some are customizable using command line arguments
+  (sorting, booleans, lists, pretty-printing, etc)
+
+* [Utils](Utils.hs):
+  miscellaneous utility functions
+
+
+The modules FitSpecC and Mutation refer to the "grey-box" version, that does
+mutant classification.  Normal FitSpec is simpler, you should probably start
+with it.
+
+
 [llcheck]: https://github.com/rudymatela/llcheck
 [cmdargs]: https://hackage.haskell.org/package/cmdargs
 [pretty]: https://hackage.haskell.org/package/pretty
