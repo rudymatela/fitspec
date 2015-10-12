@@ -95,8 +95,7 @@ The general rule, if you want to compile a file that uses FitSpec on GHC, you do
 
 
 **Example:** suppose llcheck and fitspec have been cloned in the same
-directory, you can follow the following steps, to run the sorting benchmark
-example:
+directory, do this to run the sorting example benchmark:
 
 	$ ls
 	fitspec llcheck
