@@ -35,7 +35,7 @@ You will also need [llcheck] to run this.
 Later sections describe the ways you can install it.
 You should clone the [llcheck] repository:
 
-	git clone ssh://git@github.com/rudymatela/llcheck
+	git clone git@github.com:rudymatela/llcheck
 
 
 ### Via Cabal
