@@ -1,6 +1,5 @@
 import FitSpec
 import Test.Check
-import Test.Check.Debug
 import Control.Monad
 import Data.List (sort,delete)
 
@@ -33,8 +32,6 @@ sargs = args { functionNames = ["plus"]
 main :: IO ()
 main = do putStrLn "Properties over sum:"
           reportWith sargs 256 $ propertyMap 5 (uncurry (+))
-
-          putLL 4 $ propertyMap 4 (uncurry (+))
 
 putLL :: Show a => Int -> [[a]] -> IO ()
 putLL n = putStr . unlines . map (unlines . map show) . take n
