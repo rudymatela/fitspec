@@ -2,6 +2,7 @@
 import System.Console.CmdArgs hiding (args)
 import FitSpec hiding (insert,toList)
 import Test.Check
+import Test.Check.Utils (lsCrescListsOf)
 import Control.Monad
 import Data.Functor.Compose
 import Prelude hiding (null,toList)
@@ -17,7 +18,8 @@ True  ==> p = p
 infixr 0 ==>
 
 instance (Ord a, Listable a) => Listable (Heap a) where
-  listing = cons1 fromList
+  listing = lsmap fromList
+          $ lsCrescListsOf listing -- :: [a]
 
 instance (Ord a, Sized a) => Sized (Heap a) where
   size = size . toList
