@@ -84,6 +84,8 @@ instance (Eq a, Show a) => ShowMutable (Maybe a) where mutantS = mutantSEq; show
 
 
 instance (Listable a, Show a, ShowMutable b) => ShowMutable (a->b) where
+  -- TODO: maybe somehow let the user provide how many values should be tried
+  -- when printing the mutant
   mutantS f f' = (:[])
                . take 10
                . concat
