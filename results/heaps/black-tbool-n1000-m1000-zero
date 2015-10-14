@@ -1,0 +1,100 @@
+2015-10-14 15:01:53
+zero$ ./black/dist/build/heaps/heaps -tbool -n1000 -m1000
+
+Heap:
+0   [11,12]                                                                                                                  
+0   [3,7,12]                                                                                                                 
+0   [1,2,7,12]                                                                                                               
+0   [1,7,12,13]                                                                                                              
+0   [3,5,8,10,12]                                                                                                            
+0   [1,2,5,8,10,12]                                                                                                          
+0   [1,5,8,10,12,13]                                                                                                         
+1   [1,7,12]           ( \xh -> case xh of                                                                                   
+                                  (False,Nil) -> Nil                                                                         
+                                  (True,Nil) -> Nil                                                                          
+                                  _ -> insert xh                                                                             
+                       , deleteMin                                                                                           
+                       , merge )                                                                                             
+                                                                                                                             
+1   [3,5,10,12]        ( insert                                                                                              
+                       , deleteMin                                                                                           
+                       , \hh -> case hh of                                                                                   
+                                  (Branch 1 True Nil Nil,Branch 1 True Nil Nil) -> Branch 1 False Nil (Branch 1 True Nil Nil)
+                                  _ -> merge hh )                                                                            
+                                                                                                                             
+1   [1,2,5,10,12]      ( insert                                                                                              
+                       , deleteMin                                                                                           
+                       , \hh -> case hh of                                                                                   
+                                  (Branch 1 True Nil Nil,Branch 1 True Nil Nil) -> Branch 1 False Nil (Branch 1 True Nil Nil)
+                                  _ -> merge hh )                                                                            
+                                                                                                                             
+1   [1,5,8,10,12]      ( \xh -> case xh of                                                                                   
+                                  (False,Nil) -> Nil                                                                         
+                                  (True,Nil) -> Nil                                                                          
+                                  _ -> insert xh                                                                             
+                       , deleteMin                                                                                           
+                       , merge )                                                                                             
+                                                                                                                             
+1   [1,5,10,12,13]     ( insert                                                                                              
+                       , deleteMin                                                                                           
+                       , \hh -> case hh of                                                                                   
+                                  (Branch 1 True Nil Nil,Branch 1 True Nil Nil) -> Branch 1 False Nil (Branch 1 True Nil Nil)
+                                  _ -> merge hh )                                                                            
+                                                                                                                             
+1   [3,5,6,8,12]       ( insert                                                                                              
+                       , deleteMin                                                                                           
+                       , \hh -> case hh of                                                                                   
+                                  (Branch 1 False Nil Nil,Branch 1 True Nil Nil) -> Nil                                      
+                                  (Branch 1 True Nil Nil,Branch 1 False Nil Nil) -> Nil                                      
+                                  _ -> merge hh )                                                                            
+                                                                                                                             
+1   [1,2,5,6,8,12]     ( insert                                                                                              
+                       , deleteMin                                                                                           
+                       , \hh -> case hh of                                                                                   
+                                  (Branch 1 False Nil Nil,Branch 1 True Nil Nil) -> Nil                                      
+                                  (Branch 1 True Nil Nil,Branch 1 False Nil Nil) -> Nil                                      
+                                  _ -> merge hh )                                                                            
+                                                                                                                             
+1   [1,5,6,8,12,13]    ( insert                                                                                              
+                       , deleteMin                                                                                           
+                       , \hh -> case hh of                                                                                   
+                                  (Branch 1 False Nil Nil,Branch 1 True Nil Nil) -> Nil                                      
+                                  (Branch 1 True Nil Nil,Branch 1 False Nil Nil) -> Nil                                      
+                                  _ -> merge hh )                                                                            
+                                                                                                                             
+2   [1,5,10,12]        ( \xh -> case xh of                                                                                   
+                                  (False,Nil) -> Nil                                                                         
+                                  (True,Nil) -> Nil                                                                          
+                                  _ -> insert xh                                                                             
+                       , deleteMin                                                                                           
+                       , merge )                                                                                             
+                                                                                                                             
+2   [3,5,6,12]         ( insert                                                                                              
+                       , deleteMin                                                                                           
+                       , \hh -> case hh of                                                                                   
+                                  (Branch 1 True Nil Nil,Branch 1 True Nil Nil) -> Branch 1 False Nil (Branch 1 True Nil Nil)
+                                  _ -> merge hh )                                                                            
+                                                                                                                             
+2   [1,2,5,6,12]       ( insert                                                                                              
+                       , deleteMin                                                                                           
+                       , \hh -> case hh of                                                                                   
+                                  (Branch 1 True Nil Nil,Branch 1 True Nil Nil) -> Branch 1 False Nil (Branch 1 True Nil Nil)
+                                  _ -> merge hh )                                                                            
+                                                                                                                             
+2   [1,5,6,8,12]       ( \xh -> case xh of                                                                                   
+                                  (False,Nil) -> Nil                                                                         
+                                  (True,Nil) -> Nil                                                                          
+                                  _ -> insert xh                                                                             
+                       , deleteMin                                                                                           
+                       , merge )                                                                                             
+                                                                                                                             
+2   [1,5,6,12,13]      ( insert                                                                                              
+                       , deleteMin                                                                                           
+                       , \hh -> case hh of                                                                                   
+                                  (Branch 1 True Nil Nil,Branch 1 True Nil Nil) -> Branch 1 False Nil (Branch 1 True Nil Nil)
+                                  _ -> merge hh )                                                                            
+                                                                                                                             
+
+real 3.33
+user 3.20
+sys 0.12
