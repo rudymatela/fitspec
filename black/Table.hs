@@ -1,5 +1,7 @@
 module Table where
 
+-- TODO: Remove trailing spaces from the resulting table string.
+
 import Data.List
 
 -- TODO: make this prettier (see Mutate.hs's mutant printing)
