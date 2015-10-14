@@ -11,11 +11,6 @@ import Heap
 import Utils (uncurry3,errorToFalse)
 import Control.Monad (unless)
 
-(==>) :: Bool -> Bool -> Bool
-False ==> _ = True
-True  ==> p = p
-infixr 0 ==>
-
 instance (Ord a, Listable a) => Listable (Heap a) where
   listing = cons1 fromList
 
