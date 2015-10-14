@@ -21,6 +21,8 @@ class Mutable a where
   szMutants = map (:[]) . mutants
   mutants = concat . szMutants
 
+-- Beware: if the underlying enumeration for argument/return values generates
+-- repeated elements there will be repeated and potentially null mutants.
 instance (Eq a, Listable a, Mutable b) => Mutable (a -> b) where
   szMutants f = lsmap (defaultFunPairsToFunction f)
               $ lsConcatMap (`associations'` mutantsFor)

@@ -3,6 +3,7 @@ import System.Console.CmdArgs hiding (args)
 import FitSpec
 import FitSpecC
 import Test.Check
+import Test.Check.Utils (lsCrescListsOf)
 import Mutate
 import Prelude hiding (null)
 import qualified Data.List as L
@@ -12,7 +13,13 @@ import Utils (uncurry3,errorToFalse)
 import Control.Monad (unless)
 
 instance (Ord a, Listable a) => Listable (Heap a) where
-  listing = cons1 fromList
+  listing = lsmap fromList
+          $ lsCrescListsOf listing -- :: [a]
+
+-- a good property to assure that the above does not leave out elements is:
+--
+-- \xs ys =  xs `permutation` ys  <==>  fromList xs == fromList ys
+--                                          `asTypeOf` (undefined :: Heap a)
 
 instance (Ord a, Listable a) => Mutable (Heap a) where
   szMutants = lsMutantsEq
@@ -55,7 +62,8 @@ propertyMap n insert'' deleteMin' merge'' =
         insert' = curry insert''
         holdE n = errorToFalse . holds n
 
-sargs = args { limitResults = Just 10 }
+sargs = args { limitResults = Just 20
+             , callNames = ["insert xh","deleteMin h","merge hh"]}
              -- , extraMutants = take 0 [(uncurry maxInsert,maxDeleteMin,uncurry maxMerge)] }
 
 csargs = cargs { functionNames = ["insert","deleteMin","merge"]
@@ -121,4 +129,3 @@ maxMerge h Nil = h
 maxMerge h1@(Branch _ x1 l1 r1) h2@(Branch _ x2 l2 r2)
  | x1 <= x2 = branch x1 (maxMerge l1 h2) r1
  | otherwise = maxMerge h2 h1
-
