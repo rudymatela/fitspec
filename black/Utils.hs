@@ -12,6 +12,7 @@ module Utils
   , bindArgumentType
   , errorToNothing
   , errorToFalse
+  , sortAndGroupOn
   )
 where
 
@@ -27,6 +28,8 @@ import Control.Exception ( Exception
                          , Handler (Handler)
                          , evaluate
                          )
+import Data.Function (on)
+import Data.List (groupBy,sortOn)
 
 uncurry3 :: (a->b->c->d) -> (a,b,c) -> d
 uncurry3 f (x,y,z) = f x y z
@@ -108,3 +111,7 @@ errorToFalse :: Bool -> Bool
 errorToFalse p = case errorToNothing p of
                    Just p' -> p
                    Nothing -> False
+
+sortAndGroupOn :: Ord b => (a -> b) -> [a] -> [[a]]
+sortAndGroupOn f = groupBy ((==) `on` f)
+                 . sortOn f

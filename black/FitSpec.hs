@@ -32,7 +32,7 @@ import Test.Check.Utils
 import Data.List
 import Data.Ord
 import Data.Monoid
-import Data.Maybe (catMaybes, listToMaybe)
+import Data.Maybe (catMaybes, listToMaybe, isJust)
 import Mutate
 import Table
 import Utils
@@ -54,14 +54,14 @@ args = Args { extraMutants = []
 -- | Return minimality and completeness results.  See 'report'.
 getResults :: (Mutable a)
            => Int -> a -> (a -> [Bool])
-           -> [(Int, [Int], Maybe a)]
+           -> [([[Int]], Int, Maybe a)]
 getResults = getResultsWith args
 
 -- | Return minimality and completeness results.  See 'reportWith'.
 getResultsWith :: (Mutable a)
                => Args a
                -> Int -> a -> (a -> [Bool])
-               -> [(Int, [Int], Maybe a)]
+               -> [([[Int]],Int,Maybe a)]
 getResultsWith args nMuts f propMap = maybe id take (limitResults args)
                                     $ nSurvT pids propMap muts
   where pids = [1..(length (propMap f))]
@@ -83,13 +83,15 @@ reportWith :: (ShowMutable a, Mutable a)
            -> a
            -> (a -> [Bool])
            -> IO ()
-reportWith args nf f propMap = putStrLn
-                             . table "   "
-                             . map showResult
-                             $ getResultsWith args nf f propMap
-  where showResult (x,y,mm) = [ show x, show y, showM mm ]
+reportWith args nf f = putStrLn
+                     . table "   "
+                     . intersperse [ "\n" ]
+                     . map showResult
+                     . getResultsWith args nf f
+  where showResult (x,y,mm) = [ showI x, show y, showM mm ]
+        showI = unwords . map show
         showM (Nothing) = ""
-        showM (Just m)  = showMutantN (callNames args) f m ++ "\n"
+        showM (Just m)  = showMutantN (callNames args) f m
 
 -- | 'nSurv' @props fs@ returns the number of values that match
 --   compositions of properties on the property map.
@@ -111,17 +113,22 @@ nSurv props = map countTrue
   where countTrue = length . filter id
 
 -- | 'nSurvT' is the same as 'nSurv' but the number of surviving mutants is
---   tupled with the ids of properties and first survivor.
-nSurvT :: Eq pid => [pid] -> (a -> [Bool]) -> [a] -> [(Int,[pid],Maybe a)]
-nSurvT pids pmap = filterU relevant
-                 . sortBy (comparing $ \(s,ids,_) -> (s, length ids))
-                 . zipWith (\ids sms -> (length sms, ids, listToMaybe sms))
+--   tupled with the ids of property sets and first survivor.
+--
+-- Several property sets with the same mutants are collapsed into one
+nSurvT :: Eq pid => [pid] -> (a -> [Bool]) -> [a] -> [([[pid]],Int,Maybe a)]
+nSurvT pids pmap = map collapseGroup
+                 . sortAndGroupOn (\(_,n,mms) -> (n,map isJust mms))
+                 . zipWith (\is mms -> (is,length (filter isJust mms),mms))
                            (subsets pids)
-                 . map catMaybes
                  . transpose
                  . map (\func -> map (boolToMaybe func)
                                      (compositions (pmap func)))
-  where (n,is,_) `relevant` (n',is',_) = not (n == n' && is `contained` is')
+  where collapseGroup []     = error "collapseGroup: this should not happen"
+        collapseGroup ts@((_,n,mms):_) = ( filterU ((not.).contained) . sortOn length . map tfst $ ts
+                                         , n
+                                         , listToMaybe $ catMaybes mms)
+        tfst (x,_,_) = x
 
 -- | 'compositions' @bs@ returns all compositions formed by taking values of @bs@
 compositions :: [Bool] -> [Bool]

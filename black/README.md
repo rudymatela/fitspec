@@ -162,16 +162,16 @@ we then compile and run:
 	Linking sorting ...
 
 	$ ./sorting
-	100   []   \xs -> case xs of
+	[]   100   \xs -> case xs of
 	                    [] -> [0]
 	                    _ -> sort xs
 
 What does that output mean?
 
-* The first column  (`100`)
-  indicates the number of surviving mutants
-* The second column (`[]`)
+* The first column (`[]`)
   indicates our empty property set
+* The second column  (`100`)
+  indicates the number of surviving mutants
 * The third column  (`\xs -> ...`)
   shows the smallest surviving mutant for our empty property set
 
@@ -187,11 +187,11 @@ an empty list:
 Now:
 
 	$ ./sorting
-	52    [1]   \xs -> case xs of
+	[1]   52    \xs -> case xs of
 	                     [0] -> []
 	                     _ -> sort xs
 
-	100   []    \xs -> case xs of
+	[]    100   \xs -> case xs of
 	                     [] -> [0]
 	                     _ -> sort xs
 
@@ -211,7 +211,7 @@ needed: it checks whether a property holds for a given number of tests (`n`)
 Now:
 
 	$ ./sorting
-	25    [1,2]   \xs -> case xs of
+	[1,2]    25   \xs -> case xs of
 	                       [0,0] -> []
 	                       _ -> sort xs
 	...
@@ -228,7 +228,7 @@ list should not change?
 Now:
 
 	$ ./sorting
-	4     [2,3]   \xs -> case xs of
+	[2,3]    4    \xs -> case xs of
 	                       [0,0] -> [0,1]
 	                       _ -> sort xs
 	...
@@ -256,7 +256,7 @@ and 3.  But, it is not over!  We can now update our `reportWith` call to check
 more mutants (e.g.: `500` instead of `100`).  After that:
 
 	$ ./sorting
-	2     [2,3]   \xs -> case xs of
+	[2,3]    2    \xs -> case xs of
 	                       [0,1] -> [1,0]
 	                       _ -> sort xs
 	...
