@@ -42,12 +42,14 @@ data Args a = Args
             { extraMutants :: [a]
             , callNames :: [String]
             , limitResults :: Maybe Int -- maximum number of results
+            , showPropertySets :: [String] -> String -- how to show property sets
             }
 
 -- | Default arguments
 args = Args { extraMutants = []
             , callNames = []
             , limitResults = Nothing    -- show everything
+            , showPropertySets = unwords -- just join by spaces
             }
 
 
@@ -89,7 +91,7 @@ reportWith args nf f = putStrLn
                      . map showResult
                      . getResultsWith args nf f
   where showResult (x,y,mm) = [ showI x, show y, showM mm ]
-        showI = unwords . map show
+        showI = showPropertySets args . map show
         showM (Nothing) = ""
         showM (Just m)  = showMutantN (callNames args) f m
 
