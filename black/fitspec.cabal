@@ -13,8 +13,12 @@ build-type:          Simple
 cabal-version:       >=1.10
 
 library
-  exposed-modules:   FitSpec, FitSpecC, Mutate, Mutation
-  other-modules:     Table
+  exposed-modules:   FitSpec, Mutate, Mutate.Show,
+                     Test.Types.Mutate,
+                     FitSpecC, Mutation
+  other-modules:     Table, PPP,
+                     Utils,
+                     CatchEvaluation
   build-depends:     base,  llcheck
   hs-source-dirs:    .
   default-language:  Haskell2010
