@@ -37,15 +37,34 @@ import Mutate
 import Table
 import Utils
 
--- | Extra arguments for 'getResultsWith' and 'reportWith'
+-- | Extra arguments / configuration for 'getResultsWith' and 'reportWith'.
+--   See 'args' for default values.
 data Args a = Args
-            { extraMutants :: [a]
-            , callNames :: [String]
-            , limitResults :: Maybe Int -- maximum number of results
-            , showPropertySets :: [String] -> String -- how to show property sets
-            }
+  { extraMutants :: [a]   -- ^ extra mutants to try to kill alongside mutations
+  , callNames :: [String] -- ^ function call templates: @["foo x y","goo x y"]@
+  , limitResults :: Maybe Int -- ^ Just a limit for results, 'Nothing' for all
+  , showPropertySets :: [String] -> String -- ^ function to show property sets.
+  }
 
--- | Default arguments
+-- | Default arguments for 'getResultsWith' and 'reportWith':
+--
+-- * @extraMutants = []@, no extra mutants
+--
+-- * @callNames = []@, use internal default function call template:
+--
+-- > ["f x y z w x' y' z' ...","g ...","h ...","f' ...",...]
+--
+--
+-- * @limitResults = Nothing@, show all results
+--
+-- * @showPropertySets = unwords@, just join property-sets by spaces
+--
+-- Other good values for this might be:
+--
+-- > unlines            -- one per line
+-- > unwords . take 5   -- separated by spaces, limit to 5
+-- > unlines . take 5   -- one per line, limit to 5
+-- > take 30 . unwords  -- limit to 30 characters
 args = Args { extraMutants = []
             , callNames = []
             , limitResults = Nothing    -- show everything
