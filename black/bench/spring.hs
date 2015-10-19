@@ -9,10 +9,12 @@ propertyMap n (sum',product') =
   [ holds n $ \x y   ->        x -+- y  ==  y -+- x
   , holds n $ \x y z -> x -+- (y -+- z) == (x -+- y) -+- z
   , holds n $ \x     ->         x -+- 0 == x
+  , holds n $ \x     ->         0 -+- x == x
 
   , holds n $ \x y   ->        x -*- y  ==  y -*- x
   , holds n $ \x y z -> x -*- (y -*- z) == (x -*- y) -*- z
   , holds n $ \x     ->         x -*- 1 == x
+  , holds n $ \x     ->         1 -*- x == x
 
   , holds n $ \x y z -> x -*- (y -+- z) == (x -*- y) -+- (x -*- z)
   , holds n $ \x y z -> (y -+- z) -*- x == (y -*- x) -+- (z -*- x)
@@ -24,7 +26,8 @@ propertyMap n (sum',product') =
 sargs :: (Integral a, Show a, Read a)
       => Bool -> Args ((a,a)->a,(a,a)->a)
 sargs useExtra =
-  args { limitResults = Just 10
+  args { limitResults = Nothing
+       , showPropertySets = unwords
        , extraMutants =
            if useExtra
              then [ (uncurry (*),     uncurry (+))
