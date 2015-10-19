@@ -40,8 +40,9 @@ sargs em = args
              { callNames = ["sort xs"]
              --, extraMutants = [sortCounter]
              , extraMutants = take (if em then 100 else 0)
-                            -- $ mutateBySz sort (cons1 (:) \++/ cons1 (++) \++/ cons1 (flip (++)))  -- reps
-                            $ mutateBySz sort
+                         -- $ concat $ lsmap (. sort) (cons1 (:) \++/ cons1 (++) \++/ cons1 (flip (++)))  -- reps
+                            $ concat
+                            $ lsmap (. sort)
                             $ cons1 (\x    -> (x:))
                          \++/ cons2 (\y ys -> (++ (y:ys)))
                          \++/ cons2 (\y ys -> ((y:ys) ++))
