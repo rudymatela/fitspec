@@ -40,12 +40,10 @@ sargs em = args
              { callNames = ["sort xs"]
              --, extraMutants = [sortCounter]
              , extraMutants = take (if em then 100 else 0)
-                         -- $ concat $ lsmap (. sort) (cons1 (:) \++/ cons1 (++) \++/ cons1 (flip (++)))  -- reps
                             $ concat
                             $ lsmap (. sort)
-                            $ cons1 (\x    -> (x:))
-                         \++/ cons2 (\y ys -> (++ (y:ys)))
-                         \++/ cons2 (\y ys -> ((y:ys) ++))
+                            $ cons2 (\y ys -> (++ (y:ys))) -- prepend non-empty list
+                         \++/ cons2 (\y ys -> ((y:ys) ++)) -- append non-empty list
              }
 
 csargs = cargs { functionNames = ["sort"]
