@@ -150,12 +150,6 @@ pssurv is pmap = sortOn (countTrue . snd)
         collapse [] = error "this should not happen"
         collapse rs@((_,hs):_) = (map fst rs, hs)
 
-mutateBy :: (b->a) -> [a->a] -> [b->a]
-mutateBy f = map (. f)
-
-mutateBySz :: (b->a) -> [[a->a]] -> [b->a]
-mutateBySz f dfss = f `mutateBy` concat dfss
-
 -- | 'nSurv' @props fs@ returns the number of values that match
 --   compositions of properties on the property map.
 --
