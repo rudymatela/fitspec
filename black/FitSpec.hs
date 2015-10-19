@@ -44,6 +44,7 @@ data Args a = Args
   , callNames :: [String] -- ^ function call templates: @["foo x y","goo x y"]@
   , limitResults :: Maybe Int -- ^ Just a limit for results, 'Nothing' for all
   , showPropertySets :: [String] -> String -- ^ function to show property sets.
+  , showType :: String -- ^ how to show entries
   }
 
 -- | Default arguments for 'reportWith':
@@ -69,7 +70,10 @@ args = Args { extraMutants = []
             , callNames = []
             , limitResults = Nothing    -- show everything
             , showPropertySets = unwords -- just join by spaces
+            , showType = "default"
             }
+
+-- TODO: showType should probably become a sum type
 
 -- | Report minimality and completeness results.  Uses the standard
 --   configuration (see 'args').  Needs the number of mutants to be generated,
@@ -89,14 +93,29 @@ reportWith :: (ShowMutable a, Mutable a)
 reportWith args nf f = putStrLn
                      . table "   "
                      . intersperse [ "\n" ]
-                     . map showResult
+                     . map (uncurry (showResult (showType args)))
                      . maybe id take (limitResults args)
-                     . map minimalNSmallest
                      . getRawResults (extraMutants args) nf f
-  where showResult (x,y,mm) = [ showI x, show y, showM mm ]
+  where showResult "default"     iss mms = [ showI $ filterRelevantPropertySets iss
+                                           , show  $ countSurvivors mms
+                                           , showM $ minimalMutant mms
+                                           ]
+        showResult "quiet"       iss mms = [ showI $ filterRelevantPropertySets iss
+                                           , show  $ countSurvivors mms
+                                           ]
+        showResult "implication" iss mms = [ showI (filterRelevantPropertySets iss)
+                                          ++ showImplications iss
+                                           , show  $ countSurvivors mms
+                                           , showM $ minimalMutant mms
+                                           ]
         showI = showPropertySets args . map show
         showM (Nothing) = ""
         showM (Just m)  = showMutantN (callNames args) f m
+        showImplications iss = case foldr union [] iss
+                                 \\ foldr union [] (filterRelevantPropertySets iss) of
+                                 [] -> ""
+                                 xs -> "\n ==> " ++ show xs
+
 
 -- | Return minimality and completeness results.  See 'report'.
 getResults :: (Mutable a)
@@ -108,18 +127,21 @@ getResultsExtra :: (Mutable a)
                 => [a]
                 -> Int -> a -> (a -> [Bool])
                 -> [([[Int]],Int,Maybe a)]
-getResultsExtra ems nms f = map minimalNSmallest
+getResultsExtra ems nms f = map (uncurry process)
                           . getRawResults ems nms f
+  where process iss mms = ( filterRelevantPropertySets iss
+                          , countSurvivors mms
+                          , minimalMutant mms
+                          )
 
--- Retrieve minimal property sets,
--- number of surviving mutant
--- and smallest
-minimalNSmallest :: ([[Int]],[Maybe a]) -> ([[Int]],Int,Maybe a)
-minimalNSmallest (iss,mms) = ( filterRelevantPS iss
-                             , count isJust mms
-                             , listToMaybe . catMaybes $ mms
-                             )
-  where filterRelevantPS = filterU (not ... contained) . sortOn length
+filterRelevantPropertySets :: Eq i => [[i]] -> [[i]]
+filterRelevantPropertySets = filterU (not ... contained) . sortOn length
+
+countSurvivors :: [Maybe a] -> Int
+countSurvivors = length . catMaybes
+
+minimalMutant :: [Maybe a] -> Maybe a
+minimalMutant = listToMaybe . catMaybes
 
 getRawResults :: (Mutable a)
               => [a] -> Int -> a -> (a -> [Bool])
