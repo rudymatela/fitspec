@@ -6,6 +6,7 @@ module Utils
   , eithers
   , subsets
   , contained
+  , contains
   , spread
   , filterU
   , indexDefault
@@ -57,6 +58,9 @@ subsets (x:xs) = map (x:) (subsets xs) ++ subsets xs
 -- | Check if all elements of a list is contained in another list
 contained :: Eq a => [a] -> [a] -> Bool
 xs `contained` ys = all (`elem` ys) xs
+
+contains :: Eq a => [a] -> [a] -> Bool
+contains = flip contained
 
 -- | Spread applies a function to different elements of a list to build
 --   different lists.
