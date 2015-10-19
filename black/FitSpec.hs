@@ -91,6 +91,7 @@ reportWith args nf f = putStrLn
                      . table "   "
                      . intersperse [ "\n" ]
                      . map showResult
+                     . maybe id take (limitResults args)
                      . getResultsWith args nf f
   where showResult (x,y,mm) = [ showI x, show y, showM mm ]
         showI = showPropertySets args . map show
@@ -108,8 +109,7 @@ getResultsWith :: (Mutable a)
                => Args a
                -> Int -> a -> (a -> [Bool])
                -> [([[Int]],Int,Maybe a)]
-getResultsWith args nMuts f propMap = maybe id take (limitResults args)
-                                    . map (uncurry process)
+getResultsWith args nMuts f propMap = map (uncurry process)
                                     . pssurv pids propMap
                                     $ muts
   where pids = [1..(length (propMap f))]
