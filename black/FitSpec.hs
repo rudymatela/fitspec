@@ -37,7 +37,7 @@ import Mutate
 import Table
 import Utils
 
--- | Extra arguments / configuration for 'getResultsWith' and 'reportWith'.
+-- | Extra arguments / configuration for 'reportWith'.
 --   See 'args' for default values.
 data Args a = Args
   { extraMutants :: [a]   -- ^ extra mutants to try to kill alongside mutations
@@ -46,7 +46,7 @@ data Args a = Args
   , showPropertySets :: [String] -> String -- ^ function to show property sets.
   }
 
--- | Default arguments for 'getResultsWith' and 'reportWith':
+-- | Default arguments for 'reportWith':
 --
 -- * @extraMutants = []@, no extra mutants
 --
@@ -92,7 +92,7 @@ reportWith args nf f = putStrLn
                      . intersperse [ "\n" ]
                      . map showResult
                      . maybe id take (limitResults args)
-                     . getResultsWith args nf f
+                     . getResultsExtra (extraMutants args) nf f
   where showResult (x,y,mm) = [ showI x, show y, showM mm ]
         showI = showPropertySets args . map show
         showM (Nothing) = ""
@@ -102,19 +102,19 @@ reportWith args nf f = putStrLn
 getResults :: (Mutable a)
            => Int -> a -> (a -> [Bool])
            -> [([[Int]], Int, Maybe a)]
-getResults = getResultsWith args
+getResults = getResultsExtra []
 
 -- | Return minimality and completeness results.  See 'reportWith'.
-getResultsWith :: (Mutable a)
-               => Args a
-               -> Int -> a -> (a -> [Bool])
-               -> [([[Int]],Int,Maybe a)]
-getResultsWith args nMuts f propMap = map (uncurry process)
-                                    . pssurv pids propMap
-                                    $ muts
-  where pids = [1..(length (propMap f))]
-        muts = take nMuts (tail $ mutants f)
-            ++ extraMutants args
+getResultsExtra :: (Mutable a)
+                => [a]
+                -> Int -> a -> (a -> [Bool])
+                -> [([[Int]],Int,Maybe a)]
+getResultsExtra ems nms f pmap = map (uncurry process)
+                                   . pssurv pids pmap
+                                   $ muts
+  where pids = [1..(length (pmap f))]
+        muts = take nms (tail $ mutants f)
+            ++ ems
         process iss hs = ( filterRelevantPS iss
                          , countTrue hs
                          , listToMaybe . catMaybes . zipWith boolToMaybe muts $ hs
