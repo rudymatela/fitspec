@@ -55,6 +55,8 @@ subsets :: [a] -> [[a]]
 subsets []     = [[]]
 subsets (x:xs) = map (x:) (subsets xs) ++ subsets xs
 
+-- TODO: rename contained and contains to subset and superset?
+
 -- | Check if all elements of a list is contained in another list
 contained :: Eq a => [a] -> [a] -> Bool
 xs `contained` ys = all (`elem` ys) xs
