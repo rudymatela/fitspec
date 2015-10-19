@@ -84,10 +84,18 @@ getResultsWith :: (Mutable a)
                -> Int -> a -> (a -> [Bool])
                -> [([[Int]],Int,Maybe a)]
 getResultsWith args nMuts f propMap = maybe id take (limitResults args)
-                                    $ nSurvT pids propMap muts
+                                    . map (uncurry process)
+                                    . pssurv pids propMap
+                                    $ muts
   where pids = [1..(length (propMap f))]
         muts = take nMuts (tail $ mutants f)
             ++ extraMutants args
+        process iss hs = ( filterRelevantPS iss
+                         , countTrue hs
+                         , listToMaybe . catMaybes . zipWith boolToMaybe muts $ hs
+                         )
+        filterRelevantPS = filterU (not ... contained) . sortOn length
+        countTrue = length . filter id
 
 -- | Report minimality and completeness results.  Uses the standard
 --   configuration (see 'args').  Needs the number of mutants to be generated,
@@ -133,23 +141,31 @@ nSurv props = map countTrue
             . map (compositions . props)
   where countTrue = length . filter id
 
--- | 'nSurvT' is the same as 'nSurv' but the number of surviving mutants is
---   tupled with the ids of property sets and first survivor.
+-- | Returns a description of property sets, grouping the ones that had the
+--   same surviving mutants.  The resulting list is ordered starting with the
+--   least surviving mutants to the most surviving mutants.
+-- Arguments:
 --
--- Several property sets with the same mutants are collapsed into one
-nSurvT :: Eq pid => [pid] -> (a -> [Bool]) -> [a] -> [([[pid]],Int,Maybe a)]
-nSurvT pids pmap = map collapseGroup
-                 . sortAndGroupOn (\(_,n,mms) -> (n,map isJust mms))
-                 . zipWith (\is mms -> (is,length (filter isJust mms),mms))
-                           (subsets pids)
-                 . transpose
-                 . map (\func -> map (boolToMaybe func)
-                                     (compositions (pmap func)))
-  where collapseGroup []     = error "collapseGroup: this should not happen"
-        collapseGroup ts@((_,n,mms):_) = ( filterU ((not.).contained) . sortOn length . map tfst $ ts
-                                         , n
-                                         , listToMaybe $ catMaybes mms)
-        tfst (x,_,_) = x
+-- * @is@: list of property ids (@length is == length (pmap x)@)
+--
+-- * @pmap@: a property map
+--
+-- * @ms@: list of mutants to apply to the property map
+--
+-- Return a list of tuples containing:
+--
+--   * a list of property sets
+--   * a boolean list indicating wether a given mutant survived
+pssurv :: [i] -> (a -> [Bool]) -> [a] -> [([[i]],[Bool])]
+pssurv is pmap = sortOn (countTrue . snd)
+               . map collapse
+               . sortAndGroupOn snd
+               . zip (subsets is)
+               . transpose
+               . map (compositions . pmap)
+  where countTrue = length . filter id
+        collapse [] = error "this should not happen"
+        collapse rs@((_,hs):_) = (map fst rs, hs)
 
 -- | 'compositions' @bs@ returns all compositions formed by taking values of @bs@
 compositions :: [Bool] -> [Bool]
