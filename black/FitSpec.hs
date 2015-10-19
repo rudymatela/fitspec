@@ -96,25 +96,26 @@ reportWith args nf f = putStrLn
                      . map (uncurry (showResult (showType args)))
                      . maybe id take (limitResults args)
                      . getRawResults (extraMutants args) nf f
-  where showResult "default"     iss mms = [ showI $ filterRelevantPropertySets iss
-                                           , show  $ countSurvivors mms
-                                           , showM $ minimalMutant mms
-                                           ]
-        showResult "quiet"       iss mms = [ showI $ filterRelevantPropertySets iss
-                                           , show  $ countSurvivors mms
-                                           ]
-        showResult "implication" iss mms = [ showI (filterRelevantPropertySets iss)
-                                          ++ showImplications iss
-                                           , show  $ countSurvivors mms
-                                           , showM $ minimalMutant mms
-                                           ]
-        showI = showPropertySets args . map show
-        showM (Nothing) = ""
-        showM (Just m)  = showMutantN (callNames args) f m
-        showImplications iss = case foldr union [] iss
-                                 \\ foldr union [] (filterRelevantPropertySets iss) of
-                                 [] -> ""
-                                 xs -> "\n ==> " ++ show xs
+  where
+    showResult "default"     iss mms = [ showI $ filterRelevantPropertySets iss
+                                       , show  $ countSurvivors mms
+                                       , showM $ minimalMutant mms
+                                       ]
+    showResult "quiet"       iss mms = [ showI $ filterRelevantPropertySets iss
+                                       , show  $ countSurvivors mms
+                                       ]
+    showResult "implication" iss mms = [ showI (filterRelevantPropertySets iss)
+                                      ++ showImplications iss
+                                       , show  $ countSurvivors mms
+                                       , showM $ minimalMutant mms
+                                       ]
+    showI = showPropertySets args . map show
+    showM (Nothing) = ""
+    showM (Just m)  = showMutantN (callNames args) f m
+    showImplications iss = case foldr union [] iss
+                             \\ foldr union [] (filterRelevantPropertySets iss) of
+                             [] -> ""
+                             xs -> "\n ==> " ++ show xs
 
 
 -- | Return minimality and completeness results.  See 'report'.
