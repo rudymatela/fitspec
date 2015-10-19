@@ -1,6 +1,7 @@
 -- | General purpose utility functions.
 module Utils
-  ( uncurry3
+  ( (...)
+  , uncurry3
   , uncurry4
   , boolToMaybe
   , eithers
@@ -31,6 +32,13 @@ import Control.Exception ( Exception
                          )
 import Data.Function (on)
 import Data.List (groupBy,sortOn)
+
+-- | Compose composed with compose operator.
+--
+-- > (f ... g) x y === f (g x y)
+(...) :: (c->d) -> (a->b->c) -> a -> b -> d
+(...) = (.) . (.)
+-- f ... g = \x y -> f (g x y)
 
 uncurry3 :: (a->b->c->d) -> (a,b,c) -> d
 uncurry3 f (x,y,z) = f x y z
