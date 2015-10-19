@@ -71,7 +71,6 @@ args = Args { extraMutants = []
             , showPropertySets = unwords -- just join by spaces
             }
 
-
 -- | Report minimality and completeness results.  Uses the standard
 --   configuration (see 'args').  Needs the number of mutants to be generated,
 --   a function to be mutated and a property map.
@@ -92,7 +91,8 @@ reportWith args nf f = putStrLn
                      . intersperse [ "\n" ]
                      . map showResult
                      . maybe id take (limitResults args)
-                     . getResultsExtra (extraMutants args) nf f
+                     . map minimalNSmallest
+                     . getRawResults (extraMutants args) nf f
   where showResult (x,y,mm) = [ showI x, show y, showM mm ]
         showI = showPropertySets args . map show
         showM (Nothing) = ""
@@ -104,18 +104,22 @@ getResults :: (Mutable a)
            -> [([[Int]], Int, Maybe a)]
 getResults = getResultsExtra []
 
--- | Return minimality and completeness results.  See 'reportWith'.
 getResultsExtra :: (Mutable a)
                 => [a]
                 -> Int -> a -> (a -> [Bool])
                 -> [([[Int]],Int,Maybe a)]
-getResultsExtra ems nms f = map (uncurry process)
+getResultsExtra ems nms f = map minimalNSmallest
                           . getRawResults ems nms f
-  where process iss mms = ( filterRelevantPS iss
-                          , count isJust mms
-                          , listToMaybe . catMaybes $ mms
-                          )
-        filterRelevantPS = filterU (not ... contained) . sortOn length
+
+-- Retrieve minimal property sets,
+-- number of surviving mutant
+-- and smallest
+minimalNSmallest :: ([[Int]],[Maybe a]) -> ([[Int]],Int,Maybe a)
+minimalNSmallest (iss,mms) = ( filterRelevantPS iss
+                             , count isJust mms
+                             , listToMaybe . catMaybes $ mms
+                             )
+  where filterRelevantPS = filterU (not ... contained) . sortOn length
 
 getRawResults :: (Mutable a)
               => [a] -> Int -> a -> (a -> [Bool])
