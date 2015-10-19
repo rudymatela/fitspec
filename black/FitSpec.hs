@@ -33,6 +33,7 @@ import Data.List
 import Data.Ord
 import Data.Monoid
 import Data.Maybe (catMaybes, listToMaybe, isJust)
+import Control.Monad (unless)
 import Mutate
 import Table
 import Utils
@@ -90,12 +91,15 @@ reportWith :: (ShowMutable a, Mutable a)
            -> a
            -> (a -> [Bool])
            -> IO ()
-reportWith args nf f = putStrLn
-                     . table "   "
-                     . intersperse [ "\n" ]
-                     . map (uncurry (showResult (showType args)))
-                     . maybe id take (limitResults args)
-                     . getRawResults (extraMutants args) nf f
+reportWith args nf f pmap =
+  do unless (and . pmap $ f)
+            (putStrLn "WARNING: The original function does not follow the property set\n")
+     putStrLn . table "   "
+              . intersperse [ "\n" ]
+              . map (uncurry (showResult (showType args)))
+              . maybe id take (limitResults args)
+              . getRawResults (extraMutants args) nf f
+              $ pmap
   where
     showResult "default"     iss mms = [ showI $ filterRelevantPropertySets iss
                                        , show  $ countSurvivors mms
