@@ -109,18 +109,23 @@ getResultsExtra :: (Mutable a)
                 => [a]
                 -> Int -> a -> (a -> [Bool])
                 -> [([[Int]],Int,Maybe a)]
-getResultsExtra ems nms f pmap = map (uncurry process)
-                                   . pssurv pids pmap
-                                   $ muts
-  where pids = [1..(length (pmap f))]
-        muts = take nms (tail $ mutants f)
-            ++ ems
-        process iss hs = ( filterRelevantPS iss
-                         , countTrue hs
-                         , listToMaybe . catMaybes . zipWith boolToMaybe muts $ hs
-                         )
+getResultsExtra ems nms f = map (uncurry process)
+                          . getRawResults ems nms f
+  where process iss mms = ( filterRelevantPS iss
+                          , count isJust mms
+                          , listToMaybe . catMaybes $ mms
+                          )
         filterRelevantPS = filterU (not ... contained) . sortOn length
-        countTrue = length . filter id
+
+getRawResults :: (Mutable a)
+              => [a] -> Int -> a -> (a -> [Bool])
+              -> [([[Int]],[Maybe a])]
+getRawResults ems nms f pmap = map (mapSnd (zipWith boolToMaybe ms))
+                             $ pssurv is pmap ms
+  where is = [1..(length (pmap f))]
+        ms = take nms (tail $ mutants f)
+          ++ ems
+        mapSnd f (x,y) = (x,f y)
 
 -- | Returns a description of property sets, grouping the ones that had the
 --   same surviving mutants.  The resulting list is ordered starting with the
@@ -140,14 +145,13 @@ getResultsExtra ems nms f pmap = map (uncurry process)
 --
 -- > length (pssurv is pmap ms) == length (pmap f)
 pssurv :: [i] -> (a -> [Bool]) -> [a] -> [([[i]],[Bool])]
-pssurv is pmap = sortOn (countTrue . snd)
+pssurv is pmap = sortOn (count id . snd)
                . map collapse
                . sortAndGroupOn snd
                . zip (subsets is)
                . transpose
                . map (compositions . pmap)
-  where countTrue = length . filter id
-        collapse [] = error "this should not happen"
+  where collapse [] = error "this should not happen"
         collapse rs@((_,hs):_) = (map fst rs, hs)
 
 -- | 'nSurv' @props fs@ returns the number of values that match
@@ -164,7 +168,6 @@ pssurv is pmap = sortOn (countTrue . snd)
 -- This function is otherwise unused in this file.  It is just a simpler
 -- version of 'pssurv' to serve as documentation.
 nSurv :: (a -> [Bool]) -> [a] -> [Int]
-nSurv props = map countTrue
+nSurv props = map (count id)
             . transpose
             . map (compositions . props)
-  where countTrue = length . filter id

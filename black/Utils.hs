@@ -3,6 +3,7 @@ module Utils
   ( (...)
   , uncurry3
   , uncurry4
+  , count
   , compositions
   , boolToMaybe
   , eithers
@@ -46,6 +47,9 @@ uncurry3 f (x,y,z) = f x y z
 
 uncurry4 :: (a -> b -> c -> d -> e) -> (a,b,c,d) -> e
 uncurry4 f (x,y,z,w) = f x y z w
+
+count :: (a -> Bool) -> [a] -> Int
+count p = length . filter p
 
 -- | 'compositions' @bs@ returns all compositions formed by taking values of @bs@
 compositions :: [Bool] -> [Bool]
