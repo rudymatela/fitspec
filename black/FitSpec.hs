@@ -72,31 +72,6 @@ args = Args { extraMutants = []
             }
 
 
--- | Return minimality and completeness results.  See 'report'.
-getResults :: (Mutable a)
-           => Int -> a -> (a -> [Bool])
-           -> [([[Int]], Int, Maybe a)]
-getResults = getResultsWith args
-
--- | Return minimality and completeness results.  See 'reportWith'.
-getResultsWith :: (Mutable a)
-               => Args a
-               -> Int -> a -> (a -> [Bool])
-               -> [([[Int]],Int,Maybe a)]
-getResultsWith args nMuts f propMap = maybe id take (limitResults args)
-                                    . map (uncurry process)
-                                    . pssurv pids propMap
-                                    $ muts
-  where pids = [1..(length (propMap f))]
-        muts = take nMuts (tail $ mutants f)
-            ++ extraMutants args
-        process iss hs = ( filterRelevantPS iss
-                         , countTrue hs
-                         , listToMaybe . catMaybes . zipWith boolToMaybe muts $ hs
-                         )
-        filterRelevantPS = filterU (not ... contained) . sortOn length
-        countTrue = length . filter id
-
 -- | Report minimality and completeness results.  Uses the standard
 --   configuration (see 'args').  Needs the number of mutants to be generated,
 --   a function to be mutated and a property map.
@@ -122,24 +97,30 @@ reportWith args nf f = putStrLn
         showM (Nothing) = ""
         showM (Just m)  = showMutantN (callNames args) f m
 
--- | 'nSurv' @props fs@ returns the number of values that match
---   compositions of properties on the property map.
---
--- * @props@ should be a function from a value to a list of properties that
---   match that value (in the case of functions, functions that "survive" those
---   properties).
---
--- * @fs@ is a list of values to be mapped over by @props@
---
--- > length (nSurvivors props fs)  ==  2 ^ (length (props fs))
---
--- This function is otherwise unused in this file.  It is just a simpler
--- version of 'nSurvT' to serve as documentation.
-nSurv :: (a -> [Bool]) -> [a] -> [Int]
-nSurv props = map countTrue
-            . transpose
-            . map (compositions . props)
-  where countTrue = length . filter id
+-- | Return minimality and completeness results.  See 'report'.
+getResults :: (Mutable a)
+           => Int -> a -> (a -> [Bool])
+           -> [([[Int]], Int, Maybe a)]
+getResults = getResultsWith args
+
+-- | Return minimality and completeness results.  See 'reportWith'.
+getResultsWith :: (Mutable a)
+               => Args a
+               -> Int -> a -> (a -> [Bool])
+               -> [([[Int]],Int,Maybe a)]
+getResultsWith args nMuts f propMap = maybe id take (limitResults args)
+                                    . map (uncurry process)
+                                    . pssurv pids propMap
+                                    $ muts
+  where pids = [1..(length (propMap f))]
+        muts = take nMuts (tail $ mutants f)
+            ++ extraMutants args
+        process iss hs = ( filterRelevantPS iss
+                         , countTrue hs
+                         , listToMaybe . catMaybes . zipWith boolToMaybe muts $ hs
+                         )
+        filterRelevantPS = filterU (not ... contained) . sortOn length
+        countTrue = length . filter id
 
 -- | Returns a description of property sets, grouping the ones that had the
 --   same surviving mutants.  The resulting list is ordered starting with the
@@ -156,6 +137,8 @@ nSurv props = map countTrue
 --
 --   * a list of property sets
 --   * a boolean list indicating wether a given mutant survived
+--
+-- > length (pssurv is pmap ms) == length (pmap f)
 pssurv :: [i] -> (a -> [Bool]) -> [a] -> [([[i]],[Bool])]
 pssurv is pmap = sortOn (countTrue . snd)
                . map collapse
@@ -167,12 +150,27 @@ pssurv is pmap = sortOn (countTrue . snd)
         collapse [] = error "this should not happen"
         collapse rs@((_,hs):_) = (map fst rs, hs)
 
--- | 'compositions' @bs@ returns all compositions formed by taking values of @bs@
-compositions :: [Bool] -> [Bool]
-compositions = map and . subsets
-
 mutateBy :: (b->a) -> [a->a] -> [b->a]
 mutateBy f = map (. f)
 
 mutateBySz :: (b->a) -> [[a->a]] -> [b->a]
 mutateBySz f dfss = f `mutateBy` concat dfss
+
+-- | 'nSurv' @props fs@ returns the number of values that match
+--   compositions of properties on the property map.
+--
+-- * @props@ should be a function from a value to a list of properties that
+--   match that value (in the case of functions, functions that "survive" those
+--   properties).
+--
+-- * @fs@ is a list of values to be mapped over by @props@
+--
+-- > length (nSurvivors props fs)  ==  2 ^ (length (props fs))
+--
+-- This function is otherwise unused in this file.  It is just a simpler
+-- version of 'pssurv' to serve as documentation.
+nSurv :: (a -> [Bool]) -> [a] -> [Int]
+nSurv props = map countTrue
+            . transpose
+            . map (compositions . props)
+  where countTrue = length . filter id

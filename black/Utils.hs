@@ -3,6 +3,7 @@ module Utils
   ( (...)
   , uncurry3
   , uncurry4
+  , compositions
   , boolToMaybe
   , eithers
   , subsets
@@ -45,6 +46,10 @@ uncurry3 f (x,y,z) = f x y z
 
 uncurry4 :: (a -> b -> c -> d -> e) -> (a,b,c,d) -> e
 uncurry4 f (x,y,z,w) = f x y z w
+
+-- | 'compositions' @bs@ returns all compositions formed by taking values of @bs@
+compositions :: [Bool] -> [Bool]
+compositions = map and . subsets
 
 -- | Given a value and a boolean, returns Just if True.
 boolToMaybe :: a -> Bool -> Maybe a
