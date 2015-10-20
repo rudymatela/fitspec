@@ -1,8 +1,10 @@
 {-# Language DeriveDataTypeable #-}
+import System.Console.CmdArgs hiding (args)
 import FitSpec
 import Data.List
 import Test.Check
-import System.Console.CmdArgs hiding (args)
+import Test.Types
+import Test.Types.Mutate
 
 type Add  a = a -> a -> a
 type Prod a = a -> a -> a
@@ -86,7 +88,9 @@ main :: IO ()
 main = do as <- cmdArgs arguments
           run (testType as) (useExtraMutants as) (nMutants as) (nTests as)
 
-run "int" = run' (fns :: Ty Int)
+run "int"  = run' (fns :: Ty Int)
+run "int2" = run' (fns :: Ty UInt2)
+run "int3" = run' (fns :: Ty UInt3)
 run' fs em nm nt = reportWith (sargs em) nm fs (uncurry $ propertyMap nt)
 
 (+++) :: (Show a, Read a, Integral a) => a -> a -> a
