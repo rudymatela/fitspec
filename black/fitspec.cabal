@@ -18,7 +18,8 @@ library
                      FitSpecC, Mutation
   other-modules:     Table, PPP,
                      Utils,
-                     CatchEvaluation
+                     CatchEvaluation,
+                     FitSpecDot
   build-depends:     base,  llcheck
   hs-source-dirs:    .
   default-language:  Haskell2010
