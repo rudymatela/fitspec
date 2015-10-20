@@ -15,18 +15,18 @@ propertyMap :: (Listable a, Show a, Eq a, Num a)
             -> Prod a
             -> [Bool]
 propertyMap n (+) (*) =
-  [ holds n $ \x y   ->      x + y  ==  y + x
-  , holds n $ \x y z -> x + (y + z) == (x + y) + z
-  , holds n $ \x     ->       x + 0 == x
-  , holds n $ \x     ->       0 + x == x
+  [ holds n $ \x y   ->       x + y  ==  y + x
+  , holds n $ \x y z ->  x + (y + z) == (x + y) + z
+  , holds n $ \x     ->        x + 0 == x
+  , holds n $ \x     ->        0 + x == x
 
-  , holds n $ \x y   ->      x * y  ==  y * x
-  , holds n $ \x y z -> x * (y * z) == (x * y) * z
-  , holds n $ \x     ->       x * 1 == x
-  , holds n $ \x     ->       1 * x == x
+  , holds n $ \x y   ->       x * y  ==  y * x
+  , holds n $ \x y z ->  x * (y * z) == (x * y) * z
+  , holds n $ \x     ->        x * 1 == x
+  , holds n $ \x     ->        1 * x == x
 
-  , holds n $ \x y z -> x * (y + z) == (x * y) + (x * z)
-  , holds n $ \x y z -> (y + z) * x == (y * x) + (z * x)
+  , holds n $ \x y z ->  x * (y + z) == (x * y) + (x * z)
+  , holds n $ \x y z -> (y + z) * x  == (y * x) + (z * x)
   ]
 
 
