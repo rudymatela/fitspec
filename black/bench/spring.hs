@@ -52,11 +52,11 @@ sargs useExtra =
                      -- another good example would be
                      -- || and && defined over integers
                      ]
-           in  tail [ (s,p)
-                    | useExtra
-                    , s <- (+):(*):ems
-                    , p <- (*):(+):ems
-                    ]
+           in drop 1 [ (s,p)
+                     | useExtra
+                     , s <- (+):(*):ems
+                     , p <- (*):(+):ems
+                     ]
        }
 
 
