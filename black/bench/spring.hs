@@ -43,20 +43,20 @@ sargs useExtra =
        , showPropertySets = unlines
        , callNames = [ "(+) x y", "(*) x y" ]
        , extraMutants =
-           if useExtra
-             then [ ((*),             (+))
-                  , (\x y -> x+y+1,   (*))
-                  , ((+),             \x y -> x*y+x*y)
-                  , (\x y -> x+y+x+y, (*))
-                  , ((+++),           (*))
-                  , ((+),             (+++))
-                  , ((+++),           (+++))
-                  , (min,             max)
-                  , (max,             min)
-                  -- another good example would be
-                  -- || and && defined over integers
-                  ]
-             else []
+           let ems = [ \x y -> x+y+1
+                     , \x y -> x*y+x*y
+                     , \x y -> x+y+x+y
+                     , (+++)
+                     , min
+                     , max
+                     -- another good example would be
+                     -- || and && defined over integers
+                     ]
+           in  tail [ (s,p)
+                    | useExtra
+                    , s <- (+):(*):ems
+                    , p <- (*):(+):ems
+                    ]
        }
 
 
