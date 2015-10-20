@@ -66,6 +66,7 @@ data CmdArguments = CmdArguments
   , testType :: String
 --, classify :: Bool
   , useExtraMutants :: Bool
+  , reportType :: String
   } deriving (Data,Typeable,Show,Eq)
 
 
@@ -81,17 +82,19 @@ arguments = CmdArguments
   , useExtraMutants = False
                        &= help "pass extra manual mutants to the algorithm (only works for black-box version)"
                        &= name "e"
+  , reportType = "default"
+                       &= help "what to report: default/quiet/implications"
   }
 
 
 main :: IO ()
 main = do as <- cmdArgs arguments
-          run (testType as) (useExtraMutants as) (nMutants as) (nTests as)
+          run (testType as) (reportType as) (useExtraMutants as) (nMutants as) (nTests as)
 
 run "int"  = run' (fns :: Ty Int)
 run "int2" = run' (fns :: Ty UInt2)
 run "int3" = run' (fns :: Ty UInt3)
-run' fs em nm nt = reportWith (sargs em) nm fs (uncurry $ propertyMap nt)
+run' fs re em nm nt = reportWith ((sargs em) {showType = re}) nm fs (uncurry $ propertyMap nt)
 
 (+++) :: (Show a, Read a, Integral a) => a -> a -> a
 x +++ 0 = x
