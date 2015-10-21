@@ -101,14 +101,14 @@ reportWith args nf f pmap =
               . getRawResults (extraMutants args) nf f
               $ pmap
   where
-    showResult "default"     iss mms = [ showI $ filterRelevantPropertySets iss
+    showResult "default"     iss mms = [ showI $ relevantPropertySets iss
                                        , show  $ countSurvivors mms
                                        , showM $ minimalMutant mms
                                        ]
-    showResult "quiet"       iss mms = [ showI $ filterRelevantPropertySets iss
+    showResult "quiet"       iss mms = [ showI $ relevantPropertySets iss
                                        , show  $ countSurvivors mms
                                        ]
-    showResult "implication" iss mms = [ showI (filterRelevantPropertySets iss)
+    showResult "implication" iss mms = [ showI (relevantPropertySets iss)
                                       ++ showImplications iss
                                        , show  $ countSurvivors mms
                                        , showM $ minimalMutant mms
@@ -116,8 +116,7 @@ reportWith args nf f pmap =
     showI = showPropertySets args . map show
     showM (Nothing) = ""
     showM (Just m)  = showMutantN (callNames args) f m
-    showImplications iss = case foldr union [] iss
-                             \\ foldr union [] (filterRelevantPropertySets iss) of
+    showImplications iss = case relevantImplications iss of
                              [] -> ""
                              xs -> "\n ==> " ++ show xs
 
@@ -134,13 +133,17 @@ getResultsExtra :: (Mutable a)
                 -> [([[Int]],Int,Maybe a)]
 getResultsExtra ems nms f = map (uncurry process)
                           . getRawResults ems nms f
-  where process iss mms = ( filterRelevantPropertySets iss
+  where process iss mms = ( relevantPropertySets iss
                           , countSurvivors mms
                           , minimalMutant mms
                           )
 
-filterRelevantPropertySets :: Eq i => [[i]] -> [[i]]
-filterRelevantPropertySets = filterU (not ... contained) . sortOn length
+relevantPropertySets :: Eq i => [[i]] -> [[i]]
+relevantPropertySets = filterU (not ... contained) . sortOn length
+
+relevantImplications :: Eq i => [[i]] -> [i]
+relevantImplications iss = foldr union [] iss
+                        \\ foldr union [] (relevantPropertySets iss)
 
 countSurvivors :: [Maybe a] -> Int
 countSurvivors = length . catMaybes
