@@ -109,16 +109,26 @@ reportWith args nf f pmap =
                                        , show  $ countSurvivors mms
                                        ]
     showResult "implication" iss mms = [ showI (relevantPropertySets iss)
-                                      ++ showImplications iss
+                                      ++ showImplications "\n ==> " iss
                                        , show  $ countSurvivors mms
                                        , showM $ minimalMutant mms
+                                       ]
+    showResult "eqv-impl"    iss mms = (:[]) . concat . filter (/= "") $
+                                       [ showEqv $ relevantPropertySets iss
+                                       , showImplications ((show . head
+                                                                 . relevantPropertySets
+                                                                 $ iss) ++ " ==> ")
+                                                          iss
                                        ]
     showI = showPropertySets args . map show
     showM (Nothing) = ""
     showM (Just m)  = showMutantN (callNames args) f m
-    showImplications iss = case relevantImplications iss of
-                             [] -> ""
-                             xs -> "\n ==> " ++ show xs
+    showEqv (p:ps) = unlines
+                   . map (((show p ++ " == ") ++) . show)
+                   $ ps
+    showImplications prefix iss = case relevantImplications iss of
+                                    [] -> ""
+                                    xs -> prefix ++ show xs
 
 
 -- | Return minimality and completeness results.  See 'report'.
