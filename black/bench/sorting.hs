@@ -44,7 +44,6 @@ sargs em = args
                             $ lsmap (. sort)
                             $ cons2 (\y ys -> (++ (y:ys))) -- prepend non-empty list
                          \++/ cons2 (\y ys -> ((y:ys) ++)) -- append non-empty list
-             , showType = "implication"
              }
 
 csargs = cargs { functionNames = ["sort"]

@@ -98,9 +98,12 @@ reportWith args nf f pmap =
               . intersperse [ "\n" ]
               . map (uncurry (showResult (showType args)))
               . maybe id take (limitResults args)
-              . getRawResults (extraMutants args) nf f
-              $ pmap
+              $ results
+     putStrLn "*Apparent* equivalences and implications:"
+     putStrLn . concatMap (showEI . fst)
+              $ results
   where
+    results = getRawResults (extraMutants args) nf f pmap
     showResult "default"     iss mms = [ showI $ relevantPropertySets iss
                                        , show  $ countSurvivors mms
                                        , showM $ minimalMutant mms
@@ -109,27 +112,25 @@ reportWith args nf f pmap =
                                        , show  $ countSurvivors mms
                                        ]
     showResult "implication" iss mms = [ showI (relevantPropertySets iss)
-                                      ++ showImplications "\n ==> " iss
+                                      ++ showImplications ("\n ==> " ++) iss
                                        , show  $ countSurvivors mms
                                        , showM $ minimalMutant mms
-                                       ]
-    showResult "eqv-impl"    iss mms = (:[]) . concat . filter (/= "") $
-                                       [ showEqv $ relevantPropertySets iss
-                                       , showImplications ((show . head
-                                                                 . relevantPropertySets
-                                                                 $ iss) ++ " ==> ")
-                                                          iss
                                        ]
     showI = showPropertySets args . map show
     showM (Nothing) = ""
     showM (Just m)  = showMutantN (callNames args) f m
     showEqv (p:ps) = unlines
-                   . map (((show p ++ " == ") ++) . show)
+                   . map (((show p ++ " = ") ++) . show)
                    $ ps
-    showImplications prefix iss = case relevantImplications iss of
-                                    [] -> ""
-                                    xs -> prefix ++ show xs
-
+    showImplications f iss = case relevantImplications iss of
+                               [] -> ""
+                               xs -> f $ show xs
+    showEI iss = showEqv (relevantPropertySets iss)
+              ++ showImplications (\s -> (show . head
+                                               . relevantPropertySets
+                                               $ iss)
+                                       ++ " ==> " ++ s ++ "\n")
+                                  iss
 
 -- | Return minimality and completeness results.  See 'report'.
 getResults :: (Mutable a)
