@@ -4,6 +4,8 @@ import FitSpec
 import FitSpecC
 import Test.Check
 import Test.Check.Utils (lsCrescListsOf)
+import Test.Types
+import Test.Types.Mutate
 import Mutate
 import Prelude hiding (null)
 import qualified Data.List as L
@@ -101,6 +103,8 @@ fns = (uncurry insert, deleteMin, uncurry merge)
 run :: String -> String -> Int -> Int -> IO ()
 run "bool"  = run' (fns :: Ty Bool)
 run "int"   = run' (fns :: Ty Int)
+run "int2"  = run' (fns :: Ty UInt2)
+run "int3"  = run' (fns :: Ty UInt3)
 run "bools" = run' (fns :: Ty [Bool])
 
 run' fs method n m =
