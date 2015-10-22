@@ -45,18 +45,16 @@ propertyMap n insert'' deleteMin' merge'' =
   , holds n $ \h x ->             null (insert' x h) == False                   --  2
   , holds n $ \x h ->          L.insert x (toList h) == toList (insert' x h)    --  3
 
-  ,                                                 True                        --  4
+  , holds n $ \h h1 ->                   merge' h h1 == merge' h1 h             --  4
+  , holds n $ \h ->                     merge' h Nil == h                       --  5
+  , holds n $ \h h1 h2 ->    merge' h (merge' h1 h2) == merge' h1 (merge' h h2) --  6
+  , holdE n $ \h -> not (null h) ==> findMin (merge' h h) == findMin h          --  7
+  , holds n $ \h ->                null (merge' h h) == null h                  --  8
+  , holds n $ \h h1 ->           (null h && null h1) == null (merge' h h1)      --  9
 
-  , holds n $ \h h1 ->                   merge' h h1 == merge' h1 h             --  5
-  , holds n $ \h ->                     merge' h Nil == h                       --  6
-  , holds n $ \h h1 h2 ->    merge' h (merge' h1 h2) == merge' h1 (merge' h h2) --  7
-  , holdE n $ \h -> not (null h) ==> findMin (merge' h h) == findMin h          --  8
-  , holds n $ \h ->                null (merge' h h) == null h                  --  9
-  , holds n $ \h h1 ->           (null h && null h1) == null (merge' h h1)      -- 10
-
-  , holds n $ \h h1 x ->     merge' h (insert' x h1) == insert' x (merge' h h1) -- 11
-  , holdE n $ \h -> not (null h) ==> merge' h (deleteMin' h) == deleteMin' (merge' h h) -- 12
-  , holdE n $ \x ->       deleteMin' (insert' x Nil) == Nil                     -- 13
+  , holds n $ \h h1 x ->     merge' h (insert' x h1) == insert' x (merge' h h1) -- 10
+  , holdE n $ \h -> not (null h) ==> merge' h (deleteMin' h) == deleteMin' (merge' h h) -- 11
+  , holdE n $ \x ->       deleteMin' (insert' x Nil) == Nil                     -- 12
   ]
   where merge' = curry merge''
         insert' = curry insert''
