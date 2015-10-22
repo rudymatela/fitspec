@@ -1,86 +1,121 @@
-2015-09-25 17:45:19
+2015-10-22 13:50:09
 zero$ ./black/dist/build/sorting/sorting -tint3 -m100000 -n4000
 
-0        [1,5]                                            
-0        [2,7]                                            
-0        [5,7]                                            
-0        [1,2,4]                                          
-34       [5,6]       \xs -> case xs of  [1,0] -> [1,0]    
-                                        _     -> sort xs  
-                                                          
-34       [2,4,6]     \xs -> case xs of  [1,0] -> [1,0]    
-                                        _     -> sort xs  
-                                                          
-40       [1,2,3,6]   \xs -> case xs of  [1,0,0] -> [0,1,1]
-                                        _       -> sort xs
-                                                          
-57       [1,2,3]     \xs -> case xs of  [1,0,0] -> [0,1,1]
-                                        _       -> sort xs
-                                                          
-63       [7]         \xs -> case xs of  [7,3] -> []       
-                                        _     -> sort xs  
-                                                          
-74       [2,3,6]     \xs -> case xs of  [1,0] -> [1,0]    
-                                        _     -> sort xs  
-                                                          
-140      [5]         \xs -> case xs of  [1,0] -> [1,0]    
-                                        _     -> sort xs  
-                                                          
-140      [2,4]       \xs -> case xs of  [1,0] -> [1,0]    
-                                        _     -> sort xs  
-                                                          
-295      [2,3]       \xs -> case xs of  [1,0] -> [1,0]    
-                                        _     -> sort xs  
-                                                          
-768      [1,2,6]     \xs -> case xs of  [0] -> [1]        
-                                        _   -> sort xs    
-                                                          
-819      [2,6]       \xs -> case xs of  [0] -> [1]        
-                                        _   -> sort xs    
-                                                          
-1099     [1,2]       \xs -> case xs of  [0] -> [1]        
-                                        _   -> sort xs    
-                                                          
-2028     [1,4,6]     \xs -> case xs of  [5] -> []         
-                                        _   -> sort xs    
-                                                          
-2062     [4,6]       \xs -> case xs of  [1,0] -> [1,0]    
-                                        _     -> sort xs  
-                                                          
-2118     [1,4]       \xs -> case xs of  [5] -> []         
-                                        _   -> sort xs    
-                                                          
-2270     [4]         \xs -> case xs of  [1,0] -> [1,0]    
-                                        _     -> sort xs  
-                                                          
-2393     [2]         \xs -> case xs of  [0] -> [1]        
-                                        _   -> sort xs    
-                                                          
-3627     [1,3,6]     \xs -> case xs of  [0] -> [0,0]      
-                                        _   -> sort xs    
-                                                          
-3675     [3,6]       \xs -> case xs of  [0] -> [0,0]      
-                                        _   -> sort xs    
-                                                          
-3957     [1,3]       \xs -> case xs of  [0] -> [0,0]      
-                                        _   -> sort xs    
-                                                          
-5477     [3]         \xs -> case xs of  [0] -> [0,0]      
-                                        _   -> sort xs    
-                                                          
-34653    [1,6]       \xs -> case xs of  [] -> [0]         
-                                        _  -> sort xs     
-                                                          
-34841    [6]         \xs -> case xs of  [] -> [0]         
-                                        _  -> sort xs     
-                                                          
-61299    [1]         \xs -> case xs of  [] -> [0]         
-                                        _  -> sort xs     
-                                                          
-100000   []          \xs -> case xs of  [] -> [0]         
-                                        _  -> sort xs     
-                                                          
+[7] [1,5]   0                                   
+                                                
+[1,2,4]     1        \xs -> case xs of          
+                              [6] -> [4]        
+                              _ -> sort xs      
+                                                
+[5,6]       34       \xs -> case xs of          
+                              [1,0] -> [1,0]    
+                              _ -> sort xs      
+                                                
+[2,4,6]     35       \xs -> case xs of          
+                              [1,0] -> [1,0]    
+                              _ -> sort xs      
+                                                
+[1,2,3,6]   43       \xs -> case xs of          
+                              [0,1,0] -> [0,1,1]
+                              _ -> sort xs      
+                                                
+[1,2,3]     60       \xs -> case xs of          
+                              [0,0,1] -> [0,1,1]
+                              _ -> sort xs      
+                                                
+[2,3,6]     77       \xs -> case xs of          
+                              [1,0] -> [1,0]    
+                              _ -> sort xs      
+                                                
+[5]         140      \xs -> case xs of          
+                              [0,1] -> [1,0]    
+                              _ -> sort xs      
+                                                
+[2,4]       141      \xs -> case xs of          
+                              [0,1] -> [1,0]    
+                              _ -> sort xs      
+                                                
+[2,3]       298      \xs -> case xs of          
+                              [0,1] -> [1,0]    
+                              _ -> sort xs      
+                                                
+[1,2,6]     768      \xs -> case xs of          
+                              [0] -> [1]        
+                              _ -> sort xs      
+                                                
+[2,6]       819      \xs -> case xs of          
+                              [0] -> [1]        
+                              _ -> sort xs      
+                                                
+[1,2]       1099     \xs -> case xs of          
+                              [0] -> [1]        
+                              _ -> sort xs      
+                                                
+[1,4,6]     2008     \xs -> case xs of          
+                              [5] -> []         
+                              _ -> sort xs      
+                                                
+[4,6]       2042     \xs -> case xs of          
+                              [1,0] -> [1,0]    
+                              _ -> sort xs      
+                                                
+[1,4]       2121     \xs -> case xs of          
+                              [5] -> []         
+                              _ -> sort xs      
+                                                
+[4]         2273     \xs -> case xs of          
+                              [0,1] -> [1,0]    
+                              _ -> sort xs      
+                                                
+[2]         2393     \xs -> case xs of          
+                              [0] -> [1]        
+                              _ -> sort xs      
+                                                
+[1,3,6]     3613     \xs -> case xs of          
+                              [0] -> [0,0]      
+                              _ -> sort xs      
+                                                
+[3,6]       3661     \xs -> case xs of          
+                              [0] -> [0,0]      
+                              _ -> sort xs      
+                                                
+[1,3]       3967     \xs -> case xs of          
+                              [0] -> [0,0]      
+                              _ -> sort xs      
+                                                
+[3]         5487     \xs -> case xs of          
+                              [0] -> [0,0]      
+                              _ -> sort xs      
+                                                
+[1,6]       34630    \xs -> case xs of          
+                              [] -> [0]         
+                              _ -> sort xs      
+                                                
+[6]         34818    \xs -> case xs of          
+                              [] -> [0]         
+                              _ -> sort xs      
+                                                
+[1]         61299    \xs -> case xs of          
+                              [] -> [0]         
+                              _ -> sort xs      
+                                                
+[]          100000   \xs -> case xs of          
+                              [] -> [0]         
+                              _ -> sort xs      
 
-real 439.75
-user 438.30
-sys 1.43
+*Apparent* equivalences and implications:
+[7] = [1,5]
+[7] ==> [2,3,4,6]
+[1,2,4] ==> [3,6]
+[5,6] ==> [2,3,4]
+[2,4,6] ==> [3]
+[5] ==> [2,3,4]
+[2,4] ==> [3]
+[1,4,6] ==> [3]
+[4,6] ==> [3]
+[1,4] ==> [3]
+[4] ==> [3]
+
+real 466.00
+user 464.39
+sys 1.60

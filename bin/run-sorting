@@ -1,12 +1,16 @@
 #!/bin/bash
 
 BINDIR=`dirname $0`
+BENCH=$BINDIR/bench
 
-$BINDIR/bench black    sorting -tint  -m1000 -n1000
-$BINDIR/bench grey     sorting -tint  -m1000 -n1000
-$BINDIR/bench white    sorting -tint  -m1000 -n250
-$BINDIR/bench patterns sorting -tint  -m9    -n4000
-$BINDIR/bench black    sorting -tbool -m1000 -n1000
-$BINDIR/bench grey     sorting -tbool -m1000 -n1000
-$BINDIR/bench white    sorting -tbool -m1000 -n250
-$BINDIR/bench patterns sorting -tbool -m9    -n4000
+$BENCH black sorting -tbool -n1000   -m1000 -e
+$BENCH black sorting -tbool -n1000   -m1000
+$BENCH black sorting -tint2 -m1000   -n1000
+$BENCH black sorting -tint2 -m4000   -n1000
+$BENCH black sorting -tint2 -m4000   -n4000
+$BENCH black sorting -tint3 -m4000   -n4000
+$BENCH black sorting -tint  -n10000  -m1000
+$BENCH black sorting -tint  -n10000  -m4000
+$BENCH black sorting -tint  -n1000   -m1000
+$BENCH black sorting -tint3 -m100000 -n4000
+$BENCH black sorting -tint  -n100000 -m4000
