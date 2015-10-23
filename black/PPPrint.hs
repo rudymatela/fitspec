@@ -54,6 +54,7 @@ showTuple (s:ss) =
 -- >   \123   456   3\n\
 -- >   \      789\n\"
 table :: String -> [[String]] -> String
+table s []  = ""
 table s sss = unlines
             . map (intercalate s)
             . transpose
@@ -61,7 +62,6 @@ table s sss = unlines
             . foldr1 (zipWith (++))
             . map (normalize "" . map lines)
             . normalize ""
-            $ sss
 
 -- | Given a separator, format strings in columns
 --
@@ -69,13 +69,13 @@ table s sss = unlines
 -- >   "asdf | qw   | as\n\
 -- >   \     | zxcv | df\n"
 columns :: String -> [String] -> String
-columns s ss = unlines
-             . map (intercalate s)
-             . transpose
-             . map (normalize ' ')
-             . normalize ""
-             . map lines
-             $ ss
+columns s = unlines
+          . map (intercalate s)
+          . transpose
+          . map (normalize ' ')
+          . normalize ""
+          . map lines
+          $ ss
 
 -- | Fits a list to a certain width by appending a certain value
 --
