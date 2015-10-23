@@ -4,7 +4,7 @@ module Mutation where
 import Test.Check
 import Test.Check.Utils
 import Data.List (intercalate)
-import PPP
+import PPPrint
 import Data.Maybe
 import CatchEvaluation
 import Utils (spread,errorToNothing)

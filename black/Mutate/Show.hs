@@ -4,7 +4,7 @@ module Mutate.Show
   )
 where
 
-import PPP
+import PPPrint
 import Utils (errorToNothing)
 import Test.Check
 import Data.Maybe (mapMaybe,isNothing)

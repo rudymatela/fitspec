@@ -36,7 +36,7 @@ import Data.Maybe (catMaybes, listToMaybe, isJust)
 import Control.Monad (unless)
 import Mutate
 import Utils
-import PPP
+import PPPrint
 
 -- | Extra arguments / configuration for 'reportWith'.
 --   See 'args' for default values.

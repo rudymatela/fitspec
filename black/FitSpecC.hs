@@ -7,7 +7,7 @@ import Data.List
 import Data.Ord
 import Data.Monoid
 import Data.Maybe (catMaybes, listToMaybe)
-import PPP
+import PPPrint
 import Mutation
 import Utils
 import Data.Either (lefts, rights)

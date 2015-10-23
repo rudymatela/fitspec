@@ -1,5 +1,5 @@
 -- | Poor man's pretty printing library
-module PPP
+module PPPrint
   ( beside
   , showTuple
   , table
