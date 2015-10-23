@@ -75,7 +75,6 @@ columns s = unlines
           . map (normalize ' ')
           . normalize ""
           . map lines
-          $ ss
 
 -- | Fits a list to a certain width by appending a certain value
 --
