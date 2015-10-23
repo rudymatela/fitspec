@@ -16,7 +16,7 @@ library
   exposed-modules:   FitSpec, Mutate, Mutate.Show,
                      Test.Types.Mutate,
                      FitSpecC, Mutation
-  other-modules:     Table, PPP,
+  other-modules:     PPP,
                      Utils,
                      CatchEvaluation,
                      FitSpecDot

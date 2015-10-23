@@ -4,8 +4,8 @@ module Mutation where
 import Test.Check
 import Test.Check.Utils
 import Data.List (intercalate)
+import PPP
 import Data.Maybe
-import Table
 import CatchEvaluation
 import Utils (spread,errorToNothing)
 

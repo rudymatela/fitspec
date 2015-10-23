@@ -35,8 +35,8 @@ import Data.Monoid
 import Data.Maybe (catMaybes, listToMaybe, isJust)
 import Control.Monad (unless)
 import Mutate
-import Table
 import Utils
+import PPP
 
 -- | Extra arguments / configuration for 'reportWith'.
 --   See 'args' for default values.

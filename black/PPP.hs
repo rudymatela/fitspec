@@ -1,12 +1,13 @@
--- Poor man's pretty printing library
-
+-- | Poor man's pretty printing library
 module PPP
   ( beside
   , showTuple
+  , table
+  , columns
   )
 where
 
-import Data.List (intercalate)
+import Data.List (intercalate,transpose)
 
 -- | Fits a list to a certain width by appending a certain value
 --
@@ -48,3 +49,37 @@ showTuple (s:ss) =
       ++ init (concatMap (", " `beside`) ss)
       ++ " )\n"
     else "(" ++ intercalate "," (s:ss) ++ ")"
+
+-- TODO: Remove trailing spaces from the resulting table string.
+
+-- TODO: make this prettier (see Mutate.hs's mutant printing)
+-- TODO: remove foldr1 use
+table :: String -> [[String]] -> String
+table s sss = unlines
+            . map (intercalate s)
+            . transpose
+            . map (padl ' ')
+            . foldr1 (zipWith (++))
+            . map (padl "" . map lines)
+            . padl ""
+            $ sss
+
+columns :: String -> [String] -> String
+columns s ss = unlines
+             . map (intercalate s)
+             . transpose
+             . map (padl ' ')
+             . padl ""
+             . map lines
+             $ ss
+
+pad :: Int -> a -> [a] -> [a]
+pad 0 p xs     = xs
+pad n p []     = replicate n p
+pad n p (x:xs) = x:pad (n-1) p xs
+
+padl :: a -> [[a]] -> [[a]]
+padl p xss = map (pad (maxLength xss) p) xss
+
+maxLength :: [[a]] -> Int
+maxLength = maximum . (0:) . map length
