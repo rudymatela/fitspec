@@ -91,5 +91,6 @@ fit x n xs = xs ++ replicate (n - length xs) x
 normalize :: a -> [[a]] -> [[a]]
 normalize x xs = map (x `fit` maxLength xs) xs
 
+-- | Given a list of lists returns the maximum length
 maxLength :: [[a]] -> Int
 maxLength = maximum . (0:) . map length
