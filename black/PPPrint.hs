@@ -1,4 +1,7 @@
 -- | Poor man's pretty printing library
+--
+-- This module has somewhat inefficient implementations that could be improved
+-- in the future.  i.e.: heavy use of '(++)'.
 module PPPrint
   ( beside
   , showTuple
@@ -38,11 +41,6 @@ showTuple (s:ss) =
       ++ " )\n"
     else "(" ++ intercalate "," (s:ss) ++ ")"
 
--- TODO: Remove trailing spaces from the resulting table string.
-
--- TODO: make this prettier (see Mutate.hs's mutant printing)
--- TODO: remove foldr1 use
-
 -- | Formats a table using a given separator.
 --
 -- > table "  " [ ["asdf", "qwer",     "zxvc\nzxvc"]
@@ -56,12 +54,14 @@ showTuple (s:ss) =
 table :: String -> [[String]] -> String
 table s []  = ""
 table s sss = unlines
+            . map (removeTrailing ' ')
             . map (intercalate s)
             . transpose
             . map (normalize ' ')
             . foldr1 (zipWith (++))
             . map (normalize "" . map lines)
             . normalize ""
+            $ sss
 
 -- | Given a separator, format strings in columns
 --
@@ -70,6 +70,7 @@ table s sss = unlines
 -- >   \     | zxcv | df\n"
 columns :: String -> [String] -> String
 columns s = unlines
+          . map (removeTrailing ' ')
           . map (intercalate s)
           . transpose
           . map (normalize ' ')
@@ -93,3 +94,8 @@ normalize x xs = map (x `fit` maxLength xs) xs
 -- | Given a list of lists returns the maximum length
 maxLength :: [[a]] -> Int
 maxLength = maximum . (0:) . map length
+
+removeTrailing :: Eq a => a -> [a] -> [a]
+removeTrailing x = reverse
+                 . dropWhile (==x)
+                 . reverse
