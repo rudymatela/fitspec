@@ -4,6 +4,7 @@
 -- in the future.  i.e.: heavy use of '(++)'.
 module PPPrint
   ( beside
+  , above
   , showTuple
   , table
   , columns
@@ -20,6 +21,12 @@ import Data.List (intercalate,transpose)
 beside :: String -> String -> String
 beside cs ds = unlines $ zipWith (++) (normalize ' ' css) dss
   where [css,dss] = normalize "" [lines cs,lines ds]
+
+-- | Append two Strings on top of each other, adding line breaks *when needed*.
+above :: String -> String -> String
+above cs ds = if last cs == '\n' || head ds == '\n'
+                then cs ++ ds
+                else cs ++ '\n':ds
 
 -- | Show elements of a list as a tuple.  If there are multiple lines in any of
 --   the strings, tuple is printed multiline.

@@ -112,7 +112,7 @@ reportWith args nf f pmap =
                                        , show  $ countSurvivors mms
                                        ]
     showResult "implication" iss mms = [ showI (relevantPropertySets iss)
-                                      ++ showImplications ("\n ==> " ++) iss
+                                 `above` showImplications (" ==> " ++) iss
                                        , show  $ countSurvivors mms
                                        , showM $ minimalMutant mms
                                        ]
