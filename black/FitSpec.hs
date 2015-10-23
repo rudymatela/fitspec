@@ -120,7 +120,7 @@ reportWith args nf f pmap =
     showM (Nothing) = ""
     showM (Just m)  = showMutantN (callNames args) f m
     showEqv (p:ps) = unlines
-                   . map (((show p ++ " = ") ++) . show)
+                   . map (\q -> show p ++ " = " ++ show q)
                    $ ps
     showImplications f iss = case relevantImplications iss of
                                [] -> ""
