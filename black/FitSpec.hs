@@ -46,6 +46,7 @@ data Args a = Args
   , limitResults :: Maybe Int -- ^ Just a limit for results, 'Nothing' for all
   , showPropertySets :: [String] -> String -- ^ function to show property sets.
   , showType :: String -- ^ how to show entries
+  , showMoreEI :: Bool
   }
 
 -- | Default arguments for 'reportWith':
@@ -72,6 +73,7 @@ args = Args { extraMutants = []
             , limitResults = Nothing    -- show everything
             , showPropertySets = unwords -- just join by spaces
             , showType = "default"
+            , showMoreEI = False
             }
 
 -- TODO: showType should probably become a sum type
@@ -101,9 +103,11 @@ reportWith args nf f pmap =
               $ results
      putStrLn "*Apparent* equivalences and implications:"
      putStrLn . concatMap (showEI)
-              . reduceImplications
-              . filterNonCanon
-              . reverse
+              . (if showMoreEI args
+                   then id
+                   else reduceImplications
+                      . filterNonCanon
+                      . reverse)
               . map (relevantPSI . fst)
               $ results
   where
