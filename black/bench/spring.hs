@@ -99,4 +99,4 @@ run' fs re em nm nt = reportWith ((sargs em) {showType = re}) nm fs (uncurry $ p
 (+++) :: (Show a, Read a, Integral a) => a -> a -> a
 x +++ 0 = x
 0 +++ y = y
-x +++ y = read (show x ++ show y)
+x +++ y = read (show x ++ show (abs y))
