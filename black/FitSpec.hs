@@ -100,7 +100,11 @@ reportWith args nf f pmap =
               . maybe id take (limitResults args)
               $ results
      putStrLn "*Apparent* equivalences and implications:"
-     putStrLn . concatMap (showEI . fst)
+     putStrLn . concatMap (showEI)
+              . reduceImplications
+              . filterNonCanon
+              . reverse
+              . map (relevantPSI . fst)
               $ results
   where
     results = getRawResults (extraMutants args) nf f pmap
@@ -119,18 +123,41 @@ reportWith args nf f pmap =
     showI = showPropertySets args . map show
     showM (Nothing) = ""
     showM (Just m)  = showMutantN (callNames args) f m
-    showEqv (p:ps) = unlines
-                   . map (\q -> show p ++ " = " ++ show q)
-                   $ ps
     showImplications f iss = case relevantImplications iss of
                                [] -> ""
                                xs -> f $ show xs
-    showEI iss = showEqv (relevantPropertySets iss)
-              ++ showImplications (\s -> (show . head
-                                               . relevantPropertySets
-                                               $ iss)
-                                       ++ " ==> " ++ s ++ "\n")
-                                  iss
+
+showEI :: ([[Int]],[Int]) -> String
+showEI ([],_)   = error "shoow: empty property-set equivalence class"
+showEI (p:ps,i) = unlines $ map (\p' -> show p ++ " = " ++ show p') ps
+                         ++ [ show p ++ " ==> " ++ show i | (not.null) i ]
+
+relevantPSI :: [[Int]] -> ([[Int]],[Int])
+relevantPSI iss = (relevantPropertySets iss, relevantImplications iss)
+
+filterNonCanon :: [([[Int]],[Int])] -> [([[Int]],[Int])]
+filterNonCanon [] = []
+filterNonCanon ((p:ps,i):rest) = ((p:ps,i):)
+                    . filterNonCanon
+                    . filter (not . null . fst)
+                    . map (mapFst removeNonCanon)
+                    $ rest
+  where removeNonCanon = filter (not . (\p' -> (p' `contains`) `any` ps))
+        mapFst f (x,y) = (f x, y)
+
+reduceImplications :: [([[Int]],[Int])] -> [([[Int]],[Int])]
+reduceImplications [] = []
+reduceImplications (x:xs) = x : map (x `reduce`) (reduceImplications xs)
+  where (ps,i) `reduce` (ps',i') = if or (productWith contained ps ps')
+                                     then (ps', i' \\ i)
+                                     else (ps', i')
+        productWith f xs ys = [f x y | x <- xs, y <- ys]
+
+filterRelevant :: [([[Int]],[Int])] -> [([[Int]],[Int])]
+filterRelevant = filterU relevant
+  where (p:_,i) `relevant` (ps,i') = not $ i == i'
+                                        && any (p `contained`) ps
+
 
 -- | Return minimality and completeness results.  See 'report'.
 getResults :: (Mutable a)
