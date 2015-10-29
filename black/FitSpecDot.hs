@@ -30,23 +30,21 @@ attachObviousness :: Eq i => [([[i]], [[i]])] -> [([[i]],[[i]],Bool)]
 attachObviousness = map attachObviousness'
   where attachObviousness' (as,bs) = (as,bs,isObvious as bs)
 
--- | Given a list of relations, generate a graphviz graph containing those relations
-genDotfile :: [(String,String,Bool)] -> String
-genDotfile = (\s -> "digraph G {\n" ++ s ++ "}\n")
-           . unlines
-           . map showEntry
-  where showEntry (a,b,p) = "\"" ++ a ++ "\" -> \"" ++ b ++ "\""
-                         ++ if p
-                              then " [ color = grey ]"
-                              else ""
 
--- | Generate a dotfile from implications between groups
+-- | Given a list of relations, generate a graphviz graph containing those relations.
+--   Generate a dotfile from implications between groups.
 genDotfileFromGI :: Show i
-                  => [([[i]],[[i]],Bool)]
-                  -> String
-genDotfileFromGI = genDotfile . map showEntry
-  where showEntry (iss,jss,p) = (showG iss,showG jss,p)
-        showG = unwords . map show
+                 => [([[i]],[[i]],Bool)]
+                 -> String
+genDotfileFromGI = (\s -> "digraph G {\n" ++ s ++ "}\n")
+                 . unlines
+                 . map showEntry
+  where showG = unwords . map show
+        showEntry (iss,jss,p) = "\"" ++ (showG iss) ++ "\" -> \""
+                                     ++ (showG jss) ++ "\""
+                             ++ if p
+                                  then " [ color = grey ]"
+                                  else ""
 
 -- | Equivalent to 'getResults' but returns a dotfile
 getDotfile :: (Mutable a)
