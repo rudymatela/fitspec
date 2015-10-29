@@ -21,18 +21,31 @@ groupImplications (n:ns) = [ (fst n, fst n')
   where actual (iss,is) = foldr union [] iss `union` is
         n `implies` m = actual n `contains` actual m
 
+isObvious :: Eq i => [[i]] -> [[i]] -> Bool
+isObvious as bs = or [ a `contains` b
+                     | a <- as
+                     , b <- bs ]
+
+attachObviousness :: Eq i => [([[i]], [[i]])] -> [([[i]],[[i]],Bool)]
+attachObviousness = map attachObviousness'
+  where attachObviousness' (as,bs) = (as,bs,isObvious as bs)
+
 -- | Given a list of relations, generate a graphviz graph containing those relations
-genDotfile :: [(String,String)] -> String
+genDotfile :: [(String,String,Bool)] -> String
 genDotfile = (\s -> "digraph G {\n" ++ s ++ "}\n")
            . unlines
-           . map (\(a,b) -> "\"" ++ a ++ "\" -> \"" ++ b ++ "\"")
+           . map showEntry
+  where showEntry (a,b,p) = "\"" ++ a ++ "\" -> \"" ++ b ++ "\""
+                         ++ if p
+                              then " [ color = grey ]"
+                              else ""
 
 -- | Generate a dotfile from implications between groups
 genDotfileFromGI :: Show i
-                  => [([[i]],[[i]])]
+                  => [([[i]],[[i]],Bool)]
                   -> String
 genDotfileFromGI = genDotfile . map showEntry
-  where showEntry (iss,jss) = (showG iss,showG jss)
+  where showEntry (iss,jss,p) = (showG iss,showG jss,p)
         showG = unwords . map show
 
 -- | Equivalent to 'getResults' but returns a dotfile
@@ -41,6 +54,7 @@ getDotfile :: (Mutable a)
            -> Int -> a -> (a -> [Bool])
            -> String
 getDotfile ems n f = genDotfileFromGI
+                   . attachObviousness
                    . groupImplications
                    . map (relevantSI . fst)
                    . getRawResults ems n f
