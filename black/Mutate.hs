@@ -45,6 +45,16 @@ instance Mutable Bool where szMutants = lsMutantsEq
 instance (Eq a, Listable a) => Mutable [a]       where szMutants = lsMutantsEq
 instance (Eq a, Listable a) => Mutable (Maybe a) where szMutants = lsMutantsEq
 
+{- Alternative implementation for Mutable lists:
+instance (Listable a, Mutable a) => Mutable [a]
+  where szMutants []     = [ [] ]
+                         : [ ]
+                         : tail listing
+        szMutants (x:xs) = [ (x:xs) ]
+                         : [ [] ]
+                         : tail (lsProductWith (:) (szMutants x) (szMutants xs))
+-- -}
+
 instance (Mutable a, Mutable b) => Mutable (a,b) where
   szMutants (f,g) = szMutants f `lsProduct` szMutants g
 

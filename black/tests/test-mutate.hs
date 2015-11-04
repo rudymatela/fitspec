@@ -3,10 +3,14 @@ import Data.List (elemIndices, sort)
 
 import Test.Check
 import Test.Check.Utils
-import Utils (errorToNothing)
+import Utils (errorToNothing,contained)
 import Data.Tuple (swap)
 
+import Test.Types
+import Test.Types.Mutate
+
 import Mutate
+
 
 main :: IO ()
 main =
@@ -15,12 +19,15 @@ main =
     is -> do putStrLn ("Failed tests:" ++ show is)
              exitFailure
 
+-- NOTE:
+-- the lsMutantsEqOld property only *actually* hold for functions returning
+-- lists when using lsMutantsEq as the implementation of lsMutants for [a]
 
 tests =
   [ True
 
   , lsMutantsEqOld (sort :: [Int]  -> [Int]) 5
-  , lsMutantsEqOld (sort :: [Bool] -> [Bool]) 5
+  , lsMutantsEqOld (sort :: [Bool] -> [Bool]) 3 -- was 5
   , lsMutantsEqOld (sort :: [Char] -> [Char]) 5
 -- TODO: Find out why and when the following does not terminate:
 --, lsMutantsEqOld (sort :: [()] -> [()]) 5
@@ -28,11 +35,20 @@ tests =
   , lsMutantsEqOld (head :: [Int] -> Int) 6
   , lsMutantsEqOld (head :: [Bool] -> Bool) 6
   , lsMutantsEqOld (tail :: [Int] -> [Int]) 6
-  , lsMutantsEqOld (tail :: [Bool] -> [Bool]) 6
+  , lsMutantsEqOld (tail :: [Bool] -> [Bool]) 4 -- was 6
 
   , lsMutantsEqOld (uncurry (++) :: ([Int],[Int]) -> [Int]) 4
   , lsMutantsEqOld (uncurry (++) :: ([Bool],[Bool]) -> [Bool]) 4
   , lsMutantsEqOld (uncurry (++) :: ([Char],[Char]) -> [Char]) 4
+
+  , lsMutantsEqOld not 10 
+  , lsMutantsEqOld (uncurry (&&)) 10
+  , lsMutantsEqOld (uncurry (||)) 10
+
+  , lsMutantsEqOld (uncurry (+) :: (Int,Int) -> Int) 6
+  , lsMutantsEqOld (uncurry (+) :: (Nat,Nat) -> Nat) 6
+  , lsMutantsEqOld (uncurry (*) :: (Int,Int) -> Int) 6
+  , lsMutantsEqOld (uncurry (*) :: (Nat,Nat) -> Nat) 6
 
   -- These actually do not hold for later values in the enumeration
   -- The actual way in which values are enumerated makes the enumerations
@@ -59,7 +75,36 @@ tests =
   , checkBindingsOfLength 7 2 ((,) :: Int -> Int -> (Int,Int))
   , checkBindingsOfLength 7 1 (swap :: (Bool,Bool) -> (Bool,Bool))
   , checkBindingsOfLength 4 1 (swap :: (Bool,Bool) -> (Bool,Bool),sort :: [Int] -> [Int])
+
+  , holds 25 (uniqueMutants    100 :: [Bool] -> Bool)
+  , holds 25 (mutantsInListing 100 :: [Bool] -> Bool)
+  , holds 25 (listingInMutants 100 :: [Bool] -> Bool)
+  , holds 25 (uniqueMutants    100 :: [Int] -> Bool)
+  , holds 25 (mutantsInListing 100 :: [Int] -> Bool)
+  , holds 25 (listingInMutants 100 :: [Int] -> Bool)
+  , holds 25 (uniqueMutants    100 :: [()] -> Bool)
+  , holds 25 (mutantsInListing 100 :: [()] -> Bool)
+  , holds 25 (listingInMutants 100 :: [()] -> Bool)
+  , holds 25 (uniqueMutants    100 :: Bool -> Bool)
+  , holds 25 (mutantsInListing 100 :: Bool -> Bool)
+  , holds 25 (listingInMutants 100 :: Bool -> Bool)
+  , holds 25 (uniqueMutants    100 :: Int -> Bool)
+  , holds 25 (mutantsInListing 100 :: Int -> Bool)
+  , holds 25 (listingInMutants 100 :: Int -> Bool)
+  , holds 25 (uniqueMutants    100 :: () -> Bool)
+  , holds 25 (mutantsInListing 100 :: () -> Bool)
+  , holds 25 (listingInMutants 100 :: () -> Bool)
   ]
+
+
+uniqueMutants :: (Ord a, Listable a, Mutable a) => Int -> a -> Bool
+uniqueMutants n = allUnique . take n . mutants
+
+mutantsInListing :: (Eq a, Listable a, Mutable a) => Int -> a -> Bool
+mutantsInListing n x = take n (mutants x) `contained` list
+
+listingInMutants :: (Eq a, Listable a, Mutable a) => Int -> a -> Bool
+listingInMutants n x = take n list        `contained` mutants x
 
 
 checkBindingsOfLength :: (Mutable a, ShowMutable a)
