@@ -80,6 +80,13 @@ benchmark pretty
   default-language:  Haskell2010
   type:              exitcode-stdio-1.0
 
+benchmark sieve
+  main-is:           sieve.hs
+  build-depends:     base,  llcheck,  cmdargs
+  hs-source-dirs:    ., bench
+  default-language:  Haskell2010
+  type:              exitcode-stdio-1.0
+
 benchmark id
   main-is:           id.hs
   build-depends:     base,  llcheck,  cmdargs
