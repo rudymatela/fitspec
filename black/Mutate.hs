@@ -31,7 +31,6 @@ instance (Eq a, Listable a, Mutable b) => Mutable (a -> b) where
                            Nothing -> [[]]
                            Just fx -> tail (szMutants fx)
 
-
 lsdelete :: Eq a => a -> [[a]] -> [[a]]
 lsdelete x = map (delete x)
 
@@ -54,4 +53,3 @@ instance (Mutable a, Mutable b, Mutable c) => Mutable (a,b,c) where
 
 instance (Mutable a, Mutable b, Mutable c, Mutable d) => Mutable (a,b,c,d) where
   szMutants (f,g,h,i) = lsProductWith (\f' (g',h',i') -> (f',g',h',i')) (szMutants f) (szMutants (g,h,i))
-

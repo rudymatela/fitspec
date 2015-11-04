@@ -134,4 +134,3 @@ instance (ShowMutable a, ShowMutable b, ShowMutable c, ShowMutable d) => ShowMut
 (+-+) :: String -> String -> String
 cs +-+ ds = cs ++ " " ++ ds
 infixr 5 +-+
-
