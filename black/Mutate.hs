@@ -1,7 +1,6 @@
 -- Enumeration of function mutations
 module Mutate
-  ( module Mutate.Show
-  , Mutable (..)
+  ( Mutable (..)
   , lsMutantsEq
   )
 where
@@ -11,7 +10,6 @@ import Test.Check.Utils
 import Data.List (intercalate, delete)
 import Data.Maybe
 import Utils (errorToNothing)
-import Mutate.Show
 
 -- The first mutant returned by szMutants and mutants is the actual function
 -- without mutation.

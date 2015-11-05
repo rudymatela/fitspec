@@ -35,6 +35,7 @@ import Data.Monoid
 import Data.Maybe (catMaybes, listToMaybe, isJust)
 import Control.Monad (unless)
 import Mutate
+import Mutate.Show (showMutantN, ShowMutable)
 import Utils
 import PPPrint
 

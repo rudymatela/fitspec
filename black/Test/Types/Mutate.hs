@@ -1,6 +1,7 @@
 module Test.Types.Mutate () where
 
 import Mutate
+import Mutate.Show
 import Test.Types
 
 instance Mutable Nat   where szMutants = lsMutantsEq
