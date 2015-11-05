@@ -36,6 +36,7 @@ pmap :: Int -> [Int] -> [Bool]
 pmap n primes =
   [ listToMaybe primes == Just 2 -- start with two
   , length (take n primes) == n  -- infinite
+  , allUnique (take n primes)
   , strictlyOrdered (take n primes)
   , holds n $ \x -> x `elemO` primes
                 ==> x*x `notElemO` primes
@@ -46,10 +47,20 @@ pmap n primes =
                          p  = primes !! i
                          ps = drop (i+1) primes
                      in  p > 1 ==> all (\p' -> p' `mod` p /= 0) (take n ps)
-  , allUnique (take n primes)
+  , holds n $ \x y -> x `elemO` primes
+                   && y `elemO` primes
+                   && x /= y
+                  ==> x `mod` y /= 0
+  , all prime            (take n primes)              -- sound
+  , all (`elemO` primes) [ x | x <- [1..n], prime x ] -- complete
   ]
   where holdE n = errorToFalse . holds n
+        prime x = x > 1
+               && all (\p -> p > 0 && x `mod` p /= 0)
+                      (takeWhile (\p -> p*p <= x) primes)
 
+
+prime x = x > 1 && all (\p -> p `mod` x /= 0) (takeWhile (\p -> p*p <= x) primes)
 
 sargs :: Args [Int]
 sargs = args { limitResults = Just 10
