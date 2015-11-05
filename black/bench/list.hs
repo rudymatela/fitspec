@@ -1,7 +1,6 @@
 {-# Language DeriveDataTypeable #-}
 import System.Console.CmdArgs hiding (args)
 import FitSpec
-import Mutate.Show
 import FitSpecC
 import Data.List
 import Test.Check

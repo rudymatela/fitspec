@@ -25,7 +25,17 @@
 --   * 1 and 3
 --   * 2 and 3
 
-module FitSpec where
+module FitSpec
+  ( Args(..)
+  , args
+  , report
+  , reportWith
+  , getRawResults
+  , relevantImplications
+  , relevantPropertySets
+  , ShowMutable
+  )
+where
 
 import Test.Check
 import Test.Check.Utils
