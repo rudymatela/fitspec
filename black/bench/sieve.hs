@@ -45,7 +45,7 @@ sargs = args { limitResults = Just 10
              , showMutantN = \_ _ -> showInfinite
              }
   where showInfinite xs | not . null $ drop 10 xs = (init . show $ take 10 xs) ++ "..."
-                        | otherwise                 = show xs
+                        | otherwise               = show xs
 
 data CmdArguments = CmdArguments
   { nMutants :: Int
