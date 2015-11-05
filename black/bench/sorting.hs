@@ -35,7 +35,7 @@ pmap n sort' =
   ]
 
 
-sargs :: (Listable a, Bounded a, Ord a) => Bool -> Args ([a] -> [a])
+sargs :: (Show a, Listable a, Bounded a, Ord a) => Bool -> Args ([a] -> [a])
 sargs em = args
              { callNames = ["sort xs"]
              --, extraMutants = [sortCounter]

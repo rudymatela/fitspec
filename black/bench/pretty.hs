@@ -2,6 +2,7 @@ import FitSpec
 import FitSpecC
 import Test.Check
 import Mutate
+import Mutate.Show
 import Text.PrettyPrint
 
 instance Listable Doc where

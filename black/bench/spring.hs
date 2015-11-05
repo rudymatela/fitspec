@@ -1,6 +1,7 @@
 {-# Language DeriveDataTypeable #-}
 import System.Console.CmdArgs hiding (args)
 import FitSpec
+import Mutate.Show
 import Data.List
 import Test.Check
 import Test.Types
@@ -36,7 +37,7 @@ fns :: Integral a => Ty a
 fns = ((+),(*))
 
 
-sargs :: (Integral a, Show a, Read a)
+sargs :: (ShowMutable a, Listable a, Integral a, Show a, Read a)
       => Bool -> Args (Ty a)
 sargs useExtra =
   args { limitResults = Nothing

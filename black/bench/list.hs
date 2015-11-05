@@ -1,6 +1,7 @@
 {-# Language DeriveDataTypeable #-}
 import System.Console.CmdArgs hiding (args)
 import FitSpec
+import Mutate.Show
 import FitSpecC
 import Data.List
 import Test.Check
@@ -40,7 +41,7 @@ pmap n (-:) head tail (++) =
 fns :: Ty a
 fns = ((:),head,tail,(++))
 
-sargs :: Listable a => Bool -> Args (Ty a)
+sargs :: (ShowMutable a, Eq a, Show a, Listable a) => Bool -> Args (Ty a)
 sargs em = args
              { callNames = ["(:) x xs","head xs","tail xs","(++) xs ys"]
              , limitResults = Just 30

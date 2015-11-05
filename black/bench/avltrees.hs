@@ -1,5 +1,6 @@
 import FitSpec
 import FitSpecC
+import Mutate.Show
 import Test.Check
 import Mutate
 import AVLTree

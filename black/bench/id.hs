@@ -2,6 +2,7 @@
 {-# Language DeriveDataTypeable #-}
 import System.Console.CmdArgs hiding (args)
 import FitSpec
+import Mutate.Show
 import FitSpecC
 import Test.Check
 import Test.Types
@@ -18,7 +19,7 @@ pmap n id =
   ]
 
 
-sargs :: Args (Ty a)
+sargs :: (Show a, Listable a, ShowMutable a) => Args (Ty a)
 sargs = args { callNames = ["id x"]
              , limitResults = Just 10
              }
