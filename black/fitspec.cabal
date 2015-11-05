@@ -45,13 +45,6 @@ benchmark sorting
   default-language:  Haskell2010
   type:              exitcode-stdio-1.0
 
-benchmark simple-sorting
-  main-is:           simple-sorting.hs
-  build-depends:     base,  llcheck
-  hs-source-dirs:    ., bench
-  default-language:  Haskell2010
-  type:              exitcode-stdio-1.0
-
 benchmark heaps
   main-is:           heaps.hs
   build-depends:     base,  llcheck,  cmdargs
