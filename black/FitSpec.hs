@@ -35,7 +35,8 @@ import Data.Monoid
 import Data.Maybe (catMaybes, listToMaybe, isJust)
 import Control.Monad (unless)
 import Mutate
-import Mutate.Show (showMutantN, ShowMutable)
+import Mutate.Show (ShowMutable)
+import qualified Mutate.Show (showMutantN)
 import Utils
 import PPPrint
 
@@ -48,6 +49,7 @@ data Args a = Args
   , showPropertySets :: [String] -> String -- ^ function to show property sets.
   , showType :: String -- ^ how to show entries
   , showMoreEI :: Bool
+  , showMutantN :: [String] -> a -> a -> String
   }
 
 -- | Default arguments for 'reportWith':
@@ -69,13 +71,18 @@ data Args a = Args
 -- > unwords . take 5   -- separated by spaces, limit to 5
 -- > unlines . take 5   -- one per line, limit to 5
 -- > take 30 . unwords  -- limit to 30 characters
+args :: ShowMutable a => Args a
 args = Args { extraMutants = []
             , callNames = []
             , limitResults = Nothing    -- show everything
             , showPropertySets = unwords -- just join by spaces
             , showType = "default"
             , showMoreEI = False
+            , showMutantN = Mutate.Show.showMutantN
             }
+
+showMutant :: Args a -> a -> a -> String
+showMutant as = (showMutantN as) (callNames as)
 
 -- TODO: showType should probably become a sum type
 
@@ -88,7 +95,7 @@ report = reportWith args
 
 -- | Same as 'report' but extra mutants and custom function names can be passed
 --   via 'args'.
-reportWith :: (ShowMutable a, Mutable a)
+reportWith :: Mutable a
            => Args a
            -> Int
            -> a
@@ -127,7 +134,7 @@ reportWith args nf f pmap =
                                        ]
     showI = showPropertySets args . map show
     showM (Nothing) = ""
-    showM (Just m)  = showMutantN (callNames args) f m
+    showM (Just m)  = (showMutant args) f m
     showImplications f iss = case relevantImplications iss of
                                [] -> ""
                                xs -> f $ show xs
