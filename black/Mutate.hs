@@ -14,20 +14,20 @@ import Utils (errorToNothing)
 -- The first mutant returned by szMutants and mutants is the actual function
 -- without mutation.
 class Mutable a where
-  szMutants :: a -> [[a]]
+  lsMutants :: a -> [[a]]
   mutants :: a -> [a]
-  szMutants = map (:[]) . mutants
-  mutants = concat . szMutants
+  lsMutants = map (:[]) . mutants
+  mutants = concat . lsMutants
 
 -- Beware: if the underlying enumeration for argument/return values generates
 -- repeated elements there will be repeated and potentially null mutants.
 instance (Eq a, Listable a, Mutable b) => Mutable (a -> b) where
-  szMutants f = lsmap (defaultFunPairsToFunction f)
+  lsMutants f = lsmap (defaultFunPairsToFunction f)
               $ lsConcatMap (`associations'` mutantsFor)
               $ lsCrescListsOf listing
     where mutantsFor x = case errorToNothing (f x) of
                            Nothing -> [[]]
-                           Just fx -> tail (szMutants fx)
+                           Just fx -> tail (lsMutants fx)
 
 lsdelete :: Eq a => a -> [[a]] -> [[a]]
 lsdelete x = map (delete x)
@@ -36,28 +36,28 @@ lsdelete x = map (delete x)
 lsMutantsEq :: (Listable a, Eq a) => a -> [[a]]
 lsMutantsEq x = [x] : lsdelete x listing
 
-instance Mutable ()   where szMutants = lsMutantsEq
-instance Mutable Int  where szMutants = lsMutantsEq
-instance Mutable Char where szMutants = lsMutantsEq
-instance Mutable Bool where szMutants = lsMutantsEq
-instance (Eq a, Listable a) => Mutable [a]       where szMutants = lsMutantsEq
-instance (Eq a, Listable a) => Mutable (Maybe a) where szMutants = lsMutantsEq
+instance Mutable ()   where lsMutants = lsMutantsEq
+instance Mutable Int  where lsMutants = lsMutantsEq
+instance Mutable Char where lsMutants = lsMutantsEq
+instance Mutable Bool where lsMutants = lsMutantsEq
+instance (Eq a, Listable a) => Mutable [a]       where lsMutants = lsMutantsEq
+instance (Eq a, Listable a) => Mutable (Maybe a) where lsMutants = lsMutantsEq
 
 {- Alternative implementation for Mutable lists:
 instance (Listable a, Mutable a) => Mutable [a]
-  where szMutants []     = [ [] ]
+  where lsMutants []     = [ [] ]
                          : [ ]
                          : tail listing
-        szMutants (x:xs) = [ (x:xs) ]
+        lsMutants (x:xs) = [ (x:xs) ]
                          : [ [] ]
-                         : tail (lsProductWith (:) (szMutants x) (szMutants xs))
+                         : tail (lsProductWith (:) (lsMutants x) (lsMutants xs))
 -- -}
 
 instance (Mutable a, Mutable b) => Mutable (a,b) where
-  szMutants (f,g) = szMutants f `lsProduct` szMutants g
+  lsMutants (f,g) = lsMutants f `lsProduct` lsMutants g
 
 instance (Mutable a, Mutable b, Mutable c) => Mutable (a,b,c) where
-  szMutants (f,g,h) = lsProductWith (\f' (g',h') -> (f',g',h')) (szMutants f) (szMutants (g,h))
+  lsMutants (f,g,h) = lsProductWith (\f' (g',h') -> (f',g',h')) (lsMutants f) (lsMutants (g,h))
 
 instance (Mutable a, Mutable b, Mutable c, Mutable d) => Mutable (a,b,c,d) where
-  szMutants (f,g,h,i) = lsProductWith (\f' (g',h',i') -> (f',g',h',i')) (szMutants f) (szMutants (g,h,i))
+  lsMutants (f,g,h,i) = lsProductWith (\f' (g',h',i') -> (f',g',h',i')) (lsMutants f) (lsMutants (g,h,i))

@@ -9,7 +9,7 @@ instance Listable Doc where
   listing = cons1 text  -- TODO: Improve this
 
 instance Mutable Doc where
-  szMutants = lsMutantsEq
+  lsMutants = lsMutantsEq
 
 instance ShowMutable Doc where
   mutantS = mutantSEq

@@ -4,10 +4,10 @@ import Mutate
 import Mutate.Show
 import Test.Types
 
-instance Mutable Nat   where szMutants = lsMutantsEq
-instance Mutable UInt2 where szMutants = lsMutantsEq
-instance Mutable UInt3 where szMutants = lsMutantsEq
-instance Mutable UInt4 where szMutants = lsMutantsEq
+instance Mutable Nat   where lsMutants = lsMutantsEq
+instance Mutable UInt2 where lsMutants = lsMutantsEq
+instance Mutable UInt3 where lsMutants = lsMutantsEq
+instance Mutable UInt4 where lsMutants = lsMutantsEq
 instance ShowMutable Nat   where mutantS = mutantSEq; showMutant _ = show
 instance ShowMutable UInt2 where mutantS = mutantSEq; showMutant _ = show
 instance ShowMutable UInt3 where mutantS = mutantSEq; showMutant _ = show

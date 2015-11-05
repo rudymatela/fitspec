@@ -114,7 +114,7 @@ checkBindingsOfLength n len f = (all . all) (bindingsOfLength len)
                               . concat
                               . take n
                               . lsmap (mutantS f)
-                              $ szMutants f
+                              $ lsMutants f
 
 
 bindingsOfLength :: Int -> [([String],String)] -> Bool
@@ -150,7 +150,7 @@ showNewMutants1 :: (ShowMutable a, Mutable a)
                 => a -> Int -> [[String]]
 showNewMutants1 f n = lsmap (showMutant f)
                     $ take n
-                    $ szMutants f
+                    $ lsMutants f
 
 showOldMutants2 :: ( Eq a, Eq b, Eq c
                    , Show a, Show b, Show c
@@ -166,7 +166,7 @@ showNewMutants2 :: ( Eq a, Eq b, Eq c
                 => (a -> b -> c) -> Int -> [[String]]
 showNewMutants2 f n = lsmap (showMutant uf . uncurry)
                     $ take n
-                    $ szMutants f
+                    $ lsMutants f
   where uf = uncurry f
 
 lsMutantsOld :: (Eq a, Eq b, Listable a, Listable b)
