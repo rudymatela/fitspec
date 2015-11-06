@@ -37,6 +37,7 @@ lsMutantsEq :: (Listable a, Eq a) => a -> [[a]]
 lsMutantsEq x = [x] : lsdelete x listing
 
 instance Mutable ()   where lsMutants = lsMutantsEq
+--instance Mutable Int  where lsMutants x = lsmap (x+) listing
 instance Mutable Int  where lsMutants = lsMutantsEq
 instance Mutable Char where lsMutants = lsMutantsEq
 instance Mutable Bool where lsMutants = lsMutantsEq
