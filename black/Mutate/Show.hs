@@ -10,6 +10,7 @@ import Test.Check
 import Data.Maybe (mapMaybe,isNothing)
 import Control.Monad (join)
 import Data.List (intercalate)
+import Data.Char (isLetter)
 
 -- | Default function name, when none given
 defFn :: String
@@ -48,7 +49,7 @@ flatLambdas names = showTuple . zipWith flatLambda (names ++ defFns)
 
 -- TODO: Pretty print infix operators: `1 + 2` instead of `(+) 1 2`
 flatLambda :: String -> [([String],String)] -> String
-flatLambda name []       = head (words name)
+flatLambda name []       = fname name
 flatLambda _    [([],s)] = s
 flatLambda name bs = (("\\" ++ (unwords varnames) ++ " -> ") `beside`)
                    $ "case " ++ (showTuple varnames) ++ " of\n"
@@ -57,9 +58,37 @@ flatLambda name bs = (("\\" ++ (unwords varnames) ++ " -> ") `beside`)
     cases = unlines (map (\(as,r) -> showTuple as ++ " -> " ++ r) bs)
          ++ "_ -> " ++ name
     varnames = zipWith const
-                       (drop 1 (words name) ++ defVns)
+                       (vnames name ++ defVns)
                        (fst $ head bs)
 
+
+-- | Separate function from variable names in a simple Haskell expr.
+--
+-- > fvarnames "f x y" == ("f",["x","y"])
+-- > fvarnames "x + y" == ("(+)",["x","y"])
+-- > fvarnames "aa bb cc dd" == ("aa",["bb","cc","dd"])
+--
+-- When there are three lexemes, the function checks for a potential infix
+-- operator in the middle.
+fvnames :: String -> (String,[String])
+fvnames = fvns' . words
+  where fvns' :: [String] -> (String,[String])
+        fvns' [a,b:bs,c] | b /= '(' && not (isLetter b)
+                         = if b == '`'
+                             then (init bs,[a,c])         -- `o` -> o
+                             else ('(':b:bs ++ ")",[a,c]) --  +  -> (+)
+        fvns' []         = (defFn,[])
+        fvns' (f:vs)     = (f,vs)
+
+-- | Separate the function name from a simple Haskell expression.
+--   See the docs for 'fvnames'
+fname :: String -> String
+fname = fst . fvnames
+
+-- | Separate the variable names from a simple Haskell expression.
+--   See the docs for 'fvnames'
+vnames :: String -> [String]
+vnames = snd . fvnames
 
 class ShowMutable a where
   mutantS :: a -> a -> [[([String],String)]]

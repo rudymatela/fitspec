@@ -41,7 +41,7 @@ sargs :: (ShowMutable a, Listable a, Integral a, Show a, Read a)
 sargs useExtra =
   args { limitResults = Nothing
        , showPropertySets = unlines
-       , callNames = [ "(+) x y", "(*) x y" ]
+       , callNames = [ "x + y", "x * y" ]
        , extraMutants =
            let ems = [ \x y -> x+y+1
                      , \x y -> x*y+x*y
