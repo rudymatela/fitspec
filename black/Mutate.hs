@@ -2,6 +2,7 @@
 module Mutate
   ( Mutable (..)
   , lsMutantsEq
+  , mutantsIntegral
   )
 where
 
@@ -36,8 +37,16 @@ lsdelete x = map (delete x)
 lsMutantsEq :: (Listable a, Eq a) => a -> [[a]]
 lsMutantsEq x = [x] : lsdelete x listing
 
+-- Mutants of an Integral value.  Always start towards zero.  Alternating
+-- between sucessor and predecessor.
+-- The tail usage is there to avoid generating out of bound values.
+-- (x-1) is usually safe though.
+mutantsIntegral :: Integral a => a -> [a]
+mutantsIntegral i | i > 0     = [i..] \/ tail [i,(i-1)..]
+                  | otherwise = [i,(i-1)..] \/ tail [i..]
+
 instance Mutable ()   where lsMutants = lsMutantsEq
---instance Mutable Int  where lsMutants x = lsmap (x+) listing
+--instance Mutable Int  where mutants = mutantsIntegral
 instance Mutable Int  where lsMutants = lsMutantsEq
 instance Mutable Char where lsMutants = lsMutantsEq
 instance Mutable Bool where lsMutants = lsMutantsEq
