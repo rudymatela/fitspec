@@ -31,7 +31,10 @@ instance (Eq a, Listable a, Mutable b) => Mutable (a -> b) where
                            Just fx -> tail (lsMutants fx)
 
 lsdelete :: Eq a => a -> [[a]] -> [[a]]
-lsdelete x = map (delete x)
+lsdelete x = lsnormalize . map (delete x)
+  where lsnormalize []       = []
+        lsnormalize [[]]     = []
+        lsnormalize (xs:xss) = xs:lsnormalize xss
 
 -- TODO: Possible Optimization: (deleteOnce x)
 lsMutantsEq :: (Listable a, Eq a) => a -> [[a]]
