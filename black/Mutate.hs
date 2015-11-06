@@ -49,7 +49,7 @@ mutantsIntegral i | i > 0     = [i..] \/ tail [i,(i-1)..]
                   | otherwise = [i,(i-1)..] \/ tail [i..]
 
 instance Mutable ()   where lsMutants = lsMutantsEq
---instance Mutable Int  where mutants = mutantsIntegral
+-- instance Mutable Int  where mutants = mutantsIntegral
 instance Mutable Int  where lsMutants = lsMutantsEq
 instance Mutable Char where lsMutants = lsMutantsEq
 instance Mutable Bool where lsMutants = lsMutantsEq
