@@ -47,7 +47,6 @@ defVns = ["x","y","z","w"] ++ map (++"'") defVns
 flatLambdas :: [String] -> [[([String],String)]] -> String
 flatLambdas names = showTuple . zipWith flatLambda (names ++ defFns)
 
--- TODO: Pretty print infix operators: `1 + 2` instead of `(+) 1 2`
 flatLambda :: String -> [([String],String)] -> String
 flatLambda name []       = fname name
 flatLambda _    [([],s)] = s
