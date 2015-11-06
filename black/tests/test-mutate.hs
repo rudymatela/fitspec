@@ -27,11 +27,10 @@ main =
 tests =
   [ True
 
-  , lsMutantsEqOld (sort :: [Int]  -> [Int]) 5
+  , lsMutantsEqOld (sort :: [Int]  -> [Int])  5
   , lsMutantsEqOld (sort :: [Bool] -> [Bool]) 3 -- was 5
   , lsMutantsEqOld (sort :: [Char] -> [Char]) 5
--- TODO: Find out why and when the following does not terminate:
---, lsMutantsEqOld (sort :: [()] -> [()]) 5
+  , lsMutantsEqOld (sort :: [()] -> [()])    10
 
   , lsMutantsEqOld (head :: [Int] -> Int) 6
   , lsMutantsEqOld (head :: [Bool] -> Bool) 6
