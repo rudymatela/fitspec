@@ -50,18 +50,18 @@ main = do putStrLn "### Strict mutant enumerations ###"
 
           putStrLn "Not:";
           reportWith args { callNames = ["not p"] }
-                     500 not (pMapN 500)
+                     500 not (pMapN)
 
           putStrLn "Not, and:"
           reportWith args { limitResults = Just 9
                           , callNames = ["not p","(&&) p q"] }
-                     500 (not,uncurry (&&)) (pMapNA 500)
+                     500 (not,uncurry (&&)) (pMapNA)
 
           putStrLn "Not, and, or:"
           reportWith args { limitResults = Just 2
                           , showPropertySets = unlines
                           , callNames = ["not p","(&&) p q","(||) p q"] }
-                     100 (not,uncurry (&&),uncurry (||)) (pMapNAO 100)
+                     100 (not,uncurry (&&),uncurry (||)) (pMapNAO)
 
           putStrLn "Not, and (filtered):"
           report2 500 not (uncurry (&&)) (curry (pMapNA 500))

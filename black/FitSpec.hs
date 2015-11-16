@@ -60,6 +60,7 @@ data Args a = Args
   , showType :: String -- ^ how to show entries
   , showMoreEI :: Bool
   , showMutantN :: [String] -> a -> a -> String
+  , nTestsF :: Int -> Int -- ^ number of tests in function of number of mutants
   }
 
 -- | Default arguments for 'reportWith':
@@ -68,19 +69,28 @@ data Args a = Args
 --
 -- * @callNames = []@, use internal default function call template:
 --
--- > ["f x y z w x' y' z' ...","g ...","h ...","f' ...",...]
---
+--   > ["f x y z w x' y' z' ...","g ...","h ...","f' ...",...]
 --
 -- * @limitResults = Nothing@, show all results
 --
 -- * @showPropertySets = unwords@, just join property-sets by spaces
+--   Other good values for this might be:
 --
--- Other good values for this might be:
+--   > unlines            -- one per line
+--   > unwords . take 5   -- separated by spaces, limit to 5
+--   > unlines . take 5   -- one per line, limit to 5
+--   > take 30 . unwords  -- limit to 30 characters
 --
--- > unlines            -- one per line
--- > unwords . take 5   -- separated by spaces, limit to 5
--- > unlines . take 5   -- one per line, limit to 5
--- > take 30 . unwords  -- limit to 30 characters
+-- * @nTests = (*2)@, use the same number of tests and mutants
+--   There is no general rule of thumb for this function,
+--   in some applications, less is better,
+--   in some applications, more is better.
+--   Increase this if you spot a false positive.
+--   Other good values for this might be:
+--
+--   > (*100)        -- more tests, less false positives
+--   > (`div` 100)   -- less tests, less false negatives
+--   > (const 1000)  -- specific number of tests
 args :: ShowMutable a => Args a
 args = Args { extraMutants = []
             , callNames = []
@@ -89,6 +99,7 @@ args = Args { extraMutants = []
             , showType = "default"
             , showMoreEI = False
             , showMutantN = Mutate.Show.showMutantN
+            , nTestsF = (*2)
             }
 
 showMutant :: Args a -> a -> a -> String
@@ -100,7 +111,7 @@ showMutant as = (showMutantN as) (callNames as)
 --   configuration (see 'args').  Needs the number of mutants to be generated,
 --   a function to be mutated and a property map.
 report :: (ShowMutable a, Mutable a)
-       => Int -> a -> (a -> [Bool]) -> IO ()
+       => Int -> a -> (Int -> a -> [Bool]) -> IO ()
 report = reportWith args
 
 -- | Same as 'report' but extra mutants and custom function names can be passed
@@ -109,10 +120,12 @@ reportWith :: Mutable a
            => Args a
            -> Int
            -> a
-           -> (a -> [Bool])
+           -> (Int -> a -> [Bool])
            -> IO ()
 reportWith args nf f pmap =
-  do unless (and . pmap $ f)
+  do putStrLn $ "Running FitSpec with " ++ show nf ++ " mutants"
+                             ++ " and " ++ show nt ++ " tests."
+     unless (and . pmap nt $ f)
             (putStrLn "WARNING: The original function does not follow the property set\n")
      putStrLn . table "   "
               . intersperse [ "\n" ]
@@ -129,7 +142,8 @@ reportWith args nf f pmap =
               . map (relevantPSI . fst)
               $ results
   where
-    results = getRawResults (extraMutants args) nf f pmap
+    nt = nTestsF args nf
+    results = getRawResults (extraMutants args) nf f (pmap nt)
     showResult "default"     iss mms = [ showI $ relevantPropertySets iss
                                        , show  $ countSurvivors mms
                                        , showM $ minimalMutant mms

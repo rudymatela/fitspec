@@ -62,10 +62,11 @@ pmap n primes =
 
 prime x = x > 1 && all (\p -> p `mod` x /= 0) (takeWhile (\p -> p*p <= x) primes)
 
-sargs :: Args [Int]
-sargs = args { limitResults = Just 10
-             , showMutantN = \_ _ -> showInfinite
-             }
+sargs :: Int -> Args [Int]
+sargs nt = args { limitResults = Just 10
+                , showMutantN = \_ _ -> showInfinite
+                , nTestsF = const nt
+                }
   where showInfinite xs | not . null $ drop 10 xs = (init . show $ take 10 xs) ++ "..."
                         | otherwise               = show xs
 
@@ -88,7 +89,7 @@ main = do as <- cmdArgs arguments
           run (classify as) (nMutants as) (nTests as)
 
 run :: Bool -> Int -> Int -> IO ()
-run False nm nt = reportWith sargs nm primes (pmap nt)
+run False nm nt = reportWith (sargs nt) nm primes pmap
 run True  nm nt = undefined
 
 allUnique :: Ord a => [a] -> Bool

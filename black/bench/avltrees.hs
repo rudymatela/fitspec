@@ -76,8 +76,10 @@ csargs = cargs { functionNames = ["insert","remove","find"]
                , nResults = Just 10
                }
 
+sargs = args { nTestsF = (`div` 5) }
+
 main :: IO ()
-main = do report 5000 (uncurry insert :: (Int,Tree Int) -> Tree Int, uncurry remove, uncurry find) (pmap 1000)
+main = do reportWith sargs 5000 (uncurry insert :: (Int,Tree Int) -> Tree Int, uncurry remove, uncurry find) pmap
           report3 5000 (uncurry insert :: (Int,Tree Int) -> Tree Int) (uncurry remove) (uncurry find) (propertyMap 1000)
   where pmap = uncurry3 . propertyMap
 

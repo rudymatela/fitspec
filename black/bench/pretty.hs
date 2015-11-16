@@ -48,10 +48,10 @@ propertyMapQS n beside' above' nest'' =
         nest = curry nest''
 
 main = do reportWith args { limitResults = Just 20 }
-                     1000 (uncurry (<>),uncurry ($$),uncurry (nest)) (pmap 2000)
+                     1000 (uncurry (<>),uncurry ($$),uncurry (nest)) pmap
           -- 2000m x 4000t x 7laws: 1m5s
           reportWith args { limitResults = Just 20 }
-                     1000 (uncurry (<>),uncurry ($$),uncurry (nest)) (pmapQS 2000)
+                     1000 (uncurry (<>),uncurry ($$),uncurry (nest)) pmapQS
   where pmap = uncurry3 . propertyMap
         pmapQS = uncurry3 . propertyMapQS
 

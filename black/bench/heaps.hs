@@ -108,6 +108,7 @@ run "int2"  = run' (fns :: Ty UInt2)
 run "int3"  = run' (fns :: Ty UInt3)
 run "bools" = run' (fns :: Ty [Bool])
 
+-- TODO: Remove warning below (already done inside fitspec)
 run' fs method n m =
   do unless (and $ (uncurry3 $ propertyMap n) fs) $
        putStrLn "Warning: functions being mutated *do not* follow properties"
@@ -117,7 +118,8 @@ run' fs method n m =
 
 runGrey (f,g,h) n m = report3With csargs m f g h (propertyMap n)
 
-runBlack fs n m = reportWith sargs m fs (uncurry3 $ propertyMap n)
+runBlack fs n m = reportWith (sargs { nTestsF = const n})
+                             m fs (uncurry3 . propertyMap)
 
 
 maxInsert :: Ord a => a -> Heap a -> Heap a

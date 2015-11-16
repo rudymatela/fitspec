@@ -52,6 +52,7 @@ main :: IO ()
 main = do as <- cmdArgs arguments
           run (testType as) (classify as) (nMutants as) (nTests as)
 
+-- TODO: De-ignore number of tests in the non-classifying version
 run :: String -> Bool -> Int -> Int -> IO ()
 run "bool"  = run' (id :: Ty Bool)
 run "bools" = run' (id :: Ty [Bool])
@@ -59,5 +60,5 @@ run "int"   = run' (id :: Ty Int)
 run "int2"  = run' (id :: Ty UInt2)
 run "int3"  = run' (id :: Ty UInt3)
 run "unit"  = run' (id :: Ty ())
-run' f False nm nt = reportWith   sargs nm f (pmap nt)
+run' f False nm nt = reportWith   sargs nm f pmap
 run' f True  nm nt = report1With csargs nm f (pmap nt)

@@ -94,7 +94,8 @@ main = do as <- cmdArgs arguments
 run "int"  = run' (fns :: Ty Int)
 run "int2" = run' (fns :: Ty UInt2)
 run "int3" = run' (fns :: Ty UInt3)
-run' fs re em nm nt = reportWith ((sargs em) {showType = re}) nm fs (uncurry $ propertyMap nt)
+run' fs re em nm nt = reportWith ((sargs em) {showType = re, nTestsF = const nt})
+                                 nm fs (uncurry . propertyMap)
 
 (+++) :: (Show a, Read a, Integral a) => a -> a -> a
 x +++ 0 = x

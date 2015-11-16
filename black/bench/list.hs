@@ -40,15 +40,16 @@ pmap n (-:) head tail (++) =
 fns :: Ty a
 fns = ((:),head,tail,(++))
 
-sargs :: (ShowMutable a, Eq a, Show a, Listable a) => Bool -> Args (Ty a)
-sargs em = args
-             { callNames = ["(:) x xs","head xs","tail xs","(++) xs ys"]
-             , limitResults = Just 30
-             , extraMutants = takeWhile (const em)
-                              [ ((:),head,tail,(++-))
-                              , ((:),head,tail,(++--))
-                              ]
-             }
+sargs :: (ShowMutable a, Eq a, Show a, Listable a) => Bool -> Int -> Args (Ty a)
+sargs em nt = args
+            { callNames = ["(:) x xs","head xs","tail xs","(++) xs ys"]
+            , limitResults = Just 30
+            , extraMutants = takeWhile (const em)
+                             [ ((:),head,tail,(++-))
+                             , ((:),head,tail,(++--))
+                             ]
+            , nTestsF = const nt
+            }
 
 csargs = cargs { functionNames = [":","head","tail","++"]
                , variableNames = ["p","xs","xs","p"]
@@ -88,7 +89,7 @@ run "int3"  = run' (fns :: Ty UInt3)
 run "bool"  = run' (fns :: Ty Bool)
 run "bools" = run' (fns :: Ty [Bool])
 run "unit"  = run' (fns :: Ty ())
-run' f False em nm nt = reportWith (sargs em) nm f (uncurry4 $ pmap nt)
+run' f False em nm nt = reportWith (sargs em nt) nm f (uncurry4 . pmap)
 -- run' f True  em nm nt = report1With csargs nm f (pmap nt) -- TODO
 
 
