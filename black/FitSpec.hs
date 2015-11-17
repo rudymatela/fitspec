@@ -61,6 +61,7 @@ data Args a = Args
   , showMoreEI :: Bool
   , showMutantN :: [String] -> a -> a -> String
   , nTestsF :: Int -> Int -- ^ number of tests in function of number of mutants
+  , minimumTime :: Int
   }
 
 -- | Default arguments for 'reportWith':
@@ -100,6 +101,7 @@ args = Args { extraMutants = []
             , showMoreEI = False
             , showMutantN = Mutate.Show.showMutantN
             , nTestsF = (*2)
+            , minimumTime = 0
             }
 
 showMutant :: Args a -> a -> a -> String
@@ -127,6 +129,9 @@ reportWith args nf f pmap =
                              ++ " and " ++ show nt ++ " tests."
      unless (and . pmap nt $ f)
             (putStrLn "WARNING: The original function does not follow the property set\n")
+     (n,results) <- lastTimeout (minimumTime args) resultss
+     putStrLn $ "Ran FitSpec with at least " ++ show n                ++ " mutants"
+                                  ++ " and " ++ show (nTestsF args n) ++ " tests."
      putStrLn . table "   "
               . intersperse [ "\n" ]
               . map (uncurry (showResult (showType args)))
@@ -143,7 +148,9 @@ reportWith args nf f pmap =
               $ results
   where
     nt = nTestsF args nf
-    results = getRawResults (extraMutants args) nf f (pmap nt)
+    resultss = map (\n -> let results = getRawResults (extraMutants args) n f (pmap (nTestsF args n))
+                          in  results `seq` (n,results))
+                   (iterate (\x -> x + x `div` 2) nf)
     showResult "default"     iss mms = [ showI $ relevantPropertySets iss
                                        , show  $ countSurvivors mms
                                        , showM $ minimalMutant mms
@@ -162,6 +169,7 @@ reportWith args nf f pmap =
     showImplications f iss = case relevantImplications iss of
                                [] -> ""
                                xs -> f $ show xs
+
 
 showEI :: ([[Int]],[Int]) -> String
 showEI ([],_)   = error "shoow: empty property-set equivalence class"

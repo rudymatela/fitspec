@@ -17,6 +17,7 @@ module Utils
   , errorToNothing
   , errorToFalse
   , sortAndGroupOn
+  , lastTimeout
   )
 where
 
@@ -34,6 +35,8 @@ import Control.Exception ( Exception
                          )
 import Data.Function (on)
 import Data.List (groupBy,sortOn)
+import Data.IORef (newIORef, readIORef, writeIORef)
+import Control.Concurrent (forkIO, threadDelay, killThread)
 
 -- | Compose composed with compose operator.
 --
@@ -138,3 +141,19 @@ errorToFalse p = case errorToNothing p of
 sortAndGroupOn :: Ord b => (a -> b) -> [a] -> [[a]]
 sortAndGroupOn f = groupBy ((==) `on` f)
                  . sortOn f
+
+
+lastTimeout :: Int -> [a] -> IO a
+lastTimeout _ []     = error "lastTimeout: empty list"
+lastTimeout 0 (x:_)  = return x  -- no time to loose
+lastTimeout s (x:xs) = do
+  r <- newIORef x
+  tid <- forkIO $ keepImproving r xs
+  threadDelay (s*1000000) -- change to waitForThread
+  killThread tid
+  readIORef r
+  where keepImproving _ []     = return ()
+        keepImproving r (x:xs) = do
+          evaluate x
+          writeIORef r x
+          keepImproving r xs
