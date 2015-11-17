@@ -143,6 +143,8 @@ sortAndGroupOn f = groupBy ((==) `on` f)
                  . sortOn f
 
 
+-- | @lastTimeout s xs@ will take the last value of @xs@ it is able evaluate
+--   before @s@ seconds elapse.
 lastTimeout :: Int -> [a] -> IO a
 lastTimeout _ []     = error "lastTimeout: empty list"
 lastTimeout 0 (x:_)  = return x  -- no time to loose
