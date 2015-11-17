@@ -124,20 +124,27 @@ reportWith :: Mutable a
            -> a
            -> (Int -> a -> [Bool])
            -> IO ()
-reportWith args nf f pmap =
-  do putStrLn $ "Running FitSpec with " ++ show nf ++ " mutants"
-                             ++ " and " ++ show nt ++ " tests."
+reportWith args nm f pmap =
+  do let nt = nTestsF args nm
      unless (and . pmap nt $ f)
-            (putStrLn "WARNING: The original function does not follow the property set\n")
+            (putStrLn $ "WARNING: The original function does not follow the property set for "
+                     ++ show nt ++ "tests")
+
      (n,results) <- lastTimeout (minimumTime args) resultss
-     putStrLn $ "Ran FitSpec with at least " ++ show n                ++ " mutants"
-                                  ++ " and " ++ show (nTestsF args n) ++ " tests."
+     let nm = length . snd $ head results
+         nt = nTestsF args nm
+
+     putStrLn $ "Results according to " ++ show nm ++ " mutant variations"
+                     ++ " and at most " ++ show nt ++ " test cases:\n"
      putStrLn . table "   "
               . intersperse [ "\n" ]
+              . (["Prop. sets", "No.", "Smallest survivor"]:)
               . map (uncurry (showResult (showType args)))
               . maybe id take (limitResults args)
               $ results
-     putStrLn "*Apparent* equivalences and implications:"
+     putStrLn $ "Conjectures based on " ++ show nt ++ " test cases"
+                     ++ " for each of " ++ show nm ++ " mutant variations:"
+
      putStrLn . concatMap (showEI)
               . (if showMoreEI args
                    then id
@@ -147,10 +154,9 @@ reportWith args nf f pmap =
               . map (relevantPSI . fst)
               $ results
   where
-    nt = nTestsF args nf
     resultss = map (\n -> let results = getRawResults (extraMutants args) n f (pmap (nTestsF args n))
                           in  results `seq` (n,results))
-                   (iterate (\x -> x + x `div` 2) nf)
+                   (iterate (\x -> x + x `div` 2) nm)
     showResult "default"     iss mms = [ showI $ relevantPropertySets iss
                                        , show  $ countSurvivors mms
                                        , showM $ minimalMutant mms
