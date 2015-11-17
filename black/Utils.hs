@@ -147,7 +147,7 @@ sortAndGroupOn f = groupBy ((==) `on` f)
 --   before @s@ seconds elapse.
 lastTimeout :: Int -> [a] -> IO a
 lastTimeout _ []     = error "lastTimeout: empty list"
-lastTimeout 0 (x:_)  = return x  -- no time to loose
+lastTimeout 0 (x:_)  = return x  -- no time to lose
 lastTimeout s (x:xs) = do
   r <- newIORef x
   tid <- forkIO $ keepImproving r xs
