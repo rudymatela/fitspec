@@ -57,7 +57,6 @@ data Args a = Args
   , callNames :: [String] -- ^ function call templates: @["foo x y","goo x y"]@
   , limitResults :: Maybe Int -- ^ Just a limit for results, 'Nothing' for all
   , showPropertySets :: [String] -> String -- ^ function to show property sets.
-  , showType :: String -- ^ how to show entries
   , showMoreEI :: Bool
   , showMutantN :: [String] -> a -> a -> String
   , nTestsF :: Int -> Int -- ^ number of tests in function of number of mutants
@@ -97,7 +96,6 @@ args = Args { extraMutants = []
             , callNames = []
             , limitResults = Nothing    -- show everything
             , showPropertySets = unwords -- just join by spaces
-            , showType = "default"
             , showMoreEI = False
             , showMutantN = Mutate.Show.showMutantN
             , nTestsF = (*2)
@@ -106,8 +104,6 @@ args = Args { extraMutants = []
 
 showMutant :: Args a -> a -> a -> String
 showMutant as = (showMutantN as) (callNames as)
-
--- TODO: showType should probably become a sum type
 
 -- | Report minimality and completeness results.  Uses the standard
 --   configuration (see 'args').  Needs the number of mutants to be generated,
@@ -139,7 +135,7 @@ reportWith args nm f pmap =
      putStrLn . table "   "
               . intersperse [ "\n" ]
               . (["Prop. sets", "No.", "Smallest survivor"]:)
-              . map (uncurry (showResult (showType args)))
+              . map (uncurry showResult)
               . maybe id take (limitResults args)
               $ results
      putStrLn $ "Conjectures based on " ++ show nt ++ " test cases"
@@ -157,18 +153,11 @@ reportWith args nm f pmap =
     resultss = map (\n -> let results = getRawResults (extraMutants args) n f (pmap (nTestsF args n))
                           in  results `seq` (n,results))
                    (iterate (\x -> x + x `div` 2) nm)
-    showResult "default"     iss mms = [ showI $ relevantPropertySets iss
-                                       , show  $ countSurvivors mms
-                                       , showM $ minimalMutant mms
-                                       ]
-    showResult "quiet"       iss mms = [ showI $ relevantPropertySets iss
-                                       , show  $ countSurvivors mms
-                                       ]
-    showResult "implication" iss mms = [ showI (relevantPropertySets iss)
-                                 `above` showImplications (" ==> " ++) iss
-                                       , show  $ countSurvivors mms
-                                       , showM $ minimalMutant mms
-                                       ]
+    showResult iss mms = [ showI $ relevantPropertySets iss
+                -- `above` showImplications (" ==> " ++) iss
+                         , show  $ countSurvivors mms
+                         , showM $ minimalMutant mms
+                         ]
     showI = showPropertySets args . map show
     showM (Nothing) = ""
     showM (Just m)  = (showMutant args) f m

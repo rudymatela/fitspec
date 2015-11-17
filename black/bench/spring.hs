@@ -37,8 +37,8 @@ fns = ((+),(*))
 
 
 sargs :: (ShowMutable a, Listable a, Integral a, Show a, Read a)
-      => Bool -> Args (Ty a)
-sargs useExtra =
+      => Bool -> Int -> Args (Ty a)
+sargs useExtra nt =
   args { limitResults = Nothing
        , showPropertySets = unlines
        , callNames = [ "x + y", "x * y" ]
@@ -57,6 +57,7 @@ sargs useExtra =
                      , s <- (+):(*):ems
                      , p <- (*):(+):ems
                      ]
+       , nTestsF = const nt
        }
 
 
@@ -66,7 +67,6 @@ data CmdArguments = CmdArguments
   , testType :: String
 --, classify :: Bool
   , useExtraMutants :: Bool
-  , reportType :: String
   } deriving (Data,Typeable,Show,Eq)
 
 
@@ -82,20 +82,18 @@ arguments = CmdArguments
   , useExtraMutants = False
                        &= help "pass extra manual mutants to the algorithm (only works for black-box version)"
                        &= name "e"
-  , reportType = "default"
-                       &= help "what to report: default/quiet/implications"
   }
 
 
 main :: IO ()
 main = do as <- cmdArgs arguments
-          run (testType as) (reportType as) (useExtraMutants as) (nMutants as) (nTests as)
+          run (testType as) (useExtraMutants as) (nMutants as) (nTests as)
 
 run "int"  = run' (fns :: Ty Int)
 run "int2" = run' (fns :: Ty UInt2)
 run "int3" = run' (fns :: Ty UInt3)
-run' fs re em nm nt = reportWith ((sargs em) {showType = re, nTestsF = const nt})
-                                 nm fs (uncurry . propertyMap)
+run' fs em nm nt = reportWith (sargs em nt)
+                              nm fs (uncurry . propertyMap)
 
 (+++) :: (Show a, Read a, Integral a) => a -> a -> a
 x +++ 0 = x
