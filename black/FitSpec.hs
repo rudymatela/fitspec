@@ -143,11 +143,11 @@ reportWith args nm f pmap =
 
      putStrLn . concatMap (showEI)
               . (if showMoreEI args
-                   then id
+                   then map (\r -> (sets r, implied r))
                    else reduceImplications
+                      . map (\r -> (sets r, implied r))
                       . filterNonCanon
                       . reverse)
-              . map (\r -> (sets r, implied r)) -- TODO: Fix this
               $ results
   where
     resultss = map (\n -> let results = getResultsExtra (extraMutants args) n f (pmap (nTestsF args n))
@@ -167,15 +167,15 @@ showEI ([],_)   = error "shoow: empty property-set equivalence class"
 showEI (p:ps,i) = unlines $ map (\p' -> show p ++ " = " ++ show p') ps
                          ++ [ show p ++ " ==> " ++ show i | (not.null) i ]
 
-filterNonCanon :: [([[Int]],[Int])] -> [([[Int]],[Int])]
+filterNonCanon :: [Result a] -> [Result a]
 filterNonCanon [] = []
-filterNonCanon ((p:ps,i):rest) = ((p:ps,i):)
-                    . filterNonCanon
-                    . filter (not . null . fst)
-                    . map (mapFst removeNonCanon)
-                    $ rest
-  where removeNonCanon = filter (not . (\p' -> (p' `contains`) `any` ps))
-        mapFst f (x,y) = (f x, y)
+filterNonCanon (r:rs) = (r:)
+                      . filterNonCanon
+                      . filter (not . null . sets)
+                      . map (updateSets removeNonCanon)
+                      $ rs
+  where removeNonCanon = filter (not . (\p' -> (p' `contains`) `any` tail (sets r)))
+        updateSets f r = r { sets = f (sets r) }
 
 reduceImplications :: [([[Int]],[Int])] -> [([[Int]],[Int])]
 reduceImplications [] = []
