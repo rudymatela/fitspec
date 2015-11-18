@@ -127,7 +127,7 @@ reportWith args nm f pmap =
                      ++ show nt ++ "tests")
 
      (n,results) <- lastTimeout (minimumTime args) resultss
-     let nm = length . snd $ head results
+     let nm = length . survivors $ head results
          nt = nTestsF args nm
 
      putStrLn $ "Results according to " ++ show nm ++ " mutant variations"
@@ -135,7 +135,7 @@ reportWith args nm f pmap =
      putStrLn . table "   "
               . intersperse [ "\n" ]
               . (["Prop. sets", "No.", "Smallest survivor"]:)
-              . map (uncurry showResult)
+              . map showResult
               . maybe id take (limitResults args)
               $ results
      putStrLn $ "Conjectures based on " ++ show nt ++ " test cases"
@@ -147,32 +147,25 @@ reportWith args nm f pmap =
                    else reduceImplications
                       . filterNonCanon
                       . reverse)
-              . map (relevantPSI . fst)
+              . map (\r -> (sets r, implied r)) -- TODO: Fix this
               $ results
   where
-    resultss = map (\n -> let results = getRawResults (extraMutants args) n f (pmap (nTestsF args n))
+    resultss = map (\n -> let results = getResultsExtra (extraMutants args) n f (pmap (nTestsF args n))
                           in  results `seq` (n,results))
                    (iterate (\x -> x + x `div` 2) nm)
-    showResult iss mms = [ showI $ relevantPropertySets iss
-                -- `above` showImplications (" ==> " ++) iss
-                         , show  $ countSurvivors mms
-                         , showM $ minimalMutant mms
-                         ]
+    showResult r = [ showI $ sets r -- ++ "==>" show (implied r)
+                   , show  $ nSurvivors r
+                   , showM $ smallestSurvivor r
+                   ]
     showI = showPropertySets args . map show
     showM (Nothing) = ""
     showM (Just m)  = (showMutant args) f m
-    showImplications f iss = case relevantImplications iss of
-                               [] -> ""
-                               xs -> f $ show xs
 
 
 showEI :: ([[Int]],[Int]) -> String
 showEI ([],_)   = error "shoow: empty property-set equivalence class"
 showEI (p:ps,i) = unlines $ map (\p' -> show p ++ " = " ++ show p') ps
                          ++ [ show p ++ " ==> " ++ show i | (not.null) i ]
-
-relevantPSI :: [[Int]] -> ([[Int]],[Int])
-relevantPSI iss = (relevantPropertySets iss, relevantImplications iss)
 
 filterNonCanon :: [([[Int]],[Int])] -> [([[Int]],[Int])]
 filterNonCanon [] = []
@@ -198,22 +191,36 @@ filterRelevant = filterU relevant
                                         && any (p `contained`) ps
 
 
+data Result a = Result
+              { sets :: [[Int]]
+              , implied :: [Int]
+              , survivors :: [Maybe a]
+              }
+type Results a = [Result a]
+
+smallestSurvivor :: Result a -> Maybe a
+smallestSurvivor = listToMaybe . catMaybes . survivors
+
+nSurvivors :: Result a -> Int
+nSurvivors = length . catMaybes . survivors
+
+
 -- | Return minimality and completeness results.  See 'report'.
 getResults :: (Mutable a)
            => Int -> a -> (a -> [Bool])
-           -> [([[Int]], Int, Maybe a)]
+           -> Results a
 getResults = getResultsExtra []
 
 getResultsExtra :: (Mutable a)
                 => [a]
                 -> Int -> a -> (a -> [Bool])
-                -> [([[Int]],Int,Maybe a)]
+                -> Results a
 getResultsExtra ems nms f = map (uncurry process)
                           . getRawResults ems nms f
-  where process iss mms = ( relevantPropertySets iss
-                          , countSurvivors mms
-                          , minimalMutant mms
-                          )
+  where process iss mms = Result { sets      = relevantPropertySets iss
+                                 , implied   = relevantImplications iss
+                                 , survivors = mms
+                                 }
 
 relevantPropertySets :: Eq i => [[i]] -> [[i]]
 relevantPropertySets = filterU (not ... contained) . sortOn length
