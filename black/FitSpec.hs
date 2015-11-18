@@ -142,7 +142,6 @@ reportWith args nm f pmap =
                      ++ " for each of " ++ show nm ++ " mutant variations:"
 
      putStrLn . concatMap (showEI)
-              . map (\r -> (sets r, implied r))
               . (if showMoreEI args
                    then id
                    else reduceImplications
@@ -162,10 +161,11 @@ reportWith args nm f pmap =
     showM (Just m)  = (showMutant args) f m
 
 
-showEI :: ([[Int]],[Int]) -> String
-showEI ([],_)   = error "shoow: empty property-set equivalence class"
-showEI (p:ps,i) = unlines $ map (\p' -> show p ++ " = " ++ show p') ps
-                         ++ [ show p ++ " ==> " ++ show i | (not.null) i ]
+showEI :: Result a -> String
+showEI r = unlines $ map (\p' -> show p ++ " = " ++ show p') ps
+        ++ [ show p ++ " ==> " ++ show i | (not.null) i ]
+  where i = implied r
+        (p:ps) = sets r
 
 filterNonCanon :: [Result a] -> [Result a]
 filterNonCanon [] = []
