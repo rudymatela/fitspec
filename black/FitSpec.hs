@@ -142,10 +142,10 @@ reportWith args nm f pmap =
                      ++ " for each of " ++ show nm ++ " mutant variations:"
 
      putStrLn . concatMap (showEI)
+              . map (\r -> (sets r, implied r))
               . (if showMoreEI args
-                   then map (\r -> (sets r, implied r))
+                   then id
                    else reduceImplications
-                      . map (\r -> (sets r, implied r))
                       . filterNonCanon
                       . reverse)
               $ results
@@ -177,12 +177,12 @@ filterNonCanon (r:rs) = (r:)
   where removeNonCanon = filter (not . (\p' -> (p' `contains`) `any` tail (sets r)))
         updateSets f r = r { sets = f (sets r) }
 
-reduceImplications :: [([[Int]],[Int])] -> [([[Int]],[Int])]
+reduceImplications :: [Result a] -> [Result a]
 reduceImplications [] = []
-reduceImplications (x:xs) = x : map (x `reduce`) (reduceImplications xs)
-  where (ps,i) `reduce` (ps',i') = if or (productWith contained ps ps')
-                                     then (ps', i' \\ i)
-                                     else (ps', i')
+reduceImplications (r:rs) = r : map (r `reduce`) (reduceImplications rs)
+  where r `reduce` r' = if or (productWith contained (sets r) (sets r'))
+                          then r' { implied = (implied r') \\ (implied r) }
+                          else r'
         productWith f xs ys = [f x y | x <- xs, y <- ys]
 
 
