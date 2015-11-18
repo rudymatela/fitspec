@@ -163,10 +163,15 @@ reportWith args nm f pmap =
 
 
 showEI :: Result a -> [[String]]
-showEI r = map (\p' -> [show p, " = ", show p']) ps
-        ++ [ [show p, "==>", show i] | (not.null) i ]
-  where i = implied r
-        (p:ps) = sets r
+showEI r = map (\p' -> [show p, " = ", show p', "   ", show s ++ "% killed", sMeaning]) ps
+        ++ [ [show p, "==>", show i, "   ", show s ++ "% killed", sMeaning] | (not.null) i ]
+  where (p:ps) = sets r
+        i      = implied r
+        s      = score r
+        sMeaning | s < 1  || 99 < s = "(very questionable)"  -- closer to 50 the better
+                 | s < 5  || 95 < s = "(questionable)"
+                 | s < 20 || 80 < s = "(likely)"
+                 | otherwise        = "(very likely)"
 
 filterNonCanon :: [Result a] -> [Result a]
 filterNonCanon [] = []
