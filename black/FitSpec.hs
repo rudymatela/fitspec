@@ -42,7 +42,7 @@ import Test.Check.Utils
 import Data.List
 import Data.Ord
 import Data.Monoid
-import Data.Maybe (catMaybes, listToMaybe, isJust)
+import Data.Maybe (catMaybes, listToMaybe, isJust, isNothing)
 import Control.Monad (unless)
 import Mutate
 import Mutate.Show (ShowMutable)
@@ -198,6 +198,15 @@ smallestSurvivor = listToMaybe . catMaybes . survivors
 
 nSurvivors :: Result a -> Int
 nSurvivors = length . catMaybes . survivors
+
+nKilled :: Result a -> Int
+nKilled = length . filter isNothing . survivors
+
+nMutants :: Result a -> Int
+nMutants = length . survivors
+
+score :: Result a -> Int
+score r = (nKilled r)*100 `div` nMutants r
 
 
 -- | Return minimality and completeness results.  See 'report'.
