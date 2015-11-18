@@ -185,11 +185,6 @@ reduceImplications (x:xs) = x : map (x `reduce`) (reduceImplications xs)
                                      else (ps', i')
         productWith f xs ys = [f x y | x <- xs, y <- ys]
 
-filterRelevant :: [([[Int]],[Int])] -> [([[Int]],[Int])]
-filterRelevant = filterU relevant
-  where (p:_,i) `relevant` (ps,i') = not $ i == i'
-                                        && any (p `contained`) ps
-
 
 data Result a = Result
               { sets :: [[Int]]
@@ -228,12 +223,6 @@ relevantPropertySets = filterU (not ... contained) . sortOn length
 relevantImplications :: Eq i => [[i]] -> [i]
 relevantImplications iss = foldr union [] iss
                         \\ foldr union [] (relevantPropertySets iss)
-
-countSurvivors :: [Maybe a] -> Int
-countSurvivors = length . catMaybes
-
-minimalMutant :: [Maybe a] -> Maybe a
-minimalMutant = listToMaybe . catMaybes
 
 getRawResults :: (Mutable a)
               => [a] -> Int -> a -> (a -> [Bool])
