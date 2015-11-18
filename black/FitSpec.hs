@@ -141,7 +141,8 @@ reportWith args nm f pmap =
      putStrLn $ "Conjectures based on " ++ show nt ++ " test cases"
                      ++ " for each of " ++ show nm ++ " mutant variations:"
 
-     putStrLn . concatMap (showEI)
+     putStrLn . table " "
+              . concatMap showEI
               . (if showMoreEI args
                    then id
                    else reduceImplications
@@ -161,9 +162,9 @@ reportWith args nm f pmap =
     showM (Just m)  = (showMutant args) f m
 
 
-showEI :: Result a -> String
-showEI r = unlines $ map (\p' -> show p ++ " = " ++ show p') ps
-        ++ [ show p ++ " ==> " ++ show i | (not.null) i ]
+showEI :: Result a -> [[String]]
+showEI r = map (\p' -> [show p, " = ", show p']) ps
+        ++ [ [show p, "==>", show i] | (not.null) i ]
   where i = implied r
         (p:ps) = sets r
 
