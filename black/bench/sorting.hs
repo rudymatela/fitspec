@@ -41,9 +41,9 @@ sargs :: (Show a, Listable a, Bounded a, Ord a)
       -> Args ([a] -> [a])
 sargs nm nt em = args
   { callNames = ["sort xs"]
---, minimumTime = 0
---, nMutants = nm
---, nTestsF = const nt
+  , minimumTime = 0
+  , nMutants = nm
+  , nTestsF = const nt
   , extraMutants = take (if em then 100 else 0)
                  . concat
                  . lsmap (. sort)
