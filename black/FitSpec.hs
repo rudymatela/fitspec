@@ -3,27 +3,26 @@
 --
 -- NOTE:
 --   * The API is likely to change in the near future.
---   * For now, everything is exported.
 --
--- Example -- properties over not, 500 mutants, 1000 tests each:
+-- Example -- properties over not:
 --
 -- > import Test.Check
 -- > import MinProps
 -- >
--- > pMap :: Int -> (Bool -> Bool) -> [Bool]
--- > pMap not' n =
--- >   [ holds n $ \p -> not' (not' p) == p
--- >   , holds n $ \p -> not' p /= p
--- >   ,                 not' True == False
+-- > propertyMap :: Int -> (Bool -> Bool) -> [Bool]
+-- > propertyMap not n =
+-- >   [ holds n $ \p -> not (not p) == p
+-- >   , holds n $ \p -> not p /= p
+-- >   ,                 not True == False
 -- >   ]
 -- >
--- > report 500 not (pMap 1000)
+-- > main = report not pMap
 --
--- FitSpec should report that the minimal specifications are either:
+-- FitSpec should report that the minimal (equivalent) specifications are
+-- either:
 --
---   * 1 and 2
+--   * 2
 --   * 1 and 3
---   * 2 and 3
 
 module FitSpec
   ( Args(..)
@@ -54,7 +53,7 @@ import PPPrint
 --   See 'args' for default values.
 data Args a = Args
   { nMutants    :: Int    -- ^ (starting) number of black-box mutations
-  , minimumTime :: Int    -- ^ minimum time to run
+  , minimumTime :: Int    -- ^ minimum time to run, use 0 for just nMutants
   , nTestsF :: Int -> Int -- ^ number of tests in function of number of mutants
   , callNames :: [String] -- ^ function call templates: @["foo x y","goo x y"]@
   , limitResults :: Maybe Int -- ^ Just a limit for results, 'Nothing' for all
@@ -62,16 +61,23 @@ data Args a = Args
   -- * advanced options:
   , extraMutants :: [a]   -- ^ extra mutants to try to kill alongside mutations
   , showPropertySets :: [String] -> String -- ^ function to show property sets.
-  , showMoreEI :: Bool
-  , showMutantN :: [String] -> a -> a -> String
+  , showMoreEI :: Bool    -- ^ show more equivalences and implications
+  , showMutantN :: [String] -> a -> a -> String -- ^ special mutant show
   }
 
 -- | Default arguments for 'reportWith':
 --
--- * @nMutants = 500@, 500 mutants
+-- * @nMutants = 500@,
+--   start with 500 mutants
 --
--- * @nTests = (*2)@, use the same number of tests and mutants
---   There is no general rule of thumb for this function,
+-- @ @minimumTime = 5@,
+--   keep incresing the number of mutants until 5 seconds elapse
+--
+-- * @nTestsF = (*2)@,
+--   use 2 tests more than mutants
+--   As a rule of thumb, the number of tests should be proportional to the
+--   number of mutants.
+--   There is *no* general rule of thumb for the exact proportion:
 --   in some applications, less is better,
 --   in some applications, more is better.
 --   Increase this if you spot a false positive.
@@ -81,31 +87,34 @@ data Args a = Args
 --   > (`div` 100)   -- less tests, less false negatives
 --   > (const 1000)  -- specific number of tests
 --
--- * @callNames = []@, use internal default function call template:
+-- * @callNames = []@,
+--   use internal default function call template:
 --
 --   > ["f x y z w x' y' z' ...","g ...","h ...","f' ...",...]
 --
--- * @extraMutants = []@, no extra mutants
+-- * @limitResults = Just 3@,
+--   limit to just 3 results
 --
--- * @limitResults = Just 3@, limit to just 3 results
+-- * @extraMutants = []@,
+--   no extra mutants
 --
--- * @showPropertySets = unwords@, just join property-sets by spaces
+-- * @showPropertySets = unwords@,
+--   just join property-sets by spaces.
 --   Other good values for this might be:
 --
 --   > unlines            -- one per line
 --   > unwords . take 5   -- separated by spaces, limit to 5
 --   > unlines . take 5   -- one per line, limit to 5
 --   > take 30 . unwords  -- limit to 30 characters
---
 args :: ShowMutable a => Args a
 args = Args { nMutants = 500
-            , minimumTime = 5            -- run for at least 5 seconds
+            , minimumTime = 5  -- seconds
             , nTestsF = (*2)
             , callNames = []
-            , limitResults = Just 3      -- show Just 3 result lines
+            , limitResults = Just 3
 
             , extraMutants = []
-            , showPropertySets = unwords -- just join by spaces
+            , showPropertySets = unwords -- join by spaces
             , showMoreEI = False
             , showMutantN = Mutate.Show.showMutantN
             }
@@ -113,15 +122,14 @@ args = Args { nMutants = 500
 showMutant :: Args a -> a -> a -> String
 showMutant as = (showMutantN as) (callNames as)
 
--- | Report minimality and completeness results.  Uses the standard
---   configuration (see 'args').  Needs the number of mutants to be generated,
---   a function to be mutated and a property map.
+-- | Report minimality and completeness results.
+--   Uses standard configuration (see 'args').
+--   Needs a function to be mutated and a property map.
 report :: (ShowMutable a, Mutable a)
        => a -> (Int -> a -> [Bool]) -> IO ()
 report = reportWith args
 
--- | Same as 'report' but extra mutants and custom function names can be passed
---   via 'args'.
+-- | Same as 'report' but can be configured via 'Args'/'args'.
 reportWith :: Mutable a
            => Args a
            -> a
