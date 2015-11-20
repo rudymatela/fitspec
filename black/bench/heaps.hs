@@ -65,6 +65,7 @@ propertyMap n insert'' deleteMin' merge'' =
 
 sargs = args { limitResults = Just 20
              , showPropertySets = unlines
+             , minimumTime = 0
              , callNames = ["insert xh","deleteMin h","merge hh"]}
              -- , extraMutants = take 0 [(uncurry maxInsert,maxDeleteMin,uncurry maxMerge)] }
 
