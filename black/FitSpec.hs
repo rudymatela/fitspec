@@ -185,10 +185,11 @@ showEI r = map (\p' -> [show p, " = ", show p', "   ", show s ++ "% killed", sMe
   where (p:ps) = sets r
         i      = implied r
         s      = score r
-        sMeaning | s < 1  || 99 < s = "(very questionable)"  -- closer to 50 the better
-                 | s < 5  || 95 < s = "(questionable)"
-                 | s < 20 || 80 < s = "(likely)"
-                 | otherwise        = "(very likely)"
+        sMeaning | s < 1  || 99 < s = "(possible)"
+                 | s < 4  || 96 < s = "(more possible)"
+                 | s < 10 || 90 < s = "(likely)"
+                 | s < 25 || 75 < s = "(very likely)"
+                 | otherwise        = "(extremily likely)" -- the closer to 50 the better
 
 filterNonCanon :: [Result a] -> [Result a]
 filterNonCanon [] = []
