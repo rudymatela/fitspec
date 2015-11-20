@@ -18,10 +18,15 @@ pmap n id =
   ]
 
 
-sargs :: (Show a, Listable a, ShowMutable a) => Args (Ty a)
-sargs = args { callNames = ["id x"]
-             , limitResults = Just 10
-             }
+sargs :: (Show a, Listable a, ShowMutable a)
+      => Int -> Int
+      -> Args (Ty a)
+sargs nm nt = args
+  { callNames = ["id x"]
+  , limitResults = Just 10
+  , nMutants = nm
+  , nTestsF = const nt
+  }
 
 csargs :: CArgs
 csargs = cargs { functionNames = ["id"]
@@ -30,16 +35,16 @@ csargs = cargs { functionNames = ["id"]
                }
 
 data CmdArguments = CmdArguments
-  { nMutants :: Int
-  , nTests :: Int
-  , testType :: String
-  , classify :: Bool
+  { nMutants_ :: Int
+  , nTests    :: Int
+  , testType  :: String
+  , classify  :: Bool
   } deriving (Data,Typeable,Show,Eq)
 
 arguments :: CmdArguments
 arguments = CmdArguments
-  { nTests   = 1000    &= help "number of tests to run"
-  , nMutants = 1000    &= help "number of mutants to generate"
+  { nTests    = 1000   &= help "number of tests to run"
+  , nMutants_ = 1000   &= help "number of mutants to generate"
                        &= name "m"
   , testType = "bool"  &= help "type to use"
                        &= name "type"
@@ -50,9 +55,8 @@ arguments = CmdArguments
 
 main :: IO ()
 main = do as <- cmdArgs arguments
-          run (testType as) (classify as) (nMutants as) (nTests as)
+          run (testType as) (classify as) (nMutants_ as) (nTests as)
 
--- TODO: De-ignore number of tests in the non-classifying version
 run :: String -> Bool -> Int -> Int -> IO ()
 run "bool"  = run' (id :: Ty Bool)
 run "bools" = run' (id :: Ty [Bool])
@@ -60,5 +64,5 @@ run "int"   = run' (id :: Ty Int)
 run "int2"  = run' (id :: Ty UInt2)
 run "int3"  = run' (id :: Ty UInt3)
 run "unit"  = run' (id :: Ty ())
-run' f False nm nt = reportWith   sargs nm f pmap
+run' f False nm nt = reportWith  (sargs nm nt) f pmap
 run' f True  nm nt = report1With csargs nm f (pmap nt)

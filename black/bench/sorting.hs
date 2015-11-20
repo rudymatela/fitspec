@@ -36,16 +36,20 @@ pmap n sort' =
   ]
 
 
-sargs :: (Show a, Listable a, Bounded a, Ord a) => Bool -> Args ([a] -> [a])
-sargs em = args
-             { callNames = ["sort xs"]
-             --, extraMutants = [sortCounter]
-             , extraMutants = take (if em then 100 else 0)
-                            $ concat
-                            $ lsmap (. sort)
-                            $ cons2 (\y ys -> (++ (y:ys))) -- prepend non-empty list
-                         \++/ cons2 (\y ys -> ((y:ys) ++)) -- append non-empty list
-             }
+sargs :: (Show a, Listable a, Bounded a, Ord a)
+      => Int -> Int -> Bool
+      -> Args ([a] -> [a])
+sargs nm nt em = args
+  { callNames = ["sort xs"]
+--, minimumTime = 0
+--, nMutants = nm
+--, nTestsF = const nt
+  , extraMutants = take (if em then 100 else 0)
+                 . concat
+                 . lsmap (. sort)
+                 $ cons2 (\y ys -> (++ (y:ys))) -- prepend non-empty list
+              \++/ cons2 (\y ys -> ((y:ys) ++)) -- append non-empty list
+  }
 
 csargs = cargs { functionNames = ["sort"]
                , variableNames = ["xs"]
@@ -53,16 +57,16 @@ csargs = cargs { functionNames = ["sort"]
                }
 
 data CmdArguments = CmdArguments
-  { nMutants :: Int
-  , nTests :: Int
-  , testType :: String
-  , classify :: Bool
+  { nMutants_       :: Int
+  , nTests          :: Int
+  , testType        :: String
+  , classify        :: Bool
   , useExtraMutants :: Bool
   } deriving (Data,Typeable,Show,Eq)
 
 arguments = CmdArguments
-  { nTests   = 1000    &= help "number of tests to run"
-  , nMutants = 1000    &= help "number of mutants to generate"
+  { nTests    = 1000   &= help "number of tests to run"
+  , nMutants_ = 1000   &= help "number of mutants to generate"
                        &= name "m"
   , testType = "bool"  &= help "type to use"
                        &= name "type"
@@ -76,12 +80,10 @@ arguments = CmdArguments
 
 main :: IO ()
 main = do as <- cmdArgs arguments
-          run (testType as) (classify as) (useExtraMutants as) (nMutants as) (nTests as)
+          run (testType as) (classify as) (useExtraMutants as) (nMutants_ as) (nTests as)
 
 type Ty a = [a] -> [a]
 
--- TODO: de-ignore number of tests, see:
--- For the non-classifying method the number of tests is being ignored
 run :: String -> Bool -> Bool -> Int -> Int -> IO ()
 run "bool"  = run' (sort :: Ty Bool)
 run "bools" = run' (sort :: Ty [Bool])
@@ -89,11 +91,10 @@ run "int"   = run' (sort :: Ty Int)
 run "int2"  = run' (sort :: Ty UInt2)
 run "int3"  = run' (sort :: Ty UInt3)
 run "unit"  = run' (sort :: Ty ())
-run' f False em nm nt = reportWith (sargs em) nm f pmap
+run' f False em nm nt = reportWith (sargs nm nt em) f pmap
 run' f True  em nm nt = report1With csargs nm f (pmap nt)
 
--- This hack bounded instace is only necessary when using sortCounter as a
--- manual mutant when sorting lists of things
+-- This hack is only necessary when using sortCounter as a manual mutant
 instance Bounded a => Bounded [a] where
   minBound = []
   maxBound = repeat maxBound -- non terminating upper bound

@@ -62,34 +62,35 @@ pmap n primes =
 
 prime x = x > 1 && all (\p -> p `mod` x /= 0) (takeWhile (\p -> p*p <= x) primes)
 
-sargs :: Int -> Args [Int]
-sargs nt = args { limitResults = Just 10
-                , showMutantN = \_ _ -> showInfinite
-                , nTestsF = const nt
-                }
+sargs :: Int -> Int -> Args [Int]
+sargs nt nm = args
+  { limitResults = Just 10
+  , showMutantN = \_ _ -> showInfinite
+  , nTestsF = const nt
+  }
   where showInfinite xs | not . null $ drop 10 xs = (init . show $ take 10 xs) ++ "..."
                         | otherwise               = show xs
 
 data CmdArguments = CmdArguments
-  { nMutants :: Int
+  { nMutants_ :: Int
   , nTests :: Int
   , classify :: Bool
   } deriving (Data,Typeable,Show,Eq)
 
 arguments :: CmdArguments
 arguments = CmdArguments
-  { nTests   = 100     &= help "number of tests to run"
-  , nMutants = 20000   &= help "number of mutants to generate"
-                       &= name "m"
-  , classify = False   &= help "classify mutants, report extra column with fully evaluated ones (grey-box)"
+  { nTests    = 100     &= help "number of tests to run"
+  , nMutants_ = 20000   &= help "number of mutants to generate"
+                        &= name "m"
+  , classify = False    &= help "classify mutants, report extra column with fully evaluated ones (grey-box)"
   }
 
 main :: IO ()
 main = do as <- cmdArgs arguments
-          run (classify as) (nMutants as) (nTests as)
+          run (classify as) (nMutants_ as) (nTests as)
 
 run :: Bool -> Int -> Int -> IO ()
-run False nm nt = reportWith (sargs nt) nm primes pmap
+run False nm nt = reportWith (sargs nt nm) primes pmap
 run True  nm nt = undefined
 
 allUnique :: Ord a => [a] -> Bool

@@ -17,6 +17,8 @@ module Utils
   , errorToNothing
   , errorToFalse
   , sortAndGroupOn
+  , takeWhileIncreasing
+  , takeWhileIncreasingOn
   , lastTimeout
   )
 where
@@ -143,6 +145,20 @@ sortAndGroupOn f = groupBy ((==) `on` f)
                  . sortOn f
 
 
+-- | Takes values from a list while the values increase.  If the original list
+--   is non-empty, the returning list will also be non-empty
+takeWhileIncreasing :: (a -> a -> Ordering) -> [a] -> [a]
+takeWhileIncreasing _ [] = []
+takeWhileIncreasing _ [x] = [x]
+takeWhileIncreasing cmp (x:y:xs) = x : case x `cmp` y of
+                                         LT -> takeWhileIncreasing cmp (y:xs)
+                                         _  -> []
+
+
+takeWhileIncreasingOn :: Ord b => (a -> b) -> [a] -> [a]
+takeWhileIncreasingOn f = takeWhileIncreasing (compare `on` f)
+
+
 -- | @lastTimeout s xs@ will take the last value of @xs@ it is able evaluate
 --   before @s@ seconds elapse.
 lastTimeout :: Int -> [a] -> IO a
@@ -151,7 +167,7 @@ lastTimeout 0 (x:_)  = return x  -- no time to lose
 lastTimeout s (x:xs) = do
   r <- newIORef x
   tid <- forkIO $ keepImproving r xs
-  threadDelay (s*1000000) -- change to waitForThread
+  threadDelay (s*1000000) -- TODO: change to waitForThread!!!
   killThread tid
   readIORef r
   where keepImproving _ []     = return ()

@@ -74,15 +74,15 @@ csargs = cargs { functionNames = ["insert","deleteMin","merge"]
 
 
 data CmdArguments = CmdArguments
-  { nMutants :: Int
+  { nMutants_ :: Int
   , nTests :: Int
   , testType :: String
   , method :: String
   } deriving (Data,Typeable,Show,Eq)
 
 arguments = CmdArguments
-  { nTests   = 500     &= help "number of tests to run"
-  , nMutants = 500     &= help "number of mutants to generate"
+  { nTests    = 500    &= help "number of tests to run"
+  , nMutants_ = 500    &= help "number of mutants to generate"
                        &= name "m"
   , testType = "int"   &= help "type to use"
                        &= name "type"
@@ -96,7 +96,7 @@ arguments = CmdArguments
 main :: IO ()
 main = do putStrLn "Heap:"
           as <- cmdArgs arguments
-          run (testType as) (method as) (nTests as) (nMutants as)
+          run (testType as) (method as) (nTests as) (nMutants_ as)
 
 fns :: Ord a => Ty a
 fns = (uncurry insert, deleteMin, uncurry merge)
@@ -119,7 +119,7 @@ run' fs method n m =
 runGrey (f,g,h) n m = report3With csargs m f g h (propertyMap n)
 
 runBlack fs n m = reportWith (sargs { nTestsF = const n})
-                             m fs (uncurry3 . propertyMap)
+                             fs (uncurry3 . propertyMap)
 
 
 maxInsert :: Ord a => a -> Heap a -> Heap a

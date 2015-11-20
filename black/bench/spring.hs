@@ -37,8 +37,9 @@ fns = ((+),(*))
 
 
 sargs :: (ShowMutable a, Listable a, Integral a, Show a, Read a)
-      => Bool -> Int -> Args (Ty a)
-sargs useExtra nt =
+      => Bool -> Int -> Int
+      -> Args (Ty a)
+sargs useExtra nm nt =
   args { limitResults = Nothing
        , showPropertySets = unlines
        , callNames = [ "x + y", "x * y" ]
@@ -57,12 +58,13 @@ sargs useExtra nt =
                      , s <- (+):(*):ems
                      , p <- (*):(+):ems
                      ]
+       , nMutants = nm
        , nTestsF = const nt
        }
 
 
 data CmdArguments = CmdArguments
-  { nMutants :: Int
+  { nMutants_ :: Int
   , nTests :: Int
   , testType :: String
 --, classify :: Bool
@@ -72,7 +74,7 @@ data CmdArguments = CmdArguments
 
 arguments = CmdArguments
   { nTests   = 1000    &= help "number of tests to run"
-  , nMutants = 1000    &= help "number of mutants to generate"
+  , nMutants_ = 1000    &= help "number of mutants to generate"
                        &= name "m"
   , testType = "int"   &= help "type to use"
                        &= name "type"
@@ -87,13 +89,13 @@ arguments = CmdArguments
 
 main :: IO ()
 main = do as <- cmdArgs arguments
-          run (testType as) (useExtraMutants as) (nMutants as) (nTests as)
+          run (testType as) (useExtraMutants as) (nMutants_ as) (nTests as)
 
 run "int"  = run' (fns :: Ty Int)
 run "int2" = run' (fns :: Ty UInt2)
 run "int3" = run' (fns :: Ty UInt3)
-run' fs em nm nt = reportWith (sargs em nt)
-                              nm fs (uncurry . propertyMap)
+run' fs em nm nt = reportWith (sargs em nm nt)
+                              fs (uncurry . propertyMap)
 
 (+++) :: (Show a, Read a, Integral a) => a -> a -> a
 x +++ 0 = x

@@ -53,33 +53,22 @@ import PPPrint
 -- | Extra arguments / configuration for 'reportWith'.
 --   See 'args' for default values.
 data Args a = Args
-  { extraMutants :: [a]   -- ^ extra mutants to try to kill alongside mutations
+  { nMutants    :: Int    -- ^ (starting) number of black-box mutations
+  , minimumTime :: Int    -- ^ minimum time to run
+  , nTestsF :: Int -> Int -- ^ number of tests in function of number of mutants
   , callNames :: [String] -- ^ function call templates: @["foo x y","goo x y"]@
   , limitResults :: Maybe Int -- ^ Just a limit for results, 'Nothing' for all
+
+  -- * advanced options:
+  , extraMutants :: [a]   -- ^ extra mutants to try to kill alongside mutations
   , showPropertySets :: [String] -> String -- ^ function to show property sets.
   , showMoreEI :: Bool
   , showMutantN :: [String] -> a -> a -> String
-  , nTestsF :: Int -> Int -- ^ number of tests in function of number of mutants
-  , minimumTime :: Int
   }
 
 -- | Default arguments for 'reportWith':
 --
--- * @extraMutants = []@, no extra mutants
---
--- * @callNames = []@, use internal default function call template:
---
---   > ["f x y z w x' y' z' ...","g ...","h ...","f' ...",...]
---
--- * @limitResults = Nothing@, show all results
---
--- * @showPropertySets = unwords@, just join property-sets by spaces
---   Other good values for this might be:
---
---   > unlines            -- one per line
---   > unwords . take 5   -- separated by spaces, limit to 5
---   > unlines . take 5   -- one per line, limit to 5
---   > take 30 . unwords  -- limit to 30 characters
+-- * @nMutants = 500@, 500 mutants
 --
 -- * @nTests = (*2)@, use the same number of tests and mutants
 --   There is no general rule of thumb for this function,
@@ -91,15 +80,34 @@ data Args a = Args
 --   > (*100)        -- more tests, less false positives
 --   > (`div` 100)   -- less tests, less false negatives
 --   > (const 1000)  -- specific number of tests
+--
+-- * @callNames = []@, use internal default function call template:
+--
+--   > ["f x y z w x' y' z' ...","g ...","h ...","f' ...",...]
+--
+-- * @extraMutants = []@, no extra mutants
+--
+-- * @limitResults = Just 3@, limit to just 3 results
+--
+-- * @showPropertySets = unwords@, just join property-sets by spaces
+--   Other good values for this might be:
+--
+--   > unlines            -- one per line
+--   > unwords . take 5   -- separated by spaces, limit to 5
+--   > unlines . take 5   -- one per line, limit to 5
+--   > take 30 . unwords  -- limit to 30 characters
+--
 args :: ShowMutable a => Args a
-args = Args { extraMutants = []
+args = Args { nMutants = 500
+            , minimumTime = 5            -- run for at least 5 seconds
+            , nTestsF = (*2)
             , callNames = []
-            , limitResults = Nothing    -- show everything
+            , limitResults = Just 3      -- show Just 3 result lines
+
+            , extraMutants = []
             , showPropertySets = unwords -- just join by spaces
             , showMoreEI = False
             , showMutantN = Mutate.Show.showMutantN
-            , nTestsF = (*2)
-            , minimumTime = 0
             }
 
 showMutant :: Args a -> a -> a -> String
@@ -109,19 +117,19 @@ showMutant as = (showMutantN as) (callNames as)
 --   configuration (see 'args').  Needs the number of mutants to be generated,
 --   a function to be mutated and a property map.
 report :: (ShowMutable a, Mutable a)
-       => Int -> a -> (Int -> a -> [Bool]) -> IO ()
+       => a -> (Int -> a -> [Bool]) -> IO ()
 report = reportWith args
 
 -- | Same as 'report' but extra mutants and custom function names can be passed
 --   via 'args'.
 reportWith :: Mutable a
            => Args a
-           -> Int
            -> a
            -> (Int -> a -> [Bool])
            -> IO ()
-reportWith args nm f pmap =
-  do let nt = nTestsF args nm
+reportWith args f pmap =
+  do let nm = nMutants args
+         nt = nTestsF args nm
      unless (and . pmap nt $ f)
             (putStrLn $ "WARNING: The original function does not follow the property set for "
                      ++ show nt ++ "tests")
@@ -150,9 +158,10 @@ reportWith args nm f pmap =
                       . reverse)
               $ results
   where
-    resultss = map (\n -> let results = getResultsExtra (extraMutants args) n f (pmap (nTestsF args n))
-                          in  results `seq` (n,results))
-                   (iterate (\x -> x + x `div` 2) nm)
+    resultss = takeWhileIncreasingOn (totalMutants . head . snd)
+             $ map (\n -> let results = getResultsExtra (extraMutants args) n f (pmap (nTestsF args n))
+                          in foldr seq (n,results) results)
+                   (iterate (\x -> x + x `div` 2) (nMutants args))
     showResult r = [ showI $ sets r -- ++ "==>" show (implied r)
                    , show  $ nSurvivors r
                    , showM $ smallestSurvivor r
@@ -208,11 +217,11 @@ nSurvivors = length . catMaybes . survivors
 nKilled :: Result a -> Int
 nKilled = length . filter isNothing . survivors
 
-nMutants :: Result a -> Int
-nMutants = length . survivors
+totalMutants :: Result a -> Int
+totalMutants = length . survivors
 
 score :: Result a -> Int
-score r = (nKilled r)*100 `div` nMutants r
+score r = (nKilled r)*100 `div` totalMutants r
 
 
 -- | Return minimality and completeness results.  See 'report'.
