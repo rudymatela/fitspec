@@ -171,17 +171,13 @@ reportWith args f pmap =
               . map showResult
               . maybe id take (limitResults args)
               $ results
-     putStrLn $ "Conjectures based on " ++ show nt ++ " test cases"
-                     ++ " for each of " ++ show nm ++ " mutant variations:"
 
-     putStrLn . table " "
-              . concatMap showEI
-              . (if showMoreEI args
-                   then id
-                   else reduceImplications
-                      . filterNonCanon
-                      . reverse)
-              $ results
+     let eis = showEIs (showMoreEI args) results
+     putStrLn $ if null eis
+       then "No conjectures."
+       else "Conjectures based on " ++ show nt ++ " test cases"
+                 ++ " for each of " ++ show nm ++ " mutant variations:"
+     putStrLn (table " " eis)
   where
     resultss = takeWhileIncreasingOn (totalMutants . head . snd)
              $ map (\n -> let results = getResultsExtra (extraMutants args) n f (pmap (nTestsF args n))
@@ -194,6 +190,15 @@ reportWith args f pmap =
     showI = showPropertySets args . map show
     showM (Nothing) = ""
     showM (Just m)  = (showMutant args) f m
+
+
+showEIs :: Bool -> [Result a] -> [[String]]
+showEIs showMore = concatMap showEI
+                 . (if showMore
+                      then id
+                      else reduceImplications
+                         . filterNonCanon
+                         . reverse)
 
 
 showEI :: Result a -> [[String]]
