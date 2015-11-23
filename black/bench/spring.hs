@@ -60,6 +60,7 @@ sargs useExtra nm nt =
                      ]
        , nMutants = nm
        , nTestsF = const nt
+       , minimumTime = 0
        }
 
 

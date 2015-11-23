@@ -76,7 +76,10 @@ csargs = cargs { functionNames = ["insert","remove","find"]
                , nResults = Just 10
                }
 
-sargs = args { nTestsF = (`div` 5) }
+sargs = args
+  { nTestsF = (`div` 5)
+  , minimumTime = 0
+  }
 
 main :: IO ()
 main = do reportWith sargs {nMutants = 5000}

@@ -52,6 +52,7 @@ sargs em nt nm = args
                  ]
   , nMutants = nm
   , nTestsF = const nt
+  , minimumTime = 0
   }
 
 csargs = cargs { functionNames = [":","head","tail","++"]

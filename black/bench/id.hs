@@ -26,6 +26,7 @@ sargs nm nt = args
   , limitResults = Just 10
   , nMutants = nm
   , nTestsF = const nt
+  , minimumTime = 0
   }
 
 csargs :: CArgs
