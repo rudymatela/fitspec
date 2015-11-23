@@ -13,3 +13,14 @@
 # ghc object (when compiled directly)
 **/*.o
 **/*.hi
+
+# black benchmarks
+black/bench/avltrees
+black/bench/bools
+black/bench/heaps
+black/bench/id
+black/bench/list
+black/bench/pretty
+black/bench/sieve
+black/bench/sorting
+black/bench/spring
