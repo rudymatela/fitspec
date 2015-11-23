@@ -48,7 +48,10 @@ list:
 	$(FINDHS)
 
 hlint:
-	hlint .
+	hlint \
+	  --ignore "Use first" \
+	  --ignore "Use ***" \
+	  .
 
 bench/avltrees: bench/AVLTree.o
 
