@@ -190,7 +190,7 @@ canonicalMutation f = all different
 allUnique :: Ord a => [a] -> Bool
 allUnique [] = True
 allUnique (x:xs) = x `notElem` xs
-                && allUnique (lesser)
-                && allUnique (greater)
+                && allUnique lesser
+                && allUnique greater
   where lesser  = filter (< x) xs
         greater = filter (> x) xs
