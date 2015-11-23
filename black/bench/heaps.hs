@@ -32,9 +32,9 @@ instance (Ord a, Show a, Listable a) => ShowMutable (Heap a) where
   showMutant _ = show
 
 -- Alias for type (they are repeated a lot)
-type Insert a    = (a, Heap a) -> Heap a
-type DeleteMin a = (Heap a -> Heap a)
-type Merge a     = (Heap a, Heap a) -> Heap a
+type Insert a    = a -> Heap a -> Heap a
+type DeleteMin a = Heap a -> Heap a
+type Merge a     = Heap a -> Heap a -> Heap a
 type Ty a        = (Insert a, DeleteMin a, Merge a)
 
 propertyMap :: (Ord a, Show a, Listable a)
@@ -43,7 +43,7 @@ propertyMap :: (Ord a, Show a, Listable a)
             -> DeleteMin a
             -> Merge a
             -> [Bool]
-propertyMap n insert'' deleteMin' merge'' =
+propertyMap n insert' deleteMin' merge' =
   [ holds n $ \x y h ->      insert' x (insert' y h) == insert' y (insert' x h) --  1
   , holds n $ \h x ->             null (insert' x h) == False                   --  2
   , holds n $ \x h ->          L.insert x (toList h) == toList (insert' x h)    --  3
@@ -59,15 +59,14 @@ propertyMap n insert'' deleteMin' merge'' =
   , holdE n $ \h -> not (null h) ==> merge' h (deleteMin' h) == deleteMin' (merge' h h) -- 11
   , holdE n $ \x ->       deleteMin' (insert' x Nil) == Nil                     -- 12
   ]
-  where merge' = curry merge''
-        insert' = curry insert''
-        holdE n = errorToFalse . holds n
+  where holdE n = errorToFalse . holds n
 
-sargs = args { limitResults = Just 20
-             , showPropertySets = unlines
-             , minimumTime = 0
-             , callNames = ["insert xh","deleteMin h","merge hh"]}
-             -- , extraMutants = take 0 [(uncurry maxInsert,maxDeleteMin,uncurry maxMerge)] }
+sargs nm nt = (fixargs nm nt)
+  { limitResults = Just 20
+  , showPropertySets = unlines
+  , callNames = ["insert xh","deleteMin h","merge hh"]
+--, extraMutants = take 0 [(uncurry maxInsert,maxDeleteMin,uncurry maxMerge)] }
+  }
 
 csargs = cargs { functionNames = ["insert","deleteMin","merge"]
                , nResults = Just 10
@@ -100,7 +99,7 @@ main = do putStrLn "Heap:"
           run (testType as) (method as) (nTests as) (nMutants_ as)
 
 fns :: Ord a => Ty a
-fns = (uncurry insert, deleteMin, uncurry merge)
+fns = (insert, deleteMin, merge)
 
 run :: String -> String -> Int -> Int -> IO ()
 run "bool"  = run' (fns :: Ty Bool)
@@ -117,9 +116,10 @@ run' fs method n m =
        "grey" -> runGrey  fs n m
        _      -> runBlack fs n m
 
-runGrey (f,g,h) n m = report3With csargs m f g h (propertyMap n)
+runGrey (f,g,h) n m = report3With csargs m (uncurry f) g (uncurry h) (upmap n)
+  where upmap n i d m = propertyMap n (curry i) d (curry m)
 
-runBlack fs n m = reportWith (fixargs m n)
+runBlack fs n m = reportWith (sargs m n)
                              fs (uncurry3 . propertyMap)
 
 
