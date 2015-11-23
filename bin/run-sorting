@@ -1,4 +1,6 @@
 #!/bin/bash
+#
+# It takes about 20m to run on an Intel i7 2.20GHz (zero)
 
 BINDIR=`dirname $0`
 BENCH=$BINDIR/bench

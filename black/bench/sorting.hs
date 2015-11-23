@@ -44,6 +44,7 @@ sargs nm nt em = args
   , minimumTime = 0
   , nMutants = nm
   , nTestsF = const nt
+  , limitResults = Nothing
   , extraMutants = take (if em then 100 else 0)
                  . concat
                  . lsmap (. sort)

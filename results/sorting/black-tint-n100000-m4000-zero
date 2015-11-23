@@ -1,89 +1,91 @@
-2015-10-22 13:57:57
+2015-11-23 16:20:43
 zero$ ./black/dist/build/sorting/sorting -tint -n100000 -m4000
 
-[7] [1,4] [1,5]   0                                 
-                                                    
-[1,2,3,6]         2      \xs -> case xs of          
-                                  [0,1,0] -> [0,1,1]
-                                  _ -> sort xs      
-                                                    
-[1,2,3]           3      \xs -> case xs of          
-                                  [0,0,1] -> [0,1,1]
-                                  _ -> sort xs      
-                                                    
-[4,6] [5,6]       4      \xs -> case xs of          
-                                  [1,0] -> [1,0]    
-                                  _ -> sort xs      
-                                                    
-[2,3,6]           6      \xs -> case xs of          
-                                  [1,0] -> [1,0]    
-                                  _ -> sort xs      
-                                                    
-[4] [5]           10     \xs -> case xs of          
-                                  [0,1] -> [1,0]    
-                                  _ -> sort xs      
-                                                    
-[2,3]             19     \xs -> case xs of          
-                                  [0,1] -> [1,0]    
-                                  _ -> sort xs      
-                                                    
-[1,3,6]           51     \xs -> case xs of          
-                                  [0] -> [0,0]      
-                                  _ -> sort xs      
-                                                    
-[3,6]             55     \xs -> case xs of          
-                                  [0] -> [0,0]      
-                                  _ -> sort xs      
-                                                    
-[1,3]             67     \xs -> case xs of          
-                                  [0] -> [0,0]      
-                                  _ -> sort xs      
-                                                    
-[1,2,6]           83     \xs -> case xs of          
-                                  [0] -> [1]        
-                                  _ -> sort xs      
-                                                    
-[2,6]             87     \xs -> case xs of          
-                                  [0] -> [1]        
-                                  _ -> sort xs      
-                                                    
-[1,2]             112    \xs -> case xs of          
-                                  [0] -> [1]        
-                                  _ -> sort xs      
-                                                    
-[3]               138    \xs -> case xs of          
-                                  [0] -> [0,0]      
-                                  _ -> sort xs      
-                                                    
-[2]               184    \xs -> case xs of          
-                                  [0] -> [1]        
-                                  _ -> sort xs      
-                                                    
-[1,6]             1523   \xs -> case xs of          
-                                  [] -> [0]         
-                                  _ -> sort xs      
-                                                    
-[6]               1531   \xs -> case xs of          
-                                  [] -> [0]         
-                                  _ -> sort xs      
-                                                    
-[1]               2397   \xs -> case xs of          
-                                  [] -> [0]         
-                                  _ -> sort xs      
-                                                    
-[]                4000   \xs -> case xs of          
-                                  [] -> [0]         
-                                  _ -> sort xs      
+Results based on at most 100000 test cases for each of 4000 mutant variations.
 
-*Apparent* equivalences and implications:
-[7] = [1,4]
-[7] = [1,5]
-[7] ==> [2,3,6]
-[4,6] = [5,6]
-[4,6] ==> [2,3]
-[4] = [5]
-[4] ==> [2,3]
+Property          #Survivors   Smallest or simplest
+ sets              (%Killed)    surviving mutant
 
-real 659.10
-user 657.51
-sys 1.56
+[7] [1,4] [1,5]   0 (100%)
+
+[1,2,3,6]         2 (99%)      \xs -> case xs of
+                                        [0,1,0] -> [0,1,1]
+                                        _ -> sort xs
+
+[1,2,3]           3 (99%)      \xs -> case xs of
+                                        [0,0,1] -> [0,1,1]
+                                        _ -> sort xs
+
+[4,6] [5,6]       4 (99%)      \xs -> case xs of
+                                        [1,0] -> [1,0]
+                                        _ -> sort xs
+
+[2,3,6]           6 (99%)      \xs -> case xs of
+                                        [1,0] -> [1,0]
+                                        _ -> sort xs
+
+[4] [5]           10 (99%)     \xs -> case xs of
+                                        [0,1] -> [1,0]
+                                        _ -> sort xs
+
+[2,3]             19 (99%)     \xs -> case xs of
+                                        [0,1] -> [1,0]
+                                        _ -> sort xs
+
+[1,3,6]           51 (98%)     \xs -> case xs of
+                                        [0] -> [0,0]
+                                        _ -> sort xs
+
+[3,6]             55 (98%)     \xs -> case xs of
+                                        [0] -> [0,0]
+                                        _ -> sort xs
+
+[1,3]             67 (98%)     \xs -> case xs of
+                                        [0] -> [0,0]
+                                        _ -> sort xs
+
+[1,2,6]           83 (97%)     \xs -> case xs of
+                                        [0] -> [1]
+                                        _ -> sort xs
+
+[2,6]             87 (97%)     \xs -> case xs of
+                                        [0] -> [1]
+                                        _ -> sort xs
+
+[1,2]             112 (97%)    \xs -> case xs of
+                                        [0] -> [1]
+                                        _ -> sort xs
+
+[3]               138 (96%)    \xs -> case xs of
+                                        [0] -> [0,0]
+                                        _ -> sort xs
+
+[2]               184 (95%)    \xs -> case xs of
+                                        [0] -> [1]
+                                        _ -> sort xs
+
+[1,6]             1523 (61%)   \xs -> case xs of
+                                        [] -> [0]
+                                        _ -> sort xs
+
+[6]               1531 (61%)   \xs -> case xs of
+                                        [] -> [0]
+                                        _ -> sort xs
+
+[1]               2397 (40%)   \xs -> case xs of
+                                        [] -> [0]
+                                        _ -> sort xs
+
+[]                4000 (0%)    \xs -> case xs of
+                                        [] -> [0]
+                                        _ -> sort xs
+
+Conjectures based on at most 100000 test cases for each of 4000 mutant variations:
+[4]  =  [5]       99% killed  (possible+)
+[4] ==> [2,3]     99% killed  (possible+)
+[7]  =  [1,4]     100% killed (possible)
+[7] ==> [6]       100% killed (possible)
+
+real 635.95
+user 634.39
+sys 1.54
