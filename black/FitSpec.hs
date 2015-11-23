@@ -163,11 +163,13 @@ reportWith args f pmap =
      let nm = totalMutants $ head results
          nt = nTestsF args nm
 
-     putStrLn $ "Results according to " ++ show nm ++ " mutant variations"
-                     ++ " and at most " ++ show nt ++ " test cases:\n"
+     putStrLn $ "Results based on " ++ showNTM nt nm ++ ".\n"
      putStrLn . table "   "
               . intersperse [ "\n" ]
-              . (["Prop. sets", "No.", "Smallest survivor"]:)
+              . ([ "Property\n sets"
+                 , "#Survivors\n (%Killed)"
+                 , "Smallest or simplest\n surviving mutant"
+                 ]:)
               . map showResult
               . maybe id take (limitResults args)
               $ results
@@ -175,8 +177,7 @@ reportWith args f pmap =
      let eis = showEIs (showMoreEI args) results
      putStrLn $ if null eis
        then "No conjectures."
-       else "Conjectures based on " ++ show nt ++ " test cases"
-                 ++ " for each of " ++ show nm ++ " mutant variations:"
+       else "Conjectures based on " ++ showNTM nt nm ++ ":"
      putStrLn (table " " eis)
   where
     resultss = takeWhileIncreasingOn (totalMutants . head . snd)
@@ -184,12 +185,14 @@ reportWith args f pmap =
                           in foldr seq (n,results) results)
                    (iterate (\x -> x + x `div` 2) (nMutants args))
     showResult r = [ showI $ sets r -- ++ "==>" show (implied r)
-                   , show  $ nSurvivors r
+                   , show  (nSurvivors r) ++ " (" ++ show (score r) ++ "%)"
                    , showM $ smallestSurvivor r
                    ]
     showI = showPropertySets args . map show
     showM (Nothing) = ""
     showM (Just m)  = (showMutant args) f m
+    showNTM nt nm = "at most " ++ show nt ++ " test cases"
+            ++ " for each of " ++ show nm ++ " mutant variations"
 
 
 showEIs :: Bool -> [Result a] -> [[String]]
