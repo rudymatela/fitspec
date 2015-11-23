@@ -1,0 +1,19 @@
+#!/bin/bash
+
+BINDIR=`dirname $0`
+BENCH=$BINDIR/bench
+
+$BENCH black heaps -tbool -n1000   -m1000
+$BENCH black heaps -tbool -n1000   -m5000
+$BENCH black heaps -tbool -n1000  -m10000
+$BENCH black heaps -tbool -n10000 -m10000
+
+$BENCH black heaps -tint  -n1000   -m1000
+$BENCH black heaps -tint  -n1000   -m5000
+$BENCH black heaps -tint  -n1000  -m10000
+$BENCH black heaps -tint  -n10000 -m10000
+
+$BENCH black heaps -tint2 -n1000   -m1000
+$BENCH black heaps -tint2 -n1000   -m5000
+$BENCH black heaps -tint2 -n1000  -m10000
+$BENCH black heaps -tint2 -n10000 -m10000
