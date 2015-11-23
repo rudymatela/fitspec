@@ -143,7 +143,7 @@ reportWith args f pmap =
                      ++ show nt ++ "tests")
 
      (n,results) <- lastTimeout (minimumTime args) resultss
-     let nm = length . survivors $ head results
+     let nm = totalMutants $ head results
          nt = nTestsF args nm
 
      putStrLn $ "Results according to " ++ show nm ++ " mutant variations"
@@ -219,26 +219,16 @@ reduceImplications (r:rs) = r : map (r `reduce`) (reduceImplications rs)
 
 
 data Result a = Result
-              { sets :: [[Int]]
-              , implied :: [Int]
-              , survivors :: [Maybe a]
+              { sets             :: [[Int]]
+              , implied          :: [Int]
+              , survivors        :: [Maybe a]
+              , smallestSurvivor :: Maybe a
+              , nSurvivors       :: Int
+              , nKilled          :: Int
+              , totalMutants     :: Int
+              , score            :: Int
               }
 type Results a = [Result a]
-
-smallestSurvivor :: Result a -> Maybe a
-smallestSurvivor = listToMaybe . catMaybes . survivors
-
-nSurvivors :: Result a -> Int
-nSurvivors = length . catMaybes . survivors
-
-nKilled :: Result a -> Int
-nKilled = length . filter isNothing . survivors
-
-totalMutants :: Result a -> Int
-totalMutants = length . survivors
-
-score :: Result a -> Int
-score r = (nKilled r)*100 `div` totalMutants r
 
 
 -- | Return minimality and completeness results.  See 'report'.
@@ -251,12 +241,24 @@ getResultsExtra :: (Mutable a)
                 => [a]
                 -> Int -> a -> (a -> [Bool])
                 -> Results a
-getResultsExtra ems nms f = map (uncurry process)
+getResultsExtra ems nms f = map (uncurry processRawResult)
                           . getRawResults ems nms f
-  where process iss mms = Result { sets      = relevantPropertySets iss
-                                 , implied   = relevantImplications iss
-                                 , survivors = mms
-                                 }
+
+processRawResult :: [[Int]] -> [Maybe a] -> Result a
+processRawResult iss mms = Result
+  { sets      = relevantPropertySets iss
+  , implied   = relevantImplications iss
+  , survivors = mms
+  , smallestSurvivor = listToMaybe ms
+  , nSurvivors   = ns
+  , nKilled      = nk
+  , totalMutants = nm
+  , score        = nk*100 `div` nm
+  }
+  where ms = catMaybes mms
+        nm = length mms
+        ns = length ms
+        nk = nm - ns
 
 relevantPropertySets :: Eq i => [[i]] -> [[i]]
 relevantPropertySets = filterU (not ... contained) . sortOn length
