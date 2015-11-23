@@ -50,8 +50,8 @@ flatLambdas names = showTuple . zipWith flatLambda (names ++ defFns)
 flatLambda :: String -> [([String],String)] -> String
 flatLambda name []       = fname name
 flatLambda _    [([],s)] = s
-flatLambda name bs = (("\\" ++ (unwords varnames) ++ " -> ") `beside`)
-                   $ "case " ++ (showTuple varnames) ++ " of\n"
+flatLambda name bs = (("\\" ++ unwords varnames ++ " -> ") `beside`)
+                   $ "case " ++ showTuple varnames ++ " of\n"
                   ++ "  " `beside` cases
   where
     cases = unlines (map (\(as,r) -> showTuple as ++ " -> " ++ r) bs)
@@ -131,7 +131,7 @@ instance (Listable a, Show a, ShowMutable b) => ShowMutable (a->b) where
           Just [bs] -> Just $ map (\(xs,y) -> (show x:xs,y)) bs -- valid mutant, prepend x arg
           Just ys  ->  if all null ys
                          then Nothing
-                         else Just $ [([show x],showMutant (f x) (f' x))] -- tuple
+                         else Just [([show x],showMutant (f x) (f' x))] -- tuple
                           -- in the above else clause, no error should be raised,
                           -- it is already catched by the enclosing case expression
 
