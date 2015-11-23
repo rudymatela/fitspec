@@ -40,8 +40,8 @@ genDotfileFromGI = (\s -> "digraph G {\n" ++ s ++ "}\n")
                  . unlines
                  . map showEntry
   where showG = unwords . map show
-        showEntry (iss,jss,p) = "\"" ++ (showG iss) ++ "\" -> \""
-                                     ++ (showG jss) ++ "\""
+        showEntry (iss,jss,p) = "\"" ++ showG iss ++ "\" -> \""
+                                     ++ showG jss ++ "\""
                              ++ if p
                                   then " [ color = grey ]"
                                   else ""

@@ -138,7 +138,7 @@ fixargs nm nt = args
   }
 
 showMutant :: Args a -> a -> a -> String
-showMutant as = (showMutantN as) (callNames as)
+showMutant as = showMutantN as (callNames as)
 
 -- | Report minimality and completeness results.
 --   Uses standard configuration (see 'args').
@@ -191,7 +191,7 @@ reportWith args f pmap =
                    ]
     showI = showPropertySets args . map show
     showM (Nothing) = ""
-    showM (Just m)  = (showMutant args) f m
+    showM (Just m)  = showMutant args f m
     showNTM nt nm = "at most " ++ show nt ++ " test cases"
             ++ " for each of " ++ show nm ++ " mutant variations"
 
@@ -239,7 +239,7 @@ reduceImplications :: [Result a] -> [Result a]
 reduceImplications [] = []
 reduceImplications (r:rs) = r : map (r `reduce`) (reduceImplications rs)
   where r `reduce` r' = if or (productWith contained (sets r) (sets r'))
-                          then r' { implied = (implied r') \\ (implied r) }
+                          then r' { implied = implied r' \\ implied r }
                           else r'
         productWith f xs ys = [f x y | x <- xs, y <- ys]
 
