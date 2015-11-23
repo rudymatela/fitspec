@@ -151,7 +151,7 @@ It needs a function to be mutated and the property map.
 Optionally, for a nicer output, you might want to use the reportWith function,
 which allows specifying the function and argument names (among other options):
 
-	main = reportWith args {callNames=["sort xs"]}
+	main = reportWith args { callNames = ["sort xs"] }
 	                  (sort::[Int]->[Int]) pmap
 
 By having the three sections above in a file called sorting.hs,
