@@ -122,7 +122,7 @@ Using FitSpec
 
 Suppose we want to write properties for the function sort,
 but we do not know where to start.
-We can use FitSpec to guide property generation.
+We can use FitSpec to guide property creation.
 
 
 We first import what is needed:
@@ -149,7 +149,7 @@ It needs a function to be mutated and the property map.
 	main = report (sort::[Int]->[Int]) pmap
 
 Optionally, for a nicer output, you might want to use the reportWith function,
-which allows specifying the function and argument names (among other options):
+which allows specifying function and argument names (among other options):
 
 	main = reportWith args { callNames = ["sort xs"] }
 	                  (sort::[Int]->[Int]) pmap
@@ -174,13 +174,13 @@ we then compile and run:
 The output is self-explanatory.  Obviously, our empty property set `[]` did not
 kill any mutant (`0%`).  In other words, all of the `2000` mutants survived.
 (The actual number of mutants tested will vary depending on your machine, it
-will probably be higher than 201, by default FitSpec runs for at least 5
-seconds.)
+will probably be higher than 2000 *in this case*, by default FitSpec runs for
+at least 5 seconds.)
 
 The surviving mutant shown on the third column is clearly not a valid
 implementation of sort.  For the empty list, it returns `[0]`.  We should
 improve our property set by killing that mutant.  Lets start very simple by
-adding a property stating that an empty list must yield an empty list:
+adding a property stating that sorting an empty list must yield an empty list:
 
 	pmap n sort' =
 	  [ sort' [] == []
