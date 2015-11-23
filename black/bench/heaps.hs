@@ -119,7 +119,7 @@ run' fs method n m =
 
 runGrey (f,g,h) n m = report3With csargs m f g h (propertyMap n)
 
-runBlack fs n m = reportWith (sargs { nTestsF = const n})
+runBlack fs n m = reportWith (fixargs m n)
                              fs (uncurry3 . propertyMap)
 
 
