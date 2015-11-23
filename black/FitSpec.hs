@@ -119,6 +119,23 @@ args = Args { nMutants = 500
             , showMutantN = Mutate.Show.showMutantN
             }
 
+-- Non timed-out default arguments.
+-- Make conjectures based on a fixed number of mutants and tests, e.g.:
+--
+-- > reportWith (fixargs 100 200) f pmap
+--
+-- This is just a shorthand, see:
+--
+-- > fixargs nm nt == args { nMutants = nm, nTestsF = const nt, minimumTime = 0 }
+--
+-- > (fixargs nm nt) { nMutants = 500, minimumTime = 5, nTestsF = (*2) } == args
+fixargs :: ShowMutable a => Int -> Int -> Args a
+fixargs nm nt = args
+  { nMutants    = nm
+  , nTestsF     = const nt
+  , minimumTime = 0
+  }
+
 showMutant :: Args a -> a -> a -> String
 showMutant as = (showMutantN as) (callNames as)
 
