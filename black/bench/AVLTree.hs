@@ -79,10 +79,10 @@ instance (Show a) => Show (Tree a) where
   showsPrec _ Empty                = showString "empty"
   showsPrec d (Node _ Empty x Empty) = showParen (d>9) $ showString "leaf " . showsPrec 10 x
   showsPrec d (Node _ lst   x   rst) = showParen (d>4) $ left . showsPrec 7 x . right
-    where left  | (isLeaf lst)  = showsPrec 7 (v lst) . showString "-/"
-                | otherwise     = showsPrec 6 lst . showString "//"
-          right | (isLeaf rst)  = showString "\\-" . showsPrec 7 (v rst)
-                | otherwise     = showString "\\\\" . showsPrec 6 rst
+    where left  | isLeaf lst  = showsPrec 7 (v lst) . showString "-/"
+                | otherwise   = showsPrec 6 lst . showString "//"
+          right | isLeaf rst  = showString "\\-" . showsPrec 7 (v rst)
+                | otherwise   = showString "\\\\" . showsPrec 6 rst
 
 -- | Two trees are equal if they hold the same elements.  To check for equality also on the structure of the tree, use "same"
 instance (Eq a) => Eq (Tree a) where
@@ -93,7 +93,7 @@ instance (Eq a) => Eq (Tree a) where
 -- 'delete' if it follows the 'Invariants.ordered'.
 instance Functor Tree where
   fmap _ Empty            = Empty
-  fmap f (Node h lst x rst) = (Node h (fmap f lst) (f x) (fmap f rst))
+  fmap f (Node h lst x rst) = Node h (fmap f lst) (f x) (fmap f rst)
 
 
 -- | Two trees are **same** if their *values* and *structure* is the same.
@@ -193,7 +193,7 @@ isLeaf _                      = False
 -- | Balancing factor of a Tree
 bf :: Tree a -> Int
 bf Empty          = 0
-bf (Node _ lt _ gt) = (height lt) - (height gt)
+bf (Node _ lt _ gt) = height lt - height gt
 
 -- | Value of a node (root)
 v :: Tree a -> a

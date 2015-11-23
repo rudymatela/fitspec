@@ -50,12 +50,12 @@ main = do putStrLn "### Strict mutant enumerations ###"
 
           putStrLn "Not:";
           reportWith args { callNames = ["not p"] }
-                     not (pMapN)
+                     not pMapN
 
           putStrLn "Not, and:"
           reportWith args { limitResults = Just 9
                           , callNames = ["not p","(&&) p q"] }
-                     (not,uncurry (&&)) (pMapNA)
+                     (not,uncurry (&&)) pMapNA
 
           {-
           putStrLn "Not, and, or:"

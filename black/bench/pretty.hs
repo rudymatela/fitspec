@@ -23,7 +23,7 @@ propertyMap n beside' above' nest'' =
   , holds n $ \x k y ->     nest k (x $$ y) == nest k x $$ nest k y
   , holds n $ \x k y ->     nest k (x <> y) == nest k x <> y
   , holds n $ \x k y ->       x <> nest k y == x <> y
-  , holds n $ \x k k' -> nest k (nest k' x) == (nest (k+k') x)
+  , holds n $ \x k k' -> nest k (nest k' x) == nest (k+k') x
   , holds n $ \x ->                nest 0 x == x
   , holds n $ \x y z ->       (x $$ y) <> z == x $$ (y <> z)
   , holds n $ \s y z -> text s <> ((text "" <> y) $$ z) == (text s <> y) $$ nest (length s) z
@@ -48,10 +48,10 @@ propertyMapQS n beside' above' nest'' =
         nest = curry nest''
 
 main = do reportWith args { limitResults = Just 20, nMutants = 1000 }
-                     (uncurry (<>),uncurry ($$),uncurry (nest)) pmap
+                     (uncurry (<>),uncurry ($$),uncurry nest) pmap
           -- 2000m x 4000t x 7laws: 1m5s
           reportWith args { limitResults = Just 20, nMutants = 1000 }
-                     (uncurry (<>),uncurry ($$),uncurry (nest)) pmapQS
+                     (uncurry (<>),uncurry ($$),uncurry nest) pmapQS
   where pmap = uncurry3 . propertyMap
         pmapQS = uncurry3 . propertyMapQS
 
