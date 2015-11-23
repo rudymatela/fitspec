@@ -64,3 +64,7 @@ bench/heaps: bench/Heap.o
 
 %: %.hs
 	ghc $(GHCFLAGS) $<
+
+.PHONY: %.ghci
+%.ghci: %.hs
+	ghci $(GHCFLAGS) $<
