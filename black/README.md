@@ -142,17 +142,17 @@ properties, we will start by returning and empty list:
 	  []
 
 
-Then, we need a main function, that calls the FitSpec's `reportWith` function,
-which will report the results of mutation testing.  It needs a callName
-template, the number of mutants, a function to be mutated and the property map.
+Then, we need a main function, that calls the FitSpec's `report` function,
+which will report the results of mutation testing.
+It needs a function to be mutated and the property map.
 
-	main =
-	  reportWith
-	    (args {callNames = ["sort xs"]}) -- set standard call name
-	    100                              -- number of mutants
-	    (sort::[Int]->[Int])             -- function under test
-	    (pmap 1000)                      -- property-map (1000 tests)
+	main = report (sort::[Int]->[Int]) pmap
 
+Optionally, for a nicer output, you might want to use the reportWith function,
+which allows specifying the function and argument names (among other options):
+
+	main = reportWith args {callNames=["sort xs"]}
+	                  (sort::[Int]->[Int]) pmap
 
 By having the three sections above in a file called sorting.hs,
 we then compile and run:
@@ -162,23 +162,25 @@ we then compile and run:
 	Linking sorting ...
 
 	$ ./sorting
-	[]   100   \xs -> case xs of
-	                    [] -> [0]
-	                    _ -> sort xs
+	Results based on at most 402 test cases for each of 201 mutant variations.
 
-What does that output mean?
+	Property   #Survivors    Smallest or simplest
+	 sets       (%Killed)     surviving mutant
 
-* The first column (`[]`)
-  indicates our empty property set
-* The second column  (`100`)
-  indicates the number of surviving mutants
-* The third column  (`\xs -> ...`)
-  shows the smallest surviving mutant for our empty property set
+	[]         201 (0%)      \xs -> case xs of
+	                                  [] -> [0]
+	                                  _ -> sort xs
 
-The surviving mutant shown, is clearly not a valid implementation of sort.  For
-the empty list, it returns `[0]`.  We should improve our property set by
-killing that mutant.  Lets start very simple: sorting an empty list must yield
-an empty list:
+The output is self-explanatory.  Obviously, our empty property set `[]` did not
+kill any mutant (`0%`).  In other words, all of the `201` mutants survived.
+(The actual number of mutants tested will vary depending on your machine, it
+will probably be higher than 201, by default FitSpec runs for at least 5
+seconds.)
+
+The surviving mutant shown on the third column is clearly not a valid
+implementation of sort.  For the empty list, it returns `[0]`.  We should
+improve our property set by killing that mutant.  Lets start very simple by
+adding a property stating that an empty list must yield an empty list:
 
 	pmap n sort' =
 	  [ sort' [] == []
@@ -187,19 +189,25 @@ an empty list:
 Now:
 
 	$ ./sorting
-	[1]   52    \xs -> case xs of
-	                     [0] -> []
-	                     _ -> sort xs
+	Results based on at most 290 test cases for each of 145 mutant variations.
 
-	[]    100   \xs -> case xs of
-	                     [] -> [0]
-	                     _ -> sort xs
+	Property   #Survivors    Smallest or simplest
+	 sets       (%Killed)     surviving mutant
 
-The last lines are the same as before (all mutants obviously survive the empty
-property set).  The *first lines* show that there are `52` *surviving mutants*
-for the first property `[1]`: the smallest one is shown on the third column.
-It sorts `[0]` to `[]`, which is not valid.  Lets still be very simple --
-sorting a list with one value must yield a list with the same value:
+	[1]        74 (49%)      \xs -> case xs of
+	                                  [0] -> []
+	                                  _ -> sort xs
+
+	[]         145 (0%)      \xs -> case xs of
+	                                  [] -> [0]
+	                                  _ -> sort xs
+
+The last row of results is the same as before (all mutants still obviously
+survive the empty property set).  The *first row* show that there are `74`
+*surviving mutants* (`49%`) for the first property `[1]`: the smallest one is
+shown on the third column.  It sorts `[0]` to `[]`, which is not valid.  Lets
+still be very simple -- sorting a list with one value must yield a list with
+the same value:
 
 	pmap n sort' =
 	  [                  sort' [] == []
@@ -207,17 +215,22 @@ sorting a list with one value must yield a list with the same value:
 	  ]
 
 Note that, our new property (2) has a free variable, that is why `holds` is
-needed: it checks whether a property holds for a given number of tests (`n`)
+needed: it checks whether a property holds for a given number of tests (`n`).
 Now:
 
 	$ ./sorting
-	[1,2]    25   \xs -> case xs of
-	                       [0,0] -> []
-	                       _ -> sort xs
+	Results based on at most 1000 test cases for each of 500 mutant variations.
+
+	Property   #Survivors   Smallest or simplest
+	 sets       (%Killed)    surviving mutant
+
+	[1,2]      134 (73%)    \xs -> case xs of
+	                                 [0,0] -> []
+	                                 _ -> sort xs
 	...
 
-Only 25 mutants to go, perhaps a property stating that the length of the sorted
-list should not change?
+Only 27% of mutants to go, perhaps a property stating that the length of the
+sorted list should not change?
 
 	pmap n sort' =
 	  [                           sort' [] == []
@@ -228,16 +241,24 @@ list should not change?
 Now:
 
 	$ ./sorting
-	[2,3]    4    \xs -> case xs of
-	                       [0,0] -> [0,1]
-	                       _ -> sort xs
+	Results based on at most 1000 test cases for each of 500 mutant variations.
+
+	Property   #Survivors   Smallest or simplest
+	 sets       (%Killed)    surviving mutant
+
+	[2,3]      12 (97%)     \xs -> case xs of
+	                                 [0,0] -> [0,1]
+	                                 _ -> sort xs
 	...
 
-The first lines show that the current candidate minimal-complete propety-set
+	Conjectures based on at most 1000 test cases for each of 500 mutant variations:
+	[3] ==> [1]     95% killed (likely)
+
+The first row show that the current candidate minimal-complete propety-set
 kills all but `4` mutants and is composed only by properties 2 and 3 (`[2,3]`).
-We can safely remove property `sort' [] == []` as it is not needed (it follows
-from the length property).  We should also add a property to kill that mutant:
-elements of the list should not change.
+When possible, FitSpec also reports *conjectures* based on test results.  In
+this case, that property `sort [] == []` (1) follows from the length property
+(3).  Since that is *clearly* true, we can safely remove that property.
 
 	pmap n sort' =
 	  [ holds n $ \x    ->         sort' [x] == [x]
@@ -248,22 +269,20 @@ elements of the list should not change.
 Now:
 
 	$ ./sorting
-	0     [2,3]
-	...
+	Property   #Survivors   Smallest or simplest
+	 sets       (%Killed)    surviving mutant
 
-The first line shows that, now, there are no surviving mutants for properties 2
-and 3.  But, it is not over!  We can now update our `reportWith` call to check
-more mutants (e.g.: `500` instead of `100`).  After that:
-
-	$ ./sorting
-	[2,3]    2    \xs -> case xs of
-	                       [0,1] -> [1,0]
-	                       _ -> sort xs
+	 [2,3]      2 (99%)      \xs -> case xs of
+	                                  [0,1] -> [1,0]
+	                                  _ -> sort xs
 	...
+	Conjectures based on at most 1000 test cases for each of 500 mutant variations:
+	[2,3] ==> [1]     99% killed (possible+)
 
 We could go on, but *at this point, you got the point*.  As an exercise you can
 try to improve our property-set over `sort` by killing the above mutant by
-adding a new property.
+adding a new property.  Later, you can try to improve the results by increasing
+the time limit (`minimumTime = 10` on args).
 
 
 ### To analyse minimality and completeness of property-sets
