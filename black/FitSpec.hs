@@ -186,10 +186,18 @@ showEI r = map (\p' -> [show p, " = ", show p', "   ", show s ++ "% killed", sMe
         i      = implied r
         s      = score r
         sMeaning | s < 1  || 99 < s = "(possible)"
-                 | s < 4  || 96 < s = "(more possible)"
+                 | s < 4  || 96 < s = "(possible+)"
                  | s < 10 || 90 < s = "(likely)"
                  | s < 25 || 75 < s = "(very likely)"
                  | otherwise        = "(extremily likely)" -- the closer to 50 the better
+-- TODO: improve implication score
+-- implication score can be improved by
+-- by separating each implication on its own:
+--   [4] ==> [2,3]
+-- become
+--   [4] ==> [2]
+--   [4] ==> [3]
+-- Then evaluating percentage of occurences of True ==> True and other cases
 
 filterNonCanon :: [Result a] -> [Result a]
 filterNonCanon [] = []
