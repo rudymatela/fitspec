@@ -47,6 +47,9 @@ clean:
 list:
 	$(FINDHS)
 
+hlint:
+	hlint .
+
 bench/avltrees: bench/AVLTree.o
 
 bench/heaps: bench/Heap.o
