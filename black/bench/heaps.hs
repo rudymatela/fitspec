@@ -107,14 +107,8 @@ run "int"   = run' (fns :: Ty Int)
 run "int2"  = run' (fns :: Ty UInt2)
 run "int3"  = run' (fns :: Ty UInt3)
 run "bools" = run' (fns :: Ty [Bool])
-
--- TODO: Remove warning below (already done inside fitspec)
-run' fs method n m =
-  do unless (and $ (uncurry3 $ propertyMap n) fs) $
-       putStrLn "Warning: functions being mutated *do not* follow properties"
-     case method of
-       "grey" -> runGrey  fs n m
-       _      -> runBlack fs n m
+run' fs "grey"  n m = runGrey  fs n m
+run' fs "black" n m = runBlack fs n m
 
 runGrey (f,g,h) n m = report3With csargs m (uncurry f) g (uncurry h) (upmap n)
   where upmap n i d m = propertyMap n (curry i) d (curry m)
