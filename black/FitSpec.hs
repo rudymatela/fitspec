@@ -27,6 +27,7 @@
 module FitSpec
   ( Args(..)
   , args
+  , fixargs
   , report
   , reportWith
   , getRawResults
