@@ -21,29 +21,29 @@ pMapNA n not (&&) =
   , holds n $ \p     -> p && not False  == p
   ]
 
-pMapNAO :: Int -> (Bool -> Bool, (Bool,Bool) -> Bool, (Bool,Bool) -> Bool) -> [Bool]
-pMapNAO n (not',and',or') =
-  [ holds n $                  not' True == False
-  , holds n $ \p     ->    not' (not' p) == p
+pMapNAO :: Int
+        -> (Bool->Bool) -> (Bool->Bool->Bool) -> (Bool->Bool->Bool)
+        -> [Bool]
+pMapNAO n not (&&) (||) =
+  [ holds n $                not True == False
+  , holds n $ \p     ->   not (not p) == p
 
-  , holds n $ \p q   ->          p &&- q == q &&- p
-  , holds n $ \p     ->          p &&- p == p
-  , holds n $ \p     ->       p &&- True == p
-  , holds n $ \p     ->      p &&- False == False
-  , holds n $ \p q r ->  p &&- (q &&- r) == q &&- (p &&- r)
+  , holds n $ \p q   ->        p && q == q && p
+  , holds n $ \p     ->        p && p == p
+  , holds n $ \p     ->     p && True == p
+  , holds n $ \p     ->    p && False == False
+  , holds n $ \p q r -> p && (q && r) == q && (p && r)
 
-  , holds n $ \p q   ->          p ||- q == q ||- p
-  , holds n $ \p     ->          p ||- p == p
-  , holds n $ \p     ->       p ||- True == True
-  , holds n $ \p     ->      p ||- False == p
-  , holds n $ \p q r ->  p ||- (q ||- r) == q ||- (p ||- r)
+  , holds n $ \p q   ->        p || q == q || p
+  , holds n $ \p     ->        p || p == p
+  , holds n $ \p     ->     p || True == True
+  , holds n $ \p     ->    p || False == p
+  , holds n $ \p q r -> p || (q || r) == q || (p || r)
 
-  , holds n $ \p q   ->  p &&- (p ||- q) == p
-  , holds n $ \p q   ->  p ||- (p &&- q) == p
-  , holds n $ \p     ->     p &&- not' p == False
+  , holds n $ \p q   -> p && (p || q) == p
+  , holds n $ \p q   -> p || (p && q) == p
+  , holds n $ \p     ->    p && not p == False
   ]
-  where (&&-) = curry and'
-        (||-) = curry or'
 
 main = do putStrLn "### Strict mutant enumerations ###"
 
@@ -61,9 +61,12 @@ main = do putStrLn "### Strict mutant enumerations ###"
           reportWith args { limitResults = Just 2
                           , showPropertySets = unlines
                           , callNames = ["not p","(&&) p q","(||) p q"] }
-                     (not,uncurry (&&),uncurry (||)) (pMapNAO)
-          -}
+                     (not,(&&),(||)) (uncurry3 . pMapNAO)
+          -- -}
 
           putStrLn "Not, and (filtered):"
           report2 500 not (uncurry (&&)) (upmap 500)
             where upmap n f g = pMapNA n f (curry g)
+
+uncurry3 :: (a -> b -> c -> d) -> (a, b, c) -> d
+uncurry3 f (x,y,z) = f x y z
