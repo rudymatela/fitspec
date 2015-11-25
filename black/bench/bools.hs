@@ -4,23 +4,22 @@ import Test.Check
 
 
 pMapN :: Int -> (Bool -> Bool) -> [Bool]
-pMapN n not' =
-  [ holds n $ \p -> not' (not' p) == p
-  , holds n $ \p -> not' p /= p
-  ,                 not' True == False
+pMapN n not =
+  [ holds n $ \p -> not (not p) == p
+  , holds n $ \p -> not p /= p
+  ,                 not True == False
   ]
 
-pMapNA :: Int -> (Bool -> Bool, (Bool,Bool) -> Bool) -> [Bool]
-pMapNA n (not',and') =
-  [ holds n $ \p     -> not' (not' p)    == p
-  , holds n $ \p q   -> p &&- q          == q &&- p
-  , holds n $ \p     -> p &&- p          == p
-  , holds n $ \p     -> p &&- False      == False
-  , holds n $ \p q r -> p &&- (q &&- r)  == (p &&- q) &&- r
-  , holds n $ \p     -> p &&- not' p     == False
-  , holds n $ \p     -> p &&- not' False == p
+pMapNA :: Int -> (Bool -> Bool) -> (Bool -> Bool -> Bool) -> [Bool]
+pMapNA n not (&&) =
+  [ holds n $ \p     -> not (not p)     == p
+  , holds n $ \p q   -> p && q          == q && p
+  , holds n $ \p     -> p && p          == p
+  , holds n $ \p     -> p && False      == False
+  , holds n $ \p q r -> p && (q && r)   == (p && q) && r
+  , holds n $ \p     -> p && not p      == False
+  , holds n $ \p     -> p && not False  == p
   ]
-  where (&&-) = curry and'
 
 pMapNAO :: Int -> (Bool -> Bool, (Bool,Bool) -> Bool, (Bool,Bool) -> Bool) -> [Bool]
 pMapNAO n (not',and',or') =
@@ -55,7 +54,7 @@ main = do putStrLn "### Strict mutant enumerations ###"
           putStrLn "Not, and:"
           reportWith args { limitResults = Just 9
                           , callNames = ["not p","(&&) p q"] }
-                     (not,uncurry (&&)) pMapNA
+                     (not,(&&)) (uncurry . pMapNA)
 
           {-
           putStrLn "Not, and, or:"
@@ -66,4 +65,5 @@ main = do putStrLn "### Strict mutant enumerations ###"
           -}
 
           putStrLn "Not, and (filtered):"
-          report2 500 not (uncurry (&&)) (curry (pMapNA 500))
+          report2 500 not (uncurry (&&)) (upmap 500)
+            where upmap n f g = pMapNA n f (curry g)
