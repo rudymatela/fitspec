@@ -159,6 +159,32 @@ instance (ShowMutable a, ShowMutable b, ShowMutable c, ShowMutable d) => ShowMut
                                                  , showMutant h h'
                                                  , showMutant i i' ]
 
+instance (ShowMutable a, ShowMutable b, ShowMutable c, ShowMutable d, ShowMutable e) => ShowMutable (a,b,c,d,e) where
+  mutantS (f,g,h,i,j) (f',g',h',i',j') = mutantS f f'
+                                      ++ mutantS g g'
+                                      ++ mutantS h h'
+                                      ++ mutantS i i'
+                                      ++ mutantS j j'
+  showMutant (f,g,h,i,j) (f',g',h',i',j') = showTuple [ showMutant f f'
+                                                      , showMutant g g'
+                                                      , showMutant h h'
+                                                      , showMutant i i'
+                                                      , showMutant j j' ]
+
+instance (ShowMutable a, ShowMutable b, ShowMutable c, ShowMutable d, ShowMutable e, ShowMutable f) => ShowMutable (a,b,c,d,e,f) where
+  mutantS (f,g,h,i,j,k) (f',g',h',i',j',k') = mutantS f f'
+                                           ++ mutantS g g'
+                                           ++ mutantS h h'
+                                           ++ mutantS i i'
+                                           ++ mutantS j j'
+                                           ++ mutantS k k'
+  showMutant (f,g,h,i,j,k) (f',g',h',i',j',k') = showTuple [ showMutant f f'
+                                                           , showMutant g g'
+                                                           , showMutant h h'
+                                                           , showMutant i i'
+                                                           , showMutant j j'
+                                                           , showMutant k k' ]
+
 (+-+) :: String -> String -> String
 cs +-+ ds = cs ++ " " ++ ds
 infixr 5 +-+

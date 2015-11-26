@@ -74,3 +74,9 @@ instance (Mutable a, Mutable b, Mutable c) => Mutable (a,b,c) where
 
 instance (Mutable a, Mutable b, Mutable c, Mutable d) => Mutable (a,b,c,d) where
   lsMutants (f,g,h,i) = lsProductWith (\f' (g',h',i') -> (f',g',h',i')) (lsMutants f) (lsMutants (g,h,i))
+
+instance (Mutable a, Mutable b, Mutable c, Mutable d, Mutable e) => Mutable (a,b,c,d,e) where
+  lsMutants (f,g,h,i,j) = lsProductWith (\f' (g',h',i',j') -> (f',g',h',i',j')) (lsMutants f) (lsMutants (g,h,i,j))
+
+instance (Mutable a, Mutable b, Mutable c, Mutable d, Mutable e, Mutable f) => Mutable (a,b,c,d,e,f) where
+  lsMutants (f,g,h,i,j,k) = lsProductWith (\f' (g',h',i',j',k') -> (f',g',h',i',j',k')) (lsMutants f) (lsMutants (g,h,i,j,k))
