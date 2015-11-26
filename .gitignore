@@ -24,6 +24,7 @@ black/bench/pretty
 black/bench/sieve
 black/bench/sorting
 black/bench/spring
+black/eg/sorting
 
 # black tests
 black/tests/test-mutate
