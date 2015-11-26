@@ -20,6 +20,7 @@ module Utils
   , takeWhileIncreasing
   , takeWhileIncreasingOn
   , lastTimeout
+  , sortOn
   )
 where
 

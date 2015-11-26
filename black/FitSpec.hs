@@ -39,7 +39,7 @@ where
 
 import Test.Check
 import Test.Check.Utils
-import Data.List
+import Data.List ((\\), intersperse, union, transpose)
 import Data.Ord
 import Data.Monoid
 import Data.Maybe (catMaybes, listToMaybe, isJust, isNothing)
