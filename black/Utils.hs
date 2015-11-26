@@ -36,7 +36,8 @@ import Control.Exception ( Exception
                          , evaluate
                          )
 import Data.Function (on)
-import Data.List (groupBy,sortOn)
+import Data.Ord (comparing)
+import Data.List (groupBy,sortBy)
 import Data.IORef (newIORef, readIORef, writeIORef)
 import Control.Concurrent (forkIO, threadDelay, killThread)
 
@@ -139,6 +140,10 @@ errorToFalse :: Bool -> Bool
 errorToFalse p = case errorToNothing p of
                    Just p' -> p
                    Nothing -> False
+
+sortOn :: Ord b => (a -> b) -> [a] -> [a]
+sortOn f =
+  map snd . sortBy (comparing fst) . map (\x -> let y = f x in y `seq` (y, x))
 
 sortAndGroupOn :: Ord b => (a -> b) -> [a] -> [[a]]
 sortAndGroupOn f = groupBy ((==) `on` f)
