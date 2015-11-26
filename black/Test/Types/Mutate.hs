@@ -1,4 +1,4 @@
-module Test.Types.Mutate () where
+module Test.Types.Mutate (module Test.Types) where
 
 import Mutate
 import Mutate.Show
