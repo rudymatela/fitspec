@@ -70,13 +70,75 @@ instance (Mutable a, Mutable b) => Mutable (a,b) where
   lsMutants (f,g) = lsMutants f `lsProduct` lsMutants g
 
 instance (Mutable a, Mutable b, Mutable c) => Mutable (a,b,c) where
-  lsMutants (f,g,h) = lsProductWith (\f' (g',h') -> (f',g',h')) (lsMutants f) (lsMutants (g,h))
+  lsMutants (f,g,h) = lsProductWith (\f' (g',h') -> (f',g',h'))
+                                    (lsMutants f) (lsMutants (g,h))
 
-instance (Mutable a, Mutable b, Mutable c, Mutable d) => Mutable (a,b,c,d) where
-  lsMutants (f,g,h,i) = lsProductWith (\f' (g',h',i') -> (f',g',h',i')) (lsMutants f) (lsMutants (g,h,i))
+instance (Mutable a, Mutable b, Mutable c, Mutable d)
+      => Mutable (a,b,c,d) where
+  lsMutants (f,g,h,i) = lsProductWith (\f' (g',h',i') -> (f',g',h',i'))
+                                      (lsMutants f) (lsMutants (g,h,i))
 
-instance (Mutable a, Mutable b, Mutable c, Mutable d, Mutable e) => Mutable (a,b,c,d,e) where
-  lsMutants (f,g,h,i,j) = lsProductWith (\f' (g',h',i',j') -> (f',g',h',i',j')) (lsMutants f) (lsMutants (g,h,i,j))
+instance (Mutable a, Mutable b, Mutable c, Mutable d, Mutable e)
+      => Mutable (a,b,c,d,e) where
+  lsMutants (f,g,h,i,j) = lsProductWith (\f' (g',h',i',j') -> (f',g',h',i',j'))
+                                        (lsMutants f) (lsMutants (g,h,i,j))
 
-instance (Mutable a, Mutable b, Mutable c, Mutable d, Mutable e, Mutable f) => Mutable (a,b,c,d,e,f) where
-  lsMutants (f,g,h,i,j,k) = lsProductWith (\f' (g',h',i',j',k') -> (f',g',h',i',j',k')) (lsMutants f) (lsMutants (g,h,i,j,k))
+instance (Mutable a, Mutable b, Mutable c, Mutable d, Mutable e, Mutable f)
+      => Mutable (a,b,c,d,e,f) where
+  lsMutants (f,g,h,i,j,k) = lsProductWith (\f' (g',h',i',j',k') ->
+                                            (f',g',h',i',j',k'))
+                                          (lsMutants f) (lsMutants (g,h,i,j,k))
+
+instance (Mutable a, Mutable b, Mutable c, Mutable d,
+          Mutable e, Mutable f, Mutable g)
+      => Mutable (a,b,c,d,e,f,g) where
+  lsMutants (f,g,h,i,j,k,l) = lsProductWith (\f' (g',h',i',j',k',l') ->
+                                              (f',g',h',i',j',k',l'))
+                                            (lsMutants f)
+                                            (lsMutants (g,h,i,j,k,l))
+
+instance (Mutable a, Mutable b, Mutable c, Mutable d,
+          Mutable e, Mutable f, Mutable g, Mutable h)
+      => Mutable (a,b,c,d,e,f,g,h) where
+  lsMutants (f,g,h,i,j,k,l,m) = lsProductWith (\f' (g',h',i',j',k',l',m') ->
+                                                (f',g',h',i',j',k',l',m'))
+                                              (lsMutants f)
+                                              (lsMutants (g,h,i,j,k,l,m))
+
+instance (Mutable a, Mutable b, Mutable c, Mutable d, Mutable e,
+          Mutable f, Mutable g, Mutable h, Mutable i)
+      => Mutable (a,b,c,d,e,f,g,h,i) where
+  lsMutants (f,g,h,i,j,k,l,m,n) =
+    lsProductWith (\f' (g',h',i',j',k',l',m',n') ->
+                    (f',g',h',i',j',k',l',m',n'))
+                  (lsMutants f)
+                  (lsMutants (g,h,i,j,k,l,m,n))
+
+instance (Mutable a, Mutable b, Mutable c, Mutable d, Mutable e,
+          Mutable f, Mutable g, Mutable h, Mutable i, Mutable j)
+      => Mutable (a,b,c,d,e,f,g,h,i,j) where
+  lsMutants (f,g,h,i,j,k,l,m,n,o) =
+    lsProductWith (\f' (g',h',i',j',k',l',m',n',o') ->
+                    (f',g',h',i',j',k',l',m',n',o'))
+                  (lsMutants f)
+                  (lsMutants (g,h,i,j,k,l,m,n,o))
+
+instance (Mutable a, Mutable b, Mutable c, Mutable d,
+          Mutable e, Mutable f, Mutable g, Mutable h,
+          Mutable i, Mutable j, Mutable k)
+      => Mutable (a,b,c,d,e,f,g,h,i,j,k) where
+  lsMutants (f,g,h,i,j,k,l,m,n,o,p) =
+    lsProductWith (\f' (g',h',i',j',k',l',m',n',o',p') ->
+                    (f',g',h',i',j',k',l',m',n',o',p'))
+                  (lsMutants f)
+                  (lsMutants (g,h,i,j,k,l,m,n,o,p))
+
+instance (Mutable a, Mutable b, Mutable c, Mutable d,
+          Mutable e, Mutable f, Mutable g, Mutable h,
+          Mutable i, Mutable j, Mutable k, Mutable l)
+      => Mutable (a,b,c,d,e,f,g,h,i,j,k,l) where
+  lsMutants (f,g,h,i,j,k,l,m,n,o,p,q) =
+    lsProductWith (\f' (g',h',i',j',k',l',m',n',o',p',q') ->
+                    (f',g',h',i',j',k',l',m',n',o',p',q'))
+                  (lsMutants f)
+                  (lsMutants (g,h,i,j,k,l,m,n,o,p,q))
