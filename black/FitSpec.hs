@@ -214,8 +214,8 @@ showEI r = map (\p' -> [show p, " = ", show p', "   ", show s ++ "% killed", sMe
         sMeaning | s < 1  || 99 < s = "(possible)"
                  | s < 4  || 96 < s = "(possible+)"
                  | s < 10 || 90 < s = "(likely)"
-                 | s < 25 || 75 < s = "(very likely)"
-                 | otherwise        = "(extremily likely)" -- the closer to 50 the better
+                 | s < 25 || 75 < s = "(likely+)"
+                 | otherwise        = "(very likely)" -- the closer to 50 the better
 -- TODO: improve implication score
 -- implication score can be improved by
 -- by separating each implication on its own:
