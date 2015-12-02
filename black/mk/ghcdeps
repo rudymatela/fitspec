@@ -1,0 +1,40 @@
+#!/bin/bash
+#
+# From a list of files provided on standard input,
+# generate flat make dependencies.
+#
+# Transitive relations are repeated.
+#
+# Usage:
+#   $ ghcdeps -isomedir:someother <<LIST
+#   program.hs
+#   Library.hs
+#   Path/To/Library.hs
+#   LIST
+#   program: ...
+#   Library.o: ...
+#   Path/To/Library.o: ...
+#
+# Or:
+#   $ find -name \*.hs -o -name \*.lhs | ghcdeps [GHCFLAGS]
+#   ...
+#
+# Note that when using find, you have to remember to exclude unecessary files,
+# e.g.:  dist, Setup.hs
+#
+# Yes, this is hacky.  But hey, it works.
+while read fn
+do
+	ghc "$@" -dep-suffix=. -dep-makefile=tmp.mk -M "$fn" ||
+	exit 1
+	deps="`cat tmp.mk |
+	       grep "hs$" |
+	       sed -e "s/.*: //" |
+	       tac |
+	       tr '\n' ' '`"
+	obj=`echo $fn | sed -e 's,^\./,,;s/\.hs$/.o/'`
+	bin=`echo $fn | sed -e 's,^\./,,;s/\.hs$//'`
+	echo "$obj: $deps"
+	grep -q "main" "$fn" && echo "$bin:   $deps"
+	rm -f tmp.mk
+done

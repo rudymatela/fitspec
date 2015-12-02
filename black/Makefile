@@ -13,14 +13,13 @@
 LLCHECKPATH = ../../llcheck
 
 # Misc variables
-GHCFLAGS = -i$(LLCHECKPATH):bench
+GHCIMPORTDIRS = $(LLCHECKPATH):bench
 FINDHS=find -name \*.hs \
             -a \! \( -path "./dist/*" \
                   -o -path "./bench/*" \
                   -o -path "./tests/*" \
                   -o -path "./Setup.hs" \)
 OBJS = $(shell $(FINDHS) | sed -e 's/hs$$/o/')
-INFS = $(shell $(FINDHS) | sed -e 's/hs$$/hi/')
 BENCHS = bench/avltrees \
          bench/bools \
 		 bench/heaps \
@@ -32,16 +31,15 @@ BENCHS = bench/avltrees \
 		 bench/spring
 TESTS = tests/test-mutate
 
-all: $(OBJS) $(INFS)
+all: $(OBJS)
 
 benchs: $(BENCHS) all
 
-test: all $(TESTS) $(BENCHS)
+test: all benchs $(TESTS)
 	./tests/test-mutate
 
-clean:
-	rm -f $(OBJS) $(INFS) $(TESTS) $(BENCHS)
-	rm -f {tests,bench}/*.{hi,o}
+clean: clean-hi-o
+	rm -f $(TESTS) $(BENCHS)
 
 # Debug: just list all source files compiled normally
 list:
@@ -57,14 +55,4 @@ bench/avltrees: bench/AVLTree.o
 
 bench/heaps: bench/Heap.o
 
-# Implicit rules:
-
-%.o: %.hs
-	ghc $(GHCFLAGS) $<
-
-%: %.hs
-	ghc $(GHCFLAGS) $<
-
-.PHONY: %.ghci
-%.ghci: %.hs
-	ghci $(GHCFLAGS) $<
+include mk/haskell.mk
