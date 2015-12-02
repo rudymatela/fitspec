@@ -15,7 +15,8 @@ cabal-version:       >=1.10
 library
   exposed-modules:   FitSpec, Mutate, Mutate.Show,
                      Test.Types.Mutate,
-                     FitSpecC, Mutation
+                     FitSpecC, Mutation,
+                     FItSpec.Most
   other-modules:     PPPrint,
                      Utils,
                      CatchEvaluation,

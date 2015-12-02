@@ -32,4 +32,5 @@ bench/bools:   bench/bools.hs FitSpec.hs FitSpecC.hs Mutate/Show.hs Mutate.hs Mu
 FitSpecC.o: FitSpecC.hs Mutation.hs PPPrint.hs Utils.hs CatchEvaluation.hs ../../llcheck/Test/Check/Utils.hs ../../llcheck/Test/Check.hs 
 eg/sorting.o: eg/sorting.hs FitSpec.hs Test/Types/Mutate.hs Mutate/Show.hs Mutate.hs ../../llcheck/Test/Check/Utils.hs ../../llcheck/Test/Types.hs ../../llcheck/Test/Check.hs Utils.hs PPPrint.hs 
 eg/sorting:   eg/sorting.hs FitSpec.hs Test/Types/Mutate.hs Mutate/Show.hs Mutate.hs ../../llcheck/Test/Check/Utils.hs ../../llcheck/Test/Types.hs ../../llcheck/Test/Check.hs Utils.hs PPPrint.hs 
+FitSpec/Most.o: FitSpec/Most.hs FitSpec.hs Test/Types/Mutate.hs Mutate.hs ../../llcheck/Test/Most.hs ../../llcheck/Test/Types.hs Mutate/Show.hs Utils.hs PPPrint.hs ../../llcheck/Test/Operators.hs ../../llcheck/Test/Check/Utils.hs ../../llcheck/Test/Check.hs 
 Utils.o: Utils.hs 
