@@ -34,7 +34,7 @@ GHC = ghc $(GHCFLAGS)
 
 .PHONY: %.ghci
 %.ghci: %.hs
-	$(GHC) $<
+	ghci $(GHCFLAGS) $<
 
 
 # Cleaning rule (add as a clean dependency)
