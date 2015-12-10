@@ -1,7 +1,6 @@
 {-# Language DeriveDataTypeable, NoMonomorphismRestriction #-}
 import System.Console.CmdArgs hiding (args)
-import FitSpec
-import FitSpecC
+import FitSpec.Main
 import Test.Check
 import Test.Check.Utils (lsCrescListsOf)
 import Test.Types
@@ -61,60 +60,31 @@ propertyMap n insert' deleteMin' merge' =
   ]
   where holdE n = errorToFalse . holds n
 
-sargs nm nt = (fixargs nm nt)
+sargs = args
   { limitResults = Just 20
+  , nMutants = 500
+  , nTestsF  = id
+  , minimumTime = 0
   , showPropertySets = unlines
   , callNames = ["insert x h","deleteMin h","merge h h'"]
 --, extraMutants = take 0 [(uncurry maxInsert,maxDeleteMin,uncurry maxMerge)] }
   }
 
-csargs = cargs { functionNames = ["insert","deleteMin","merge"]
-               , nResults = Just 10
-               }
-
-
-data CmdArguments = CmdArguments
-  { nMutants_ :: Int
-  , nTests :: Int
-  , testType :: String
-  , method :: String
-  } deriving (Data,Typeable,Show,Eq)
-
-arguments = CmdArguments
-  { nTests    = 500    &= help "number of tests to run"
-  , nMutants_ = 500    &= help "number of mutants to generate"
-                       &= name "m"
-  , testType = "int"   &= help "type to use"
-                       &= name "type"
-                       &= name "t"
-                       &= explicit
-  , method   = "black" &= help "method (black/grey)"
-                       &= name "e"
-  }
-
-
-main :: IO ()
-main = do putStrLn "Heap:"
-          as <- cmdArgs arguments
-          run (testType as) (method as) (nTests as) (nMutants_ as)
-
 fns :: Ord a => Ty a
 fns = (insert, deleteMin, merge)
 
-run :: String -> String -> Int -> Int -> IO ()
-run "bool"  = run' (fns :: Ty Bool)
-run "int"   = run' (fns :: Ty Int)
-run "int2"  = run' (fns :: Ty UInt2)
-run "int3"  = run' (fns :: Ty UInt3)
-run "bools" = run' (fns :: Ty [Bool])
-run' fs "grey"  n m = runGrey  fs n m
-run' fs "black" n m = runBlack fs n m
-
-runGrey (f,g,h) n m = report3With csargs m (uncurry f) g (uncurry h) (upmap n)
-  where upmap n i d m = propertyMap n (curry i) d (curry m)
-
-runBlack fs n m = reportWith (sargs m n)
-                             fs (uncurry3 . propertyMap)
+main :: IO ()
+main = do 
+  let run f = mainWith sargs f (uncurry3 . propertyMap)
+  ty <- typeArgument
+  case ty of
+    "bool"  -> run (fns :: Ty Bool)
+    "bools" -> run (fns :: Ty [Bool])
+    "int"   -> run (fns :: Ty Int)
+    "int2"  -> run (fns :: Ty UInt2)
+    "int3"  -> run (fns :: Ty UInt3)
+    "unit"  -> run (fns :: Ty ())
+    _       -> run (fns :: Ty UInt2)
 
 
 maxInsert :: Ord a => a -> Heap a -> Heap a

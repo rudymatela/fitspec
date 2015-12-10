@@ -1,10 +1,7 @@
-{-# Language DeriveDataTypeable #-}
-import System.Console.CmdArgs hiding (args)
-import FitSpec
-import FitSpecC
 import Data.List
+
+import FitSpec.Main
 import Test.Check
-import Test.Types
 import Test.Types.Mutate
 
 
@@ -37,63 +34,34 @@ pmap n sort' =
 
 
 sargs :: (Show a, Listable a, Bounded a, Ord a)
-      => Int -> Int -> Bool
-      -> Args ([a] -> [a])
-sargs nm nt em = args
+      => Args ([a] -> [a])
+sargs = args
   { callNames = ["sort xs"]
   , minimumTime = 0
-  , nMutants = nm
-  , nTestsF = const nt
+  , nMutants = 1000
+  , nTestsF = id
   , limitResults = Nothing
-  , extraMutants = take (if em then 100 else 0)
+  , extraMutants = take 0
                  . concat
                  . lsmap (. sort)
                  $ cons2 (\y ys -> (++ (y:ys))) -- prepend non-empty list
               \++/ cons2 (\y ys -> ((y:ys) ++)) -- append non-empty list
   }
 
-csargs = cargs { functionNames = ["sort"]
-               , variableNames = ["xs"]
-               , nResults = Just 10
-               }
-
-data CmdArguments = CmdArguments
-  { nMutants_       :: Int
-  , nTests          :: Int
-  , testType        :: String
-  , classify        :: Bool
-  , useExtraMutants :: Bool
-  } deriving (Data,Typeable,Show,Eq)
-
-arguments = CmdArguments
-  { nTests    = 1000   &= help "number of tests to run"
-  , nMutants_ = 1000   &= help "number of mutants to generate"
-                       &= name "m"
-  , testType = "bool"  &= help "type to use"
-                       &= name "type"
-                       &= name "t"
-                       &= explicit
-  , classify = False   &= help "classify mutants, report extra column with fully evaluated ones (grey-box)"
-  , useExtraMutants = False
-                       &= help "pass extra manual mutants to the algorithm (only works for black-box version)"
-                       &= name "e"
-  }
-
-main :: IO ()
-main = do as <- cmdArgs arguments
-          run (testType as) (classify as) (useExtraMutants as) (nMutants_ as) (nTests as)
-
 type Ty a = [a] -> [a]
 
-run :: String -> Bool -> Bool -> Int -> Int -> IO ()
-run "bool"  = run' (sort :: Ty Bool)
-run "bools" = run' (sort :: Ty [Bool])
-run "int"   = run' (sort :: Ty Int)
-run "int2"  = run' (sort :: Ty UInt2)
-run "int3"  = run' (sort :: Ty UInt3)
-run "unit"  = run' (sort :: Ty ())
-run' f False em nm nt = reportWith (sargs nm nt em) f pmap
-run' f True  em nm nt = report1With csargs nm f (pmap nt)
+main :: IO ()
+main = do
+  let run f = mainWith sargs f pmap
+  ty <- typeArgument
+  case ty of
+    "bool"  -> run (sort :: Ty Bool)
+    "bools" -> run (sort :: Ty [Bool])
+    "int"   -> run (sort :: Ty Int)
+    "int2"  -> run (sort :: Ty UInt2)
+    "int3"  -> run (sort :: Ty UInt3)
+    "unit"  -> run (sort :: Ty ())
+    _       -> run (sort :: Ty UInt2)
 
 -- This hack is only necessary when using sortCounter as a manual mutant
 instance Bounded a => Bounded [a] where

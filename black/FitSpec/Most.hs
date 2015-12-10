@@ -8,6 +8,7 @@ module FitSpec.Most
 where
 import Test.Most
 import FitSpec
+import FitSpec.Main
 import Test.Types.Mutate
 import Mutate
 import Mutate.Show hiding (showMutantN)
