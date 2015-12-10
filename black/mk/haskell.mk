@@ -42,6 +42,8 @@ GHC = ghc $(GHCFLAGS)
 clean-hi-o:
 	$(LISTHS) | sed -e "s/hs$$/o/"  | xargs rm -f
 	$(LISTHS) | sed -e "s/hs$$/hi/" | xargs rm -f
+	$(LISTHS) | sed -e "s/hs$$/dyn_o/"  | xargs rm -f
+	$(LISTHS) | sed -e "s/hs$$/dyn_hi/" | xargs rm -f
 
 
 # Update dependency file

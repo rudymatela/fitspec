@@ -13,6 +13,8 @@
 # ghc object (when compiled directly)
 **/*.o
 **/*.hi
+**/*.dyn_o
+**/*.dyn_hi
 
 # black benchmarks
 black/bench/avltrees
