@@ -1,6 +1,7 @@
 module FitSpec.Most
   ( module Test.Most
   , module FitSpec
+  , module FitSpec.Main
   , module Test.Types.Mutate
   , module Mutate
   , module Mutate.Show
