@@ -211,11 +211,11 @@ showEI r = map (\p' -> [show p, " = ", show p', "   ", show s ++ "% killed", sMe
   where (p:ps) = sets r
         i      = implied r
         s      = score r
-        sMeaning | s < 1  || 99 < s = "(possible)"
-                 | s < 4  || 96 < s = "(possible+)"
-                 | s < 10 || 90 < s = "(likely)"
-                 | s < 25 || 75 < s = "(likely+)"
-                 | otherwise        = "(very likely)" -- the closer to 50 the better
+        sMeaning | s < 1  || 99 < s = "(very weak)"
+                 | s < 4  || 96 < s = "(quite weak)"
+                 | s < 10 || 90 < s = "(weak)"
+                 | s < 25 || 75 < s = "(mild)"
+                 | otherwise        = "(strong)" -- the closer to 50 the better
 -- TODO: improve implication score
 -- implication score can be improved by
 -- by separating each implication on its own:
