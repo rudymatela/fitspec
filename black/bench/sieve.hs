@@ -1,10 +1,8 @@
 -- Example benchmark that mutation tests properties over an infinite list of primes
 {-# Language DeriveDataTypeable #-}
 import System.Console.CmdArgs hiding (args)
-import FitSpec
-import FitSpecC
+import FitSpec.Main
 import Test.Check
-import Test.Types
 import Test.Types.Mutate
 import Data.Maybe
 import Utils (errorToFalse)
@@ -32,27 +30,27 @@ notElemO = (not .) . elemO
 infix 4 `notElemO`
 
 -- The property map
-pmap :: Int -> [Int] -> [Bool]
-pmap n primes =
-  [ listToMaybe primes == Just 2 -- start with two
-  , length (take n primes) == n  -- infinite
-  , allUnique (take n primes)
-  , strictlyOrdered (take n primes)
-  , holds n $ \x -> x `elemO` primes
-                ==> x*x `notElemO` primes
-  , holds n $ \x y -> x `elemO` primes
-                   && y `elemO` primes
-                  ==> x*y `notElemO` primes
-  , holdE n $ \i' -> let i  = fromIntegral (i'::Nat)
-                         p  = primes !! i
-                         ps = drop (i+1) primes
-                     in  p > 1 ==> all (\p' -> p' `mod` p /= 0) (take n ps)
-  , holds n $ \x y -> x `elemO` primes
-                   && y `elemO` primes
-                   && x /= y
-                  ==> x `mod` y /= 0
-  , all prime            (take n primes)              -- sound
-  , all (`elemO` primes) [ x | x <- [1..n], prime x ] -- complete
+properties :: [Int] -> [Property]
+properties primes =
+  [ property $ listToMaybe primes == Just 2 -- start with two
+--, property $ length (take n primes) == n  -- infinite
+--, property $ allUnique (take n primes)
+--, property $ strictlyOrdered (take n primes)
+  , property $ \x -> x `elemO` primes
+                 ==> x*x `notElemO` primes
+  , property $ \x y -> x `elemO` primes
+                    && y `elemO` primes
+                   ==> x*y `notElemO` primes
+--, property $ \i' -> let i  = fromIntegral (i'::Nat)
+--                        p  = primes !! i
+--                        ps = drop (i+1) primes
+--                    in  p > 1 ==> all (\p' -> p' `mod` p /= 0) (take n ps)
+  , property $ \x y -> x `elemO` primes
+                    && y `elemO` primes
+                    && x /= y
+                   ==> x `mod` y /= 0
+--, all prime            (take n primes)              -- sound
+--, all (`elemO` primes) [ x | x <- [1..n], prime x ] -- complete
   ]
   where holdE n = errorToFalse . holds n
         prime x = x > 1
@@ -62,37 +60,19 @@ pmap n primes =
 
 prime x = x > 1 && all (\p -> p `mod` x /= 0) (takeWhile (\p -> p*p <= x) primes)
 
-sargs :: Int -> Int -> Args [Int]
-sargs nt nm = args
+sargs :: Args [Int]
+sargs = args
   { limitResults = Just 10
   , showMutantN = \_ _ -> showInfinite
-  , nTestsF = const nt
+  , nMutants = 20000
+  , nTestsF = const 100
   , minimumTime = 0
   }
   where showInfinite xs | not . null $ drop 10 xs = (init . show $ take 10 xs) ++ "..."
                         | otherwise               = show xs
 
-data CmdArguments = CmdArguments
-  { nMutants_ :: Int
-  , nTests :: Int
-  , classify :: Bool
-  } deriving (Data,Typeable,Show,Eq)
-
-arguments :: CmdArguments
-arguments = CmdArguments
-  { nTests    = 100     &= help "number of tests to run"
-  , nMutants_ = 20000   &= help "number of mutants to generate"
-                        &= name "m"
-  , classify = False    &= help "classify mutants, report extra column with fully evaluated ones (grey-box)"
-  }
-
 main :: IO ()
-main = do as <- cmdArgs arguments
-          run (classify as) (nMutants_ as) (nTests as)
-
-run :: Bool -> Int -> Int -> IO ()
-run False nm nt = reportWith (sargs nt nm) primes pmap
-run True  nm nt = undefined
+main = mainWith sargs primes properties
 
 allUnique :: Ord a => [a] -> Bool
 allUnique [] = True

@@ -18,22 +18,20 @@ type Ty a = ( Cons a
             )
 
 -- The property map
-pmap :: (Eq a, Show a, Listable a)
-     => Int
-     -> Cons a
-     -> Head a
-     -> Tail a
-     -> Append a
-     -> [Bool]
-pmap n (-:) head tail (++) =
-  [ holds n $ \xs -> [] ++ xs == xs && xs == xs ++ []
-  , holdE n $ \x xs -> head (x-:xs) == x  -- mutated (:) might return an empty list
-  , holdE n $ \x xs -> tail (x-:xs) == xs -- mutated (:) might return an empty list
-  , holds n $ \xs -> null (xs ++ xs) == null xs
-  , holds n $ \xs ys zs -> (xs ++ ys) ++ zs == xs ++ (ys ++ zs)
-  , holds n $ \x xs ys -> x-:(xs ++ ys) == (x-:xs) ++ ys
+properties :: (Eq a, Show a, Listable a)
+           => Cons a
+           -> Head a
+           -> Tail a
+           -> Append a
+           -> [Property]
+properties (-:) head tail (++) =
+  [ property  $ \xs -> [] ++ xs == xs && xs == xs ++ []
+  , propertyE $ \x xs -> head (x-:xs) == x  -- mutated (:) might return an empty list
+  , propertyE $ \x xs -> tail (x-:xs) == xs -- mutated (:) might return an empty list
+  , property  $ \xs -> null (xs ++ xs) == null xs
+  , property  $ \xs ys zs -> (xs ++ ys) ++ zs == xs ++ (ys ++ zs)
+  , property  $ \x xs ys -> x-:(xs ++ ys) == (x-:xs) ++ ys
   ]
-  where holdE n = errorToFalse . holds n
 
 
 fns :: Ty a
@@ -55,7 +53,7 @@ sargs = args
 
 main :: IO ()
 main = do 
-  let run f = mainWith sargs f (uncurry4 . pmap)
+  let run f = mainWith sargs f (uncurry4 properties)
   ty <- typeArgument
   case ty of
     "bool"  -> run (fns :: Ty Bool)

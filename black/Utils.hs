@@ -21,6 +21,7 @@ module Utils
   , takeWhileIncreasingOn
   , lastTimeout
   , sortOn
+  , (***)
   )
 where
 
@@ -182,3 +183,6 @@ lastTimeout s (x:xs) = do
           evaluate x
           writeIORef r x
           keepImproving r xs
+
+(***) :: (a -> b) -> (c -> d) -> (a,c) -> (b,d)
+f *** g = \(x,y) -> (f x, g y)

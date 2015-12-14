@@ -10,12 +10,12 @@ ordered (x:y:xs) = x<=y && ordered (y:xs)
 
 -- Given the number of tests and a sorting implementation
 -- return whether each property holds
-pmap :: (Show a, Ord a, Listable a) => Int -> ([a] -> [a]) -> [Bool]
-pmap n sort =
-  [ holds n $ \xs   -> ordered (sort xs)
-  , holds n $ \xs   -> length (sort xs) == length xs
-  , holds n $ \x xs -> elem x xs == elem x (sort xs)
-  , holds n $ \x xs -> count x xs == count x (sort xs)
+properties :: (Show a, Ord a, Listable a) => ([a] -> [a]) -> [Property]
+properties sort =
+  [ property $ \xs   -> ordered (sort xs)
+  , property $ \xs   -> length (sort xs) == length xs
+  , property $ \x xs -> elem x xs == elem x (sort xs)
+  , property $ \x xs -> count x xs == count x (sort xs)
   ]
   where count x = length . filter (==x)
 
@@ -27,4 +27,4 @@ main = do
                   , limitResults = Just 3
                   }
              (sort::[UInt2]->[UInt2])
-             pmap
+             properties

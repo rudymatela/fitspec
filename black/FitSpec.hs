@@ -34,6 +34,10 @@ module FitSpec
   , relevantImplications
   , relevantPropertySets
   , ShowMutable
+  , property
+  , propertyE
+  , Property
+  , propertiesToMap -- remove this export
   )
 where
 
@@ -140,25 +144,59 @@ fixargs nm nt = args
 showMutant :: Args a -> a -> a -> String
 showMutant as = showMutantN as (callNames as)
 
+
+type Property = [(Bool,[String])]
+type Properties = [Property]
+
+property :: Testable a
+         => a -> Property
+property = resultArguments
+
+propertyE :: Testable a
+          => a -> Property
+propertyE = map (errorToFalse *** id) . resultArguments
+
+propertyHold :: Int -> Property -> Bool
+propertyHold n = and . map fst . take n
+
+propertyCE :: Int -> Property -> Maybe String
+propertyCE n = listToMaybe . map (unwords . snd) . filter (not . fst) . take n
+
+propertiesToMap :: [Property] -> Int -> [Bool]
+propertiesToMap ps n = map (propertyHold n) ps
+
+propertiesHold :: Int -> [Property] -> Bool
+propertiesHold n = and . map (propertyHold n)
+
+propertiesCE :: Int -> [Property] -> Maybe String
+propertiesCE n = listToMaybe
+               . catMaybes
+               . zipWith (\n -> fmap ((show n ++ ".  ") ++)) [1..]
+               . map (propertyCE n)
+
+
 -- | Report minimality and completeness results.
 --   Uses standard configuration (see 'args').
 --   Needs a function to be mutated and a property map.
 report :: (ShowMutable a, Mutable a)
-       => a -> (Int -> a -> [Bool]) -> IO ()
+       => a -> (a -> [Property]) -> IO ()
 report = reportWith args
 
 -- | Same as 'report' but can be configured via 'Args'/'args'.
 reportWith :: Mutable a
            => Args a
            -> a
-           -> (Int -> a -> [Bool])
+           -> (a -> [Property])
            -> IO ()
-reportWith args f pmap =
+reportWith args f properties =
   do let nm = nMutants args
          nt = nTestsF args nm
-     unless (and . pmap nt $ f)
-            (putStrLn $ "WARNING: The original function does not follow the property set for "
-                     ++ show nt ++ "tests")
+     case propertiesCE nt (properties f) of
+       Nothing -> return () -- Just carry on
+       Just ce -> do
+         putStrLn $ "WARNING: The original function does not follow the property set for "
+                 ++ show nt ++ " tests"
+         putStrLn $ "         property " ++ ce
 
      (n,results) <- lastTimeout (minimumTime args) resultss
      let nm = totalMutants $ head results
@@ -181,6 +219,7 @@ reportWith args f pmap =
        else "Conjectures based on " ++ showNTM nt nm ++ ":"
      putStrLn (table " " eis)
   where
+    pmap n f = propertiesToMap (properties f) n
     resultss = takeWhileIncreasingOn (totalMutants . head . snd)
              $ map (\n -> let results = getResultsExtra (extraMutants args) n f (pmap (nTestsF args n))
                           in foldr seq (n,results) results)

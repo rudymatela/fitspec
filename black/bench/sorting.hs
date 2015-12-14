@@ -20,16 +20,16 @@ count :: Eq a => a -> [a] -> Int
 count x = length . filter (==x)
 
 
--- The property map
-pmap :: (Ord a, Show a, Listable a) => Int -> ([a] -> [a]) -> [Bool]
-pmap n sort' =
-  [ holds n $ \xs ->          ordered (sort' xs)
-  , holds n $ \xs ->           length (sort' xs) == length xs
-  , holds n $ \x xs ->         elem x (sort' xs) == elem x xs
-  , holds n $ \x xs ->        count x (sort' xs) == count x xs
-  , holds n $ \xs ->   permutation xs (sort' xs)
-  , holds n $ \xs ->            sort' (sort' xs) == sort' xs
-  , holds n $ \x xs ->       insert x (sort' xs) == sort' (x:xs)
+properties :: (Ord a, Show a, Listable a)
+           => ([a] -> [a]) -> [Property]
+properties sort =
+  [ property $ \xs ->          ordered (sort xs)
+  , property $ \xs ->           length (sort xs) == length xs
+  , property $ \x xs ->         elem x (sort xs) == elem x xs
+  , property $ \x xs ->        count x (sort xs) == count x xs
+  , property $ \xs ->   permutation xs (sort xs)
+  , property $ \xs ->             sort (sort xs) == sort xs
+  , property $ \x xs ->       insert x (sort xs) == sort (x:xs)
   ]
 
 
@@ -52,7 +52,7 @@ type Ty a = [a] -> [a]
 
 main :: IO ()
 main = do
-  let run f = mainWith sargs f pmap
+  let run f = mainWith sargs f properties
   ty <- typeArgument
   case ty of
     "bool"  -> run (sort :: Ty Bool)

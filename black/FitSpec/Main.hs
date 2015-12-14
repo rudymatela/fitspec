@@ -45,11 +45,11 @@ typeArgument = liftM type__ (cmdArgs overrideArgs)
 
 mainWith :: (Mutable a, ShowMutable a)
          => Args a
-         -> a -> (Int -> a -> [Bool]) -> IO ()
-mainWith args f pmap = do
+         -> a -> (a -> [Property]) -> IO ()
+mainWith args f props = do
   or <- cmdArgs overrideArgs
-  reportWith (override args or) f pmap
+  reportWith (override args or) f props
 
 defaultMain :: (Mutable a, ShowMutable a)
-            => a -> (Int -> a -> [Bool]) -> IO ()
+            => a -> (a -> [Property]) -> IO ()
 defaultMain = mainWith args

@@ -1,5 +1,4 @@
 import FitSpec
-import FitSpecC
 import Mutate.Show
 import Test.Check
 import Mutate
@@ -45,36 +44,26 @@ correctHeight t =  height t == explicitHeight t
     explicitHeight (Node _ lt _ gt) = max (height lt) (height gt) + 1
 
 
-propertyMap :: (Ord a, Show a, Listable a)
-            => Int
-            -> ((a,Tree a) -> Tree a)
-            -> ((a,Tree a) -> Tree a)
-            -> ((a,Tree a) -> Maybe a)
-            -> [Bool]
-propertyMap n insert'' remove'' find'' =
-  [ holds n $ \x t -> ordered (insert' x t)             --  1
-  , holds n $ \x t -> ordered (remove' x t)             --  2
-  , holds n $ \x t -> balanced (insert' x t)            --  3
-  , holds n $ \x t -> balanced (remove' x t)            --  4
-  , holds n $ \x t -> underHeightLimit (insert' x t)    --  5
-  , holds n $ \x t -> underHeightLimit (remove' x t)    --  6
-  , holds n $ \x t -> correctHeight (insert' x t)       --  7
-  , holds n $ \x t -> correctHeight (remove' x t)       --  8
-  , holds n $ \x t -> find' x (insert' x t) == Just x   --  9
-  , holds n $ \x t -> find' x (remove' x t) == Nothing  -- 10
+properties :: (Ord a, Show a, Listable a)
+           => (a -> Tree a -> Tree a)
+           -> (a -> Tree a -> Tree a)
+           -> (a -> Tree a -> Maybe a)
+           -> [Property]
+properties insert remove find =
+  [ property $ \x t -> ordered (insert x t)             --  1
+  , property $ \x t -> ordered (remove x t)             --  2
+  , property $ \x t -> balanced (insert x t)            --  3
+  , property $ \x t -> balanced (remove x t)            --  4
+  , property $ \x t -> underHeightLimit (insert x t)    --  5
+  , property $ \x t -> underHeightLimit (remove x t)    --  6
+  , property $ \x t -> correctHeight (insert x t)       --  7
+  , property $ \x t -> correctHeight (remove x t)       --  8
+  , property $ \x t -> find x (insert x t) == Just x    --  9
+  , property $ \x t -> find x (remove x t) == Nothing   -- 10
   ]
-  where insert' = curry insert''
-        remove' = curry remove''
-        find'   = curry find''
-        holdE n = errorToFalse . holds n
-        orderedList []       = True
+  where orderedList []       = True
         orderedList [_]      = True
         orderedList (x:y:xs) = x < y && orderedList (y:xs)
-
-
-csargs = cargs { functionNames = ["insert","remove","find"]
-               , nResults = Just 10
-               }
 
 sargs = args
   { nTestsF = (`div` 5)
@@ -83,10 +72,8 @@ sargs = args
 
 main :: IO ()
 main = do reportWith sargs {nMutants = 5000}
-                     (uncurry insert :: (Int,Tree Int) -> Tree Int, uncurry remove, uncurry find) pmap
-          report3 5000 (uncurry insert :: (Int,Tree Int) -> Tree Int) (uncurry remove) (uncurry find) (propertyMap 1000)
-  where pmap = uncurry3 . propertyMap
-
+                     (insert :: Int -> Tree Int -> Tree Int, remove, find)
+                     (uncurry3 properties)
 
 uncurry3 :: (a -> b -> c -> d) -> (a,b,c) -> d
 uncurry3 f = \(x,y,z) -> f x y z
