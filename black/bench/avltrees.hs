@@ -1,10 +1,15 @@
+{-# LANGUAGE CPP #-}
 import FitSpec
 import Mutate.Show
 import Test.Check
 import Mutate
 import AVLTree
 import Utils (errorToFalse)
+#if __GLASGOW_HASKELL__ >= 706
 import Prelude hiding (insert,find)
+#else
+import Prelude
+#endif
 
 
 instance (Ord a, Listable a) => Listable (Tree a) where

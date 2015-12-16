@@ -1,8 +1,16 @@
+{-# LANGUAGE CPP #-}
 import FitSpec.Main
 import Test.Check
 import Mutate
 import Mutate.Show
 import Text.PrettyPrint
+
+#if __GLASGOW_HASKELL__ < 710
+-- pretty <= 1.1.1.1 (bundled with GHC <= 7.8)  does not provide this instance
+-- pretty >= 1.1.2.0 (bundled with GHC >= 7.10) does provide this instance
+instance Eq Doc where
+  d == d' = show d == show d'
+#endif
 
 instance Listable Doc where
   listing = cons1 text  -- TODO: Improve this
