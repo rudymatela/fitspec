@@ -4,6 +4,9 @@
 #endif
 module CatchEvaluation (catchE, catchedE, noE, throwE) where
 
+#if __GLASGOW_HASKELL__ <= 704
+import Prelude hiding (catch)
+#endif
 import System.IO.Unsafe
 import Control.Exception
 import Data.Maybe
