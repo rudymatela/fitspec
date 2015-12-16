@@ -1,3 +1,4 @@
+{-# LANGUAGE CPP #-}
 -- | General purpose utility functions.
 module Utils
   ( (...)
@@ -25,6 +26,9 @@ module Utils
   )
 where
 
+#if __GLASGOW_HASKELL__ <= 704
+import Prelude hiding (catch)
+#endif
 import System.IO.Unsafe (unsafePerformIO)
 import Control.Exception ( Exception
                          , SomeException
