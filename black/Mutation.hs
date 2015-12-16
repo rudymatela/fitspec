@@ -94,7 +94,8 @@ makeMutantTraps3 f g h bs cs ds = map (\(bs',cs',ds') -> (makeMutant f bs', make
                                       (makeBindingTraps3 bs cs ds)
 
 makeBindingTraps :: Eq a => Mutation a b -> [Mutation a b]
-makeBindingTraps = spread (fmap throwE)
+makeBindingTraps = spread (mapSnd throwE)
+  where mapSnd f (x,y) = (x,f y) -- could be fmap
 
 makeBindingTraps2 :: (Eq a, Eq c) => Mutation a b -> Mutation c d -> [(Mutation a b,Mutation c d)]
 makeBindingTraps2 bs cs = map (\bs' -> (bs',cs)) (makeBindingTraps bs)
