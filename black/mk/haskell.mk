@@ -1,6 +1,16 @@
 # Haskell implicit rules
 #
-# Configure variables below *before* importing this into your main makefile
+# You can optionally configure the "Configuration variables" below in your main
+# makefile, e.g.:
+#
+#   GHCIMPORTDIRS = path/to/dir:path/to/another/dir
+#   GHCFLAGS = -O2 -dynamic
+#   GHC = ghc-7.6
+#   include haskell.mk
+#
+# NOTE:
+#   * Setting -O2 on GHCFLAGS will break GHCi
+#                (which does not support -O2)
 
 
 
@@ -8,7 +18,8 @@
 
 # GHC Parameters
 GHCIMPORTDIRS ?=
-GHCFLAGS ?= -i$(GHCIMPORTDIRS)
+GHCFLAGS ?=
+GHC ?= ghc
 
 # Makefile where to keep the dependencies
 DEPMK ?= mk/depend.mk
@@ -24,17 +35,17 @@ LISTHS ?= find \( -path "./dist" -o -path "./Setup.hs" \) -prune \
 
 
 # Implicit rules
-GHC = ghc $(GHCFLAGS)
+GHCCMD = $(GHC) -i$(GHCIMPORTDIRS) $(GHCFLAGS)
 
 %.hi %.o: %.hs
-	$(GHC) $< && touch $@
+	$(GHCCMD) $< && touch $@
 
 %: %.hs
-	$(GHC) $< && touch $@
+	$(GHCCMD) $< && touch $@
 
 .PHONY: %.ghci
 %.ghci: %.hs
-	ghci $(GHCFLAGS) $<
+	$(GHCCMD) --interactive $<
 
 
 # Cleaning rule (add as a clean dependency)
