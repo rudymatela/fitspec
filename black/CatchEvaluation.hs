@@ -1,11 +1,22 @@
+{-# LANGUAGE CPP #-}
+#if __GLASGOW_HASKELL__ < 710
+{-# LANGUAGE DeriveDataTypeable #-}
+#endif
 module CatchEvaluation (catchE, catchedE, noE, throwE) where
 
 import System.IO.Unsafe
 import Control.Exception
 import Data.Maybe
+import Data.Functor ((<$>))
 
+#if __GLASGOW_HASKELL__ >= 710
 data Evaluated = Evaluated
   deriving Show
+#else
+import Data.Typeable
+data Evaluated = Evaluated
+  deriving (Show, Typeable)
+#endif
 
 instance Exception Evaluated
 
