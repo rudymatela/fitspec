@@ -156,17 +156,17 @@ propertyE :: Testable a
           => a -> Property
 propertyE = map (errorToFalse *** id) . resultArguments
 
-propertyHold :: Int -> Property -> Bool
-propertyHold n = and . map fst . take n
+propertyHolds :: Int -> Property -> Bool
+propertyHolds n = and . map fst . take n
 
 propertyCE :: Int -> Property -> Maybe String
 propertyCE n = listToMaybe . map (unwords . snd) . filter (not . fst) . take n
 
 propertiesToMap :: [Property] -> Int -> [Bool]
-propertiesToMap ps n = map (propertyHold n) ps
+propertiesToMap ps n = map (propertyHolds n) ps
 
 propertiesHold :: Int -> [Property] -> Bool
-propertiesHold n = and . map (propertyHold n)
+propertiesHold n = and . map (propertyHolds n)
 
 propertiesCE :: Int -> [Property] -> Maybe String
 propertiesCE n = listToMaybe
