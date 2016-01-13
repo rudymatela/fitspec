@@ -63,7 +63,7 @@ main = do putStrLn "### Strict mutant enumerations ###"
                           , showPropertySets = unlines
                           , nTestsF = (*100)
                           , callNames = ["not p","p && q","p && q"] }
-                     (not,(&&),(||)) (uncurry3 . pMapNAO)
+                     (not,(&&),(||)) (uncurry3 propertiesNAO)
           -- -}
 
 uncurry3 :: (a -> b -> c -> d) -> (a, b, c) -> d
