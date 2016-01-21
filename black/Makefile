@@ -29,7 +29,8 @@ BENCHS = bench/avltrees \
 		 bench/sieve \
 		 bench/sorting \
 		 bench/spring
-TESTS = tests/test-mutate
+TESTS = tests/test-mutate \
+        tests/test-derive
 
 all: $(OBJS)
 
@@ -37,6 +38,7 @@ benchs: $(BENCHS) all
 
 test: all benchs $(TESTS)
 	./tests/test-mutate
+	./tests/test-derive
 
 legacy-test:
 	make clean && make test GHC=ghc-7.8
@@ -47,7 +49,7 @@ legacy-test:
 legacy-test-via-cabal:
 	cabal clean && cabal-ghc-7.8 configure --enable-tests --enable-benchmarks && cabal-ghc-7.8 build && cabal-ghc-7.8 test
 	cabal clean && cabal-ghc-7.6 configure --enable-tests --enable-benchmarks && cabal-ghc-7.6 build && cabal-ghc-7.6 test
-	cabal clean && cabal-ghc-7.4 configure --enable-tests --enable-benchmarks && cabal-ghc-7.6 build && cabal-ghc-7.4 test
+	cabal clean && cabal-ghc-7.4 configure --enable-tests --enable-benchmarks && cabal-ghc-7.4 build && cabal-ghc-7.4 test
 	cabal clean
 
 
