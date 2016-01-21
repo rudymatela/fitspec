@@ -60,6 +60,6 @@ clean-hi-o:
 # Update dependency file
 .PHONY: depend
 depend:
-	$(LISTHS) | ./mk/ghcdeps $(GHCFLAGS) > $(DEPMK)
+	$(LISTHS) | ./mk/ghcdeps -i$(GHCIMPORTDIRS) $(GHCFLAGS) > $(DEPMK)
 
 include $(DEPMK)
