@@ -63,8 +63,8 @@ reallyDeriveMutable t = do
         where mutantS = mutantSEq |]
     `appendInstancesCxtQ` cxt
 #else
-reallyDeriveListable :: Name -> DecsQ
-reallyDeriveListable t = do
+reallyDeriveMutable :: Name -> DecsQ
+reallyDeriveMutable t = do
   (nt,vs) <- normalizeType t
   cxt <- sequence $ [classP ''Listable [return v] | v <- vs]
                  ++ [classP ''Eq       [return v] | v <- vs]
@@ -72,11 +72,11 @@ reallyDeriveListable t = do
   return [ InstanceD
              cxt
              (AppT (ConT ''Mutable) nt)
-             [ValD (VarP 'lsMutants) (NormalB 'lsMutantsEq) []]
+             [ValD (VarP 'lsMutants) (NormalB (VarE 'lsMutantsEq)) []]
          , InstanceD
              cxt
              (AppT (ConT ''ShowMutable) nt)
-             [ValD (VarP 'mutantS) (NormalB 'mutantSEq) []]
+             [ValD (VarP 'mutantS) (NormalB (VarE 'mutantSEq)) []]
          ]
 -- TODO: Fix above, is `NormalB 'mutantSEq`, should be something else
 #endif
