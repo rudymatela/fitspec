@@ -30,3 +30,4 @@ black/eg/sorting
 
 # black tests
 black/tests/test-mutate
+black/tests/test-derive
