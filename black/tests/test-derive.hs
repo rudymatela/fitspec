@@ -48,6 +48,9 @@ tests n =
   , allUnique $ concat $ showNewMutants1 (id :: Id (D1 UInt2)) 7
   , allUnique $ concat $ showNewMutants1 (id :: Id (D2 UInt2 UInt2)) 7
   , allUnique $ concat $ showNewMutants1 (id :: Id (D3 UInt2 UInt2 UInt2)) 7
+  , allUnique $ concat $ showNewMutants1 (id :: Id (C1 UInt2)) 7
+  , allUnique $ concat $ showNewMutants1 (id :: Id (C2 UInt2 UInt2)) 7
+  , allUnique $ concat $ showNewMutants1 (id :: Id (I  UInt2 UInt2)) 7
   ]
 
 showNewMutants1 :: (ShowMutable a, Mutable a)
