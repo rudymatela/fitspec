@@ -44,7 +44,6 @@ deriveMutable t = do
 canDeriveMutable :: Name -> Q Bool
 canDeriveMutable = (`isInstanceOf` ''Eq)
 
--- TODO: Somehow check if the enumeration has repetitions, then warn the user.
 #if __GLASGOW_HASKELL__ >= 708
 reallyDeriveMutable :: Name -> DecsQ
 reallyDeriveMutable t = do
