@@ -14,6 +14,7 @@ LLCHECKPATH = ../../llcheck
 
 # Misc variables
 GHCIMPORTDIRS = $(LLCHECKPATH):bench
+GHCFLAGS = -dynamic
 FINDHS=find -name \*.hs \
             -a \! \( -path "./dist/*" \
                   -o -path "./bench/*" \
@@ -41,9 +42,9 @@ test: all benchs $(TESTS)
 	./tests/test-derive
 
 legacy-test:
-	make clean && make test GHC=ghc-7.8
-	make clean && make test GHC=ghc-7.6
-	make clean && make test GHC=ghc-7.4
+	make clean && make -C $(LLCHECKPATH) clean && make test GHC=ghc-7.8 GHCFLAGS="-Werror -dynamic"
+	make clean && make -C $(LLCHECKPATH) clean && make test GHC=ghc-7.6 GHCFLAGS=-Werror
+	make clean && make -C $(LLCHECKPATH) clean && make test GHC=ghc-7.4 GHCFLAGS=-Werror
 	make clean
 
 legacy-test-via-cabal:
