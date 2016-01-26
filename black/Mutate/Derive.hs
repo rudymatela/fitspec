@@ -51,7 +51,6 @@ canDeriveMutable t = (t `isInstanceOf` ''Eq)
                  &&& (t `isInstanceOf` ''Show)
   where (&&&) = liftM2 (&&)
 
-#if __GLASGOW_HASKELL__ >= 708
 reallyDeriveMutable :: Name -> DecsQ
 reallyDeriveMutable t = do
   (nt,vs) <- normalizeType t
@@ -64,17 +63,12 @@ reallyDeriveMutable t = do
                  ++ [classP ''Listable [return v] | v <- vs]
                  ++ [classP ''Show     [return v] | v <- vs]
 #endif
+#if __GLASGOW_HASKELL__ >= 708
   cxt |=>| [d| instance Mutable $(return nt)
                  where lsMutants = lsMutantsEq
                instance ShowMutable $(return nt)
                  where mutantS = mutantSEq |]
 #else
-reallyDeriveMutable :: Name -> DecsQ
-reallyDeriveMutable t = do
-  (nt,vs) <- normalizeType t
-  cxt <- sequence $ [classP ''Listable [return v] | v <- vs]
-                 ++ [classP ''Eq       [return v] | v <- vs]
-                 ++ [classP ''Show     [return v] | v <- vs]
   return [ InstanceD
              cxt
              (AppT (ConT ''Mutable) nt)
