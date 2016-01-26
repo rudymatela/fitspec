@@ -32,8 +32,7 @@ data Set a = Set [a] deriving (Show,Eq,Ord)
 instance (Ord a, Listable a) => Listable (Set a) where
   listing = lsmap Set $ lsCrescListsOf $ listing
 
--- TODO: make the following compile (extra context)
--- deriveMutable ''Set
+deriveMutableE [''Ord] ''Set
 
 main :: IO ()
 main =
@@ -53,6 +52,7 @@ tests n =
   , allUnique $ concat $ showNewMutants1 (id :: Id (C1 UInt2)) 7
   , allUnique $ concat $ showNewMutants1 (id :: Id (C2 UInt2 UInt2)) 7
   , allUnique $ concat $ showNewMutants1 (id :: Id (I  UInt2 UInt2)) 7
+  , allUnique $ concat $ showNewMutants1 (id :: Id (Set UInt2)) 7
   ]
 
 showNewMutants1 :: (ShowMutable a, Mutable a)

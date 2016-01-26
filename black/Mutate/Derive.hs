@@ -4,6 +4,7 @@
 -- Needs GHC and Template Haskell (tested on GHC 7.4, 7.6, 7.8 and 7.10)
 module Mutate.Derive
   ( deriveMutable
+  , deriveMutableE
   , deriveListable
   , module Mutate
   , module Mutate.Show
@@ -33,7 +34,12 @@ deriveListableIfNeeded t = do
 
 -- | Derives a Mutable instance for a given type ('Name').
 deriveMutable :: Name -> DecsQ
-deriveMutable t = do
+deriveMutable = deriveMutableE []
+
+-- | Derives a Mutable instance for a given type ('Name') using a given context
+--   ('[Name]') for all type variables.
+deriveMutableE :: [Name] -> Name -> DecsQ
+deriveMutableE cs t = do
   is <- t `isInstanceOf` ''Mutable
   if is
     then do
@@ -43,7 +49,7 @@ deriveMutable t = do
     else do
       cd <- canDeriveMutable t
       unless cd (fail $ "Unable to derive Mutable " ++ show t)
-      liftM2 (++) (deriveListableIfNeeded t) (reallyDeriveMutable t)
+      liftM2 (++) (deriveListableIfNeeded t) (reallyDeriveMutable cs t)
 
 -- | Checks whether it is possible to derive a Mutable instance.
 canDeriveMutable :: Name -> Q Bool
@@ -51,18 +57,15 @@ canDeriveMutable t = (t `isInstanceOf` ''Eq)
                  &&& (t `isInstanceOf` ''Show)
   where (&&&) = liftM2 (&&)
 
-reallyDeriveMutable :: Name -> DecsQ
-reallyDeriveMutable t = do
+reallyDeriveMutable :: [Name] -> Name -> DecsQ
+reallyDeriveMutable cs t = do
   (nt,vs) <- normalizeType t
 #if __GLASGOW_HASKELL__ >= 710
-  cxt <- sequence $ [[t| Eq       $(return v) |] | v <- vs]
-                 ++ [[t| Listable $(return v) |] | v <- vs]
-                 ++ [[t| Show     $(return v) |] | v <- vs]
+  cxt <- sequence $ [ [t| $(conT c) $(return v) |]
 #else
-  cxt <- sequence $ [classP ''Eq       [return v] | v <- vs]
-                 ++ [classP ''Listable [return v] | v <- vs]
-                 ++ [classP ''Show     [return v] | v <- vs]
+  cxt <- sequence $ [ classP c [return v]
 #endif
+                    | v <- vs, c <- ''Eq:''Listable:''Show:cs ]
 #if __GLASGOW_HASKELL__ >= 708
   cxt |=>| [d| instance Mutable $(return nt)
                  where lsMutants = lsMutantsEq
