@@ -78,7 +78,6 @@ reallyDeriveMutable t = do
              (AppT (ConT ''ShowMutable) nt)
              [ValD (VarP 'mutantS) (NormalB (VarE 'mutantSEq)) []]
          ]
--- TODO: Fix above, is `NormalB 'mutantSEq`, should be something else
 #endif
 
 
