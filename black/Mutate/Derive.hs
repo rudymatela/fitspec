@@ -31,14 +31,14 @@ deriveMutable :: Name -> DecsQ
 deriveMutable t = do
   is <- t `isInstanceOf` ''Mutable
   if is
-    then do reportWarning $ "Instance Mutable "
-                         ++ show t
-                         ++ " already exists, skipping derivation"
-            return []
-    else do cd <- canDeriveMutable t
-            when (not cd) (fail $ "Unable to derive Mutable "
-                               ++ show t)
-            reallyDeriveMutable t
+    then do
+      reportWarning $ "Instance Mutable " ++ show t
+                   ++ " already exists, skipping derivation"
+      return []
+    else do
+      cd <- canDeriveMutable t
+      when (not cd) (fail $ "Unable to derive Mutable " ++ show t)
+      reallyDeriveMutable t
 
 -- | Checks whether it is possible to derive a Mutable instance.
 canDeriveMutable :: Name -> Q Bool
