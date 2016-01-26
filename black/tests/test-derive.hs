@@ -11,13 +11,6 @@ data D3 a b c = D3 a b c              deriving (Show,Eq,Ord)
 data C1 a     =           C11 a | C10 deriving (Show,Eq,Ord)
 data C2 a b   = C22 a b | C21 a | C20 deriving (Show,Eq,Ord)
 data I a b    = a :+ b                deriving (Show,Eq,Ord)
-deriveListable ''D0
-deriveListable ''D1
-deriveListable ''D2
-deriveListable ''D3
-deriveListable ''C1
-deriveListable ''C2
-deriveListable ''I
 deriveMutable ''D0
 deriveMutable ''D1
 deriveMutable ''D2
@@ -28,9 +21,9 @@ deriveMutable ''I
 
 -- Those should have no effect (instance already exists):
 {- uncommenting those should generate warnings
-deriveListable ''Bool
-deriveListable ''Maybe
-deriveListable ''Either
+deriveMutable ''Bool
+deriveMutable ''Maybe
+deriveMutable ''Either
 -}
 
 main :: IO ()

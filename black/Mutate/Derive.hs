@@ -1,12 +1,10 @@
 {-# LANGUAGE TemplateHaskell, CPP #-}
 -- Experimental module for deriving Mutable instances
 --
--- Needs GHC and Template Haskell (tested on GHC 7.10)
+-- Needs GHC and Template Haskell (tested on GHC 7.4, 7.6, 7.8 and 7.10)
 module Mutate.Derive
   ( deriveMutable
---, deriveShowMutable
   , deriveListable
---, deriveInstances
   , module Mutate
   , module Mutate.Show
   , module Test.Check
@@ -18,13 +16,20 @@ import Test.Check
 import Test.Check.Derive
 import Mutate
 import Mutate.Show
-import Control.Monad (when, unless, liftM2)
+import Control.Monad (when, unless, liftM, liftM2)
 
 #if __GLASGOW_HASKELL__ < 706
 -- reportWarning was only introduced in GHC 7.6 / TH 2.8
 reportWarning :: String -> Q ()
 reportWarning = report False
 #endif
+
+deriveListableIfNeeded :: Name -> DecsQ
+deriveListableIfNeeded t = do
+  is <- t `isInstanceOf` ''Listable
+  if is
+    then return []
+    else deriveListable t
 
 -- | Derives a Mutable instance for a given type ('Name').
 deriveMutable :: Name -> DecsQ
@@ -38,12 +43,11 @@ deriveMutable t = do
     else do
       cd <- canDeriveMutable t
       unless cd (fail $ "Unable to derive Mutable " ++ show t)
-      reallyDeriveMutable t
+      liftM2 (++) (deriveListableIfNeeded t) (reallyDeriveMutable t)
 
 -- | Checks whether it is possible to derive a Mutable instance.
 canDeriveMutable :: Name -> Q Bool
 canDeriveMutable t = (t `isInstanceOf` ''Eq)
-                 &&& (t `isInstanceOf` ''Listable)
                  &&& (t `isInstanceOf` ''Show)
   where (&&&) = liftM2 (&&)
 
