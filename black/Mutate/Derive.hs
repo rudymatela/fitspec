@@ -18,7 +18,7 @@ import Test.Check
 import Test.Check.Derive
 import Mutate
 import Mutate.Show
-import Control.Monad (when, liftM2)
+import Control.Monad (when, unless, liftM2)
 
 #if __GLASGOW_HASKELL__ < 706
 -- reportWarning was only introduced in GHC 7.6 / TH 2.8
@@ -37,7 +37,7 @@ deriveMutable t = do
       return []
     else do
       cd <- canDeriveMutable t
-      when (not cd) (fail $ "Unable to derive Mutable " ++ show t)
+      unless cd (fail $ "Unable to derive Mutable " ++ show t)
       reallyDeriveMutable t
 
 -- | Checks whether it is possible to derive a Mutable instance.
