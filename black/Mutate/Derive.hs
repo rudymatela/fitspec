@@ -42,7 +42,10 @@ deriveMutable t = do
 
 -- | Checks whether it is possible to derive a Mutable instance.
 canDeriveMutable :: Name -> Q Bool
-canDeriveMutable = (`isInstanceOf` ''Eq)
+canDeriveMutable t = (t `isInstanceOf` ''Eq)
+                 &&& (t `isInstanceOf` ''Listable)
+                 &&& (t `isInstanceOf` ''Show)
+  where (&&&) = liftM2 (&&)
 
 #if __GLASGOW_HASKELL__ >= 708
 reallyDeriveMutable :: Name -> DecsQ
