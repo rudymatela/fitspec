@@ -3,6 +3,7 @@ import Mutate.Derive
 import Test.Types.Mutate
 import System.Exit (exitFailure)
 import Data.List (elemIndices,sort)
+import Test.Check.Utils
 
 data D0       = D0                    deriving (Show,Eq,Ord)
 data D1 a     = D1 a                  deriving (Show,Eq,Ord)
@@ -25,6 +26,14 @@ deriveMutable ''Bool
 deriveMutable ''Maybe
 deriveMutable ''Either
 -}
+
+data Set a = Set [a] deriving (Show,Eq,Ord)
+
+instance (Ord a, Listable a) => Listable (Set a) where
+  listing = lsmap Set $ lsCrescListsOf $ listing
+
+-- TODO: make the following compile (extra context)
+-- deriveMutable ''Set
 
 main :: IO ()
 main =
