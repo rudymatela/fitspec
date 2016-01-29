@@ -194,7 +194,7 @@ reportWith args f properties =
      case propertiesCE nt (properties f) of
        Nothing -> return () -- Just carry on
        Just ce -> do
-         putStrLn $ "WARNING: The original function does not follow the property set for "
+         putStrLn $ "WARNING: The original function(s) does not follow the property set for "
                  ++ show nt ++ " tests"
          putStrLn $ "         property " ++ ce
 
