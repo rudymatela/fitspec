@@ -237,6 +237,7 @@ reportWith args f properties =
 
 showEIs :: Bool -> [Result a] -> [[String]]
 showEIs showMore = concatMap showEI
+                 . sortOn (abs . (50-) . score)
                  . (if showMore
                       then id
                       else reduceImplications
