@@ -238,6 +238,10 @@ reportWith args f properties =
 showEIs :: Bool -> [Result a] -> [[String]]
 showEIs showMore = concatMap showEI
                  . sortOn (abs . (50-) . score)
+                 . (if False -- TODO: on showEI, add showVeryWeak parameter
+                      then id
+                      else filter (\r -> nKilled r    /= 0
+                                      && nSurvivors r /= 0))
                  . (if showMore
                       then id
                       else reduceImplications
