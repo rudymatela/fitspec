@@ -188,36 +188,36 @@ reportWith :: Mutable a
            -> a
            -> (a -> [Property])
            -> IO ()
-reportWith args f properties =
-  do let nm = nMutants args
-         nt = nTestsF args nm
-     case propertiesCE nt (properties f) of
-       Nothing -> return () -- Just carry on
-       Just ce -> do
-         putStrLn $ "WARNING: The original function(s) does not follow the property set for "
-                 ++ show nt ++ " tests"
-         putStrLn $ "         property " ++ ce
+reportWith args f properties = do
+  let nm = nMutants args
+      nt = nTestsF args nm
+  case propertiesCE nt (properties f) of
+    Nothing -> return () -- Just carry on
+    Just ce -> do
+      putStrLn $ "WARNING: The original function(s) does not follow the property set for "
+              ++ show nt ++ " tests"
+      putStrLn $ "         property " ++ ce
 
-     (n,results) <- lastTimeout (minimumTime args) resultss
-     let nm = totalMutants $ head results
-         nt = nTestsF args nm
+  (n,results) <- lastTimeout (minimumTime args) resultss
+  let nm = totalMutants $ head results
+      nt = nTestsF args nm
 
-     putStrLn $ "Results based on " ++ showNTM nt nm ++ ".\n"
-     putStrLn . table "   "
-              . intersperse [ "\n" ]
-              . ([ "Property\n sets"
-                 , "#Survivors\n (%Killed)"
-                 , "Smallest or simplest\n surviving mutant"
-                 ]:)
-              . map showResult
-              . maybe id take (limitResults args)
-              $ results
+  putStrLn $ "Results based on " ++ showNTM nt nm ++ ".\n"
+  putStrLn . table "   "
+           . intersperse [ "\n" ]
+           . ([ "Property\n sets"
+              , "#Survivors\n (%Killed)"
+              , "Smallest or simplest\n surviving mutant"
+              ]:)
+           . map showResult
+           . maybe id take (limitResults args)
+           $ results
 
-     let eis = showEIs (showMoreEI args) results
-     putStrLn $ if null eis
-       then "No conjectures."
-       else "Conjectures based on " ++ showNTM nt nm ++ ":"
-     putStrLn (table " " eis)
+  let eis = showEIs (showMoreEI args) results
+  putStrLn $ if null eis
+    then "No conjectures."
+    else "Conjectures based on " ++ showNTM nt nm ++ ":"
+  putStrLn (table " " eis)
   where
     pmap n f = propertiesToMap (properties f) n
     resultss = takeWhileIncreasingOn (totalMutants . head . snd)
