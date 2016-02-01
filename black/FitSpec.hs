@@ -251,9 +251,8 @@ showEI r = map (\p' -> [show p, " = ", show p', "   ", show s ++ "% killed", sMe
         i      = implied r
         s      = score r
         sMeaning | s < 1  || 99 < s = "(very weak)"
-                 | s < 4  || 96 < s = "(quite weak)"
-                 | s < 10 || 90 < s = "(weak)"
-                 | s < 25 || 75 < s = "(mild)"
+                 | s < 11 || 89 < s = "(weak)"
+                 | s < 33 || 67 < s = "(mild)"
                  | otherwise        = "(strong)" -- the closer to 50 the better
 -- TODO: improve implication score
 -- implication score can be improved by
