@@ -70,6 +70,9 @@ data Args a = Args
   , showMutantN :: [String] -> a -> a -> String -- ^ special mutant show
   }
 
+nTests :: Args a -> Int
+nTests as = nTestsF as (nMutants as)
+
 -- | Default arguments for 'reportWith':
 --
 -- * @nMutants = 500@,
@@ -171,7 +174,7 @@ propertiesHold n = and . map (propertyHolds n)
 propertiesCE :: Int -> [Property] -> Maybe String
 propertiesCE n = listToMaybe
                . catMaybes
-               . zipWith (\n -> fmap ((show n ++ ".  ") ++)) [1..]
+               . zipWith (\n -> fmap ((show n ++ ":  ") ++)) [1..]
                . map (propertyCE n)
 
 
@@ -192,12 +195,21 @@ reportWith args f properties = do
   let nm = nMutants args
       nt = nTestsF args nm
   case propertiesCE nt (properties f) of
-    Nothing -> return () -- Just carry on
+    Nothing -> reportWith' args f properties
     Just ce -> do
-      putStrLn $ "WARNING: The original function(s) does not follow the property set for "
+      putStrLn $ "ERROR: The original function-set does not follow property-set for "
               ++ show nt ++ " tests"
-      putStrLn $ "         property " ++ ce
+      putStrLn $ "Counter-example to property " ++ ce
+      putStrLn $ "Aborting."
 
+-- | Same as 'reportWith', does not abort if the original function does not
+--   follow the property set.
+reportWith' :: Mutable a
+            => Args a
+            -> a
+            -> (a -> [Property])
+            -> IO ()
+reportWith' args f properties = do
   results <- lastTimeout (minimumTime args) resultss
   let nm = totalMutants $ head results
       nt = nTestsF args nm
