@@ -7,7 +7,6 @@ module Mutate
 where
 
 import Test.Check
-import Test.Check.Utils
 import Data.List (intercalate, delete)
 import Data.Maybe
 import Utils (errorToNothing)
@@ -24,11 +23,14 @@ class Mutable a where
 -- repeated elements there will be repeated and potentially null mutants.
 instance (Eq a, Listable a, Mutable b) => Mutable (a -> b) where
   lsMutants f = lsmap (defaultFunPairsToFunction f)
-              $ lsConcatMap (`associations'` mutantsFor)
-              $ lsCrescListsOf listing
+              $ lsConcatMap (`lsAssociations'` mutantsFor)
+              $ lsStrictlyAscendingListsOf listing
     where mutantsFor x = case errorToNothing (f x) of
                            Nothing -> [[]]
                            Just fx -> tail (lsMutants fx)
+
+lsAssociations' :: [a] -> (a -> [[b]]) -> [[[(a,b)]]]
+lsAssociations' xs f = lsmap (zip xs) (lsProducts (map f xs))
 
 lsdelete :: Eq a => a -> [[a]] -> [[a]]
 lsdelete x = lsnormalize . map (delete x)

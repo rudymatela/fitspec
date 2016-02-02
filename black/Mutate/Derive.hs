@@ -9,7 +9,7 @@
 module Mutate.Derive
   ( deriveMutable
   , deriveMutableE
-  , deriveListable
+--, deriveListable
   , module Mutate
   , module Mutate.Show
   , module Test.Check
