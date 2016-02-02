@@ -43,8 +43,8 @@ test: all benchs $(TESTS)
 
 legacy-test:
 	make clean && make -C $(LLCHECKPATH) clean && make test GHC=ghc-7.8 GHCFLAGS="-Werror -dynamic"
-	make clean && make -C $(LLCHECKPATH) clean && make test GHC=ghc-7.6 GHCFLAGS=-Werror
-	make clean && make -C $(LLCHECKPATH) clean && make test GHC=ghc-7.4 GHCFLAGS=-Werror
+	make clean && make -C $(LLCHECKPATH) clean && make test GHC=ghc-7.6 GHCFLAGS="-Werror -fno-warn-unrecognised-pragmas"
+	make clean && make -C $(LLCHECKPATH) clean && make test GHC=ghc-7.4 GHCFLAGS="-Werror -fno-warn-unrecognised-pragmas"
 	make clean
 
 legacy-test-via-cabal:
