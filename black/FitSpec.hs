@@ -198,7 +198,7 @@ reportWith args f properties = do
               ++ show nt ++ " tests"
       putStrLn $ "         property " ++ ce
 
-  (n,results) <- lastTimeout (minimumTime args) resultss
+  results <- lastTimeout (minimumTime args) resultss
   let nm = totalMutants $ head results
       nt = nTestsF args nm
 
@@ -220,9 +220,9 @@ reportWith args f properties = do
   putStrLn (table " " eis)
   where
     pmap n f = propertiesToMap (properties f) n
-    resultss = takeWhileIncreasingOn (totalMutants . head . snd)
+    resultss = takeWhileIncreasingOn (totalMutants . head)
              $ map (\n -> let results = getResultsExtra (extraMutants args) n f (pmap (nTestsF args n))
-                          in foldr seq (n,results) results)
+                          in foldr seq results results) -- evaluate head -> evaluate trunk
                    (iterate (\x -> x + x `div` 2) (nMutants args))
     showResult r = [ showI $ sets r -- ++ "==>" show (implied r)
                    , show  (nSurvivors r) ++ " (" ++ show (score r) ++ "%)"
