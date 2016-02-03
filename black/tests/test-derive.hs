@@ -29,7 +29,7 @@ deriveMutable ''Either
 data Set a = Set [a] deriving (Show,Eq,Ord)
 
 instance (Ord a, Listable a) => Listable (Set a) where
-  listing = lsmap Set $ lsSetsOf $ listing
+  listing = consFromSet Set
 
 deriveMutableE [''Ord] ''Set
 
