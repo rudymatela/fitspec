@@ -4,7 +4,12 @@
 -- ones that did have not.
 --
 -- This version is much less flexible and is still very experimental.
-module FitSpecC where
+--
+-- It is called "Grey" because, despite being mostly black-box,
+-- it catches evalutaion of mutated parts by raising errors
+-- inside functions (unsafePerformIO).
+-- Not totally black-box, neither totally white-box.
+module FitSpec.Grey where
 
 import Test.Check
 import Test.Check.Utils
@@ -13,11 +18,11 @@ import Data.Ord
 import Data.Monoid
 import Data.Maybe (catMaybes, listToMaybe)
 import PPPrint
-import Mutation
+import FitSpec.Grey.Mutation
 import Utils
 import Data.Either (lefts, rights)
 import Control.Applicative (liftA2)
-import CatchEvaluation
+import FitSpec.Grey.CatchEvaluation
 
 -- | Extra arguments for 'getResultsWith' and 'reportWith'
 data CArgs = CArgs

@@ -2,7 +2,12 @@
 #if __GLASGOW_HASKELL__ < 710
 {-# LANGUAGE DeriveDataTypeable #-}
 #endif
-module CatchEvaluation (catchE, catchedE, noE, throwE) where
+module FitSpec.Grey.CatchEvaluation
+  ( catchE
+  , catchedE
+  , noE
+  , throwE)
+where
 
 #if __GLASGOW_HASKELL__ <= 704
 import Prelude hiding (catch)
