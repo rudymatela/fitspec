@@ -4,7 +4,6 @@ import Mutate.Show
 import Test.Check
 import Mutate
 import AVLTree
-import Utils (errorToFalse)
 #if __GLASGOW_HASKELL__ >= 706
 import Prelude hiding (insert,find)
 #else

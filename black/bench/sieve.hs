@@ -5,7 +5,6 @@ import FitSpec.Main
 import Test.Check
 import Test.Types.Mutate
 import Data.Maybe
-import Utils (errorToFalse)
 
 -- The code under test
 primes :: [Int]
@@ -52,8 +51,7 @@ properties primes =
 --, all prime            (take n primes)              -- sound
 --, all (`elemO` primes) [ x | x <- [1..n], prime x ] -- complete
   ]
-  where holdE n = errorToFalse . holds n
-        prime x = x > 1
+  where prime x = x > 1
                && all (\p -> p > 0 && x `mod` p /= 0)
                       (takeWhile (\p -> p*p <= x) primes)
 

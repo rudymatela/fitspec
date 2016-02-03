@@ -11,7 +11,7 @@ import Prelude hiding (null)
 import qualified Data.List as L
 import Data.Maybe (listToMaybe)
 import Heap
-import Utils (uncurry3,errorToFalse)
+import Utils (uncurry3)
 import Control.Monad (unless)
 
 instance (Ord a, Listable a) => Listable (Heap a) where

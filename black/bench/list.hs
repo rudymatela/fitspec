@@ -5,7 +5,7 @@ import Data.List
 import Test.Check
 import Test.Types
 import Test.Types.Mutate
-import Utils (errorToFalse, uncurry4)
+import Utils (uncurry4)
 
 type Cons a = a -> [a] -> [a]
 type Head a = [a] -> a
