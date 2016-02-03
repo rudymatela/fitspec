@@ -5,7 +5,6 @@ import Data.List
 import Test.Check
 import Test.Types
 import Test.Types.Mutate
-import Utils (uncurry4)
 
 type Cons a = a -> [a] -> [a]
 type Head a = [a] -> a
@@ -72,3 +71,7 @@ xs ++- ys = []
 xs ++-- ys = if length xs > length ys
                then xs
                else ys
+
+uncurry4 :: (a -> b -> c -> d -> e) -> (a,b,c,d) -> e
+uncurry4 f (x,y,z,w) = f x y z w
+

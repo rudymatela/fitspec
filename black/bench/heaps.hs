@@ -11,7 +11,6 @@ import Prelude hiding (null)
 import qualified Data.List as L
 import Data.Maybe (listToMaybe)
 import Heap
-import Utils (uncurry3)
 import Control.Monad (unless)
 
 instance (Ord a, Listable a) => Listable (Heap a) where
@@ -98,3 +97,6 @@ maxMerge h Nil = h
 maxMerge h1@(Branch _ x1 l1 r1) h2@(Branch _ x2 l2 r2)
  | x1 <= x2 = branch x1 (maxMerge l1 h2) r1
  | otherwise = maxMerge h2 h1
+
+uncurry3 :: (a->b->c->d) -> (a,b,c) -> d
+uncurry3 f (x,y,z) = f x y z
