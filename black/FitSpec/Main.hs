@@ -3,11 +3,11 @@ module FitSpec.Main
   ( mainWith
   , defaultMain
   , typeArgument
-  , module FitSpec
+  , module FitSpec.Engine -- deprecated export, remove later
   )
 where
 
-import FitSpec
+import FitSpec.Engine
 import System.Console.CmdArgs hiding (args)
 import Control.Monad (liftM)
 import Mutate
