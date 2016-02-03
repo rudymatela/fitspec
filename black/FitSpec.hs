@@ -37,7 +37,6 @@ module FitSpec
   , property
   , propertyE
   , Property
-  , propertiesToMap -- remove this export
   )
 where
 
