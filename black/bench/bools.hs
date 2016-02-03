@@ -1,5 +1,4 @@
 import FitSpec
-import FitSpecC
 import Test.Check
 
 
