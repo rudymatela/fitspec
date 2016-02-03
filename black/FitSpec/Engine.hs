@@ -127,7 +127,7 @@ args = Args { nMutants = 500
             , extraMutants = []
             , showPropertySets = unwords -- join by spaces
             , showMoreEI = False
-            , showMutantN = Mutate.Show.showMutantN
+            , showMutantN = FitSpec.ShowMutable.showMutantN
             }
 
 -- Non timed-out default arguments.

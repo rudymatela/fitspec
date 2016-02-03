@@ -9,9 +9,9 @@
 module FitSpec.Derive 
   ( deriveMutable
   , deriveMutableE
---, deriveListable
-  , module Mutable
-  , module ShowMutable
+  , module FitSpec.Mutable
+  , module FitSpec.ShowMutable
+  , module Test.Check
   )
 where
 

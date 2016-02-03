@@ -1,6 +1,7 @@
 {-# Language DeriveDataTypeable, NoMonomorphismRestriction #-}
 import System.Console.CmdArgs hiding (args)
 import FitSpec
+import Test.Check (lsSetsOf)
 import Prelude hiding (null)
 import qualified Data.List as L
 import Data.Maybe (listToMaybe)
@@ -9,7 +10,7 @@ import Control.Monad (unless)
 
 instance (Ord a, Listable a) => Listable (Heap a) where
   listing = lsmap fromList
-          $ lsCrescListsOf listing -- :: [a]
+          $ lsSetsOf listing -- :: [a]
 
 -- a good property to assure that the above does not leave out elements is:
 --

@@ -1,5 +1,5 @@
 {-# LANGUAGE CPP #-}
-import FitSpec.Main
+import FitSpec
 import Test.Check
 import Text.PrettyPrint
 

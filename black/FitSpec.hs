@@ -3,9 +3,9 @@ module FitSpec
   ( module FitSpec.Engine
   , module FitSpec.Main
 
-  , module Mutable
-  , module ShowMutable
-  , module Derive
+  , module FitSpec.Mutable
+  , module FitSpec.ShowMutable
+  , module FitSpec.Derive
 
   , module Test.Types.Mutate
   , module Test.Check
