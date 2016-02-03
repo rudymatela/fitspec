@@ -1,4 +1,4 @@
-module Mutate.Show
+module FitSpec.ShowMutable
   ( ShowMutable (..)
   , mutantSEq
   )

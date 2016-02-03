@@ -3,9 +3,9 @@ module FitSpec
   ( module FitSpec.Engine
   , module FitSpec.Main
 
-  , module Mutate
-  , module Mutate.Show
-  , module Mutate.Derive
+  , module Mutable
+  , module ShowMutable
+  , module Derive
 
   , module Test.Types.Mutate
   , module Test.Check
@@ -17,9 +17,9 @@ where
 import FitSpec.Engine
 import FitSpec.Main
 
-import Mutate
-import Mutate.Show hiding (showMutantN)
-import Mutate.Derive hiding (showMutantN)
+import FitSpec.Mutable
+import FitSpec.ShowMutable hiding (showMutantN)
+import FitSpec.Derive hiding (showMutantN)
 
 import Test.Types.Mutate
 import Test.Check

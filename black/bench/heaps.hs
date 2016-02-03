@@ -1,12 +1,6 @@
 {-# Language DeriveDataTypeable, NoMonomorphismRestriction #-}
 import System.Console.CmdArgs hiding (args)
-import FitSpec.Main
-import Test.Check
-import Test.Check.Utils (lsCrescListsOf)
-import Test.Types
-import Test.Types.Mutate
-import Mutate
-import Mutate.Show
+import FitSpec
 import Prelude hiding (null)
 import qualified Data.List as L
 import Data.Maybe (listToMaybe)

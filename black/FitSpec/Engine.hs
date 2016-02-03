@@ -51,9 +51,9 @@ import Data.Ord
 import Data.Monoid
 import Data.Maybe (catMaybes, listToMaybe, isJust, isNothing)
 import Control.Monad (unless)
-import Mutate
-import Mutate.Show (ShowMutable)
-import qualified Mutate.Show (showMutantN)
+import FitSpec.Mutable
+import FitSpec.ShowMutable (ShowMutable)
+import qualified FitSpec.ShowMutable (showMutantN)
 import Utils
 import PPPrint
 

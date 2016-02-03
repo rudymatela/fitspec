@@ -9,8 +9,8 @@ import Data.Tuple (swap)
 import Test.Types
 import Test.Types.Mutate
 
-import Mutate
-import Mutate.Show
+import FitSpec.Mutable
+import FitSpec.ShowMutable
 
 
 main :: IO ()

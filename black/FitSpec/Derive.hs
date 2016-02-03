@@ -6,21 +6,20 @@
 -- Despite Mutable instances being actually very simple, this module can be
 -- used to derive those.  However, it will not work on all cases: when that
 -- happens, you should write your instances manually.
-module Mutate.Derive
+module FitSpec.Derive 
   ( deriveMutable
   , deriveMutableE
 --, deriveListable
-  , module Mutate
-  , module Mutate.Show
-  , module Test.Check
+  , module Mutable
+  , module ShowMutable
   )
 where
 
-import Language.Haskell.TH
+import FitSpec.Mutable
+import FitSpec.ShowMutable
+
 import Test.Check
-import Test.Check.Derive
-import Mutate
-import Mutate.Show
+import Language.Haskell.TH
 import Control.Monad (when, unless, liftM, liftM2)
 
 #if __GLASGOW_HASKELL__ < 706

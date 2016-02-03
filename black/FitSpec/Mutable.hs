@@ -1,5 +1,5 @@
 -- Enumeration of function mutations
-module Mutate
+module FitSpec.Mutable
   ( Mutable (..)
   , lsMutantsEq
   , mutantsIntegral

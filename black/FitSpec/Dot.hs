@@ -1,7 +1,6 @@
 module FitSpec.Dot where
 
 import FitSpec
-import Mutate
 import Utils
 import Data.List
 

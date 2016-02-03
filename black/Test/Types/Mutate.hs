@@ -1,7 +1,7 @@
 module Test.Types.Mutate (module Test.Types) where
 
-import Mutate
-import Mutate.Show
+import FitSpec.Mutable
+import FitSpec.ShowMutable
 import Test.Types
 
 -- {- Standard implementation:

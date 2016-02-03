@@ -1,5 +1,5 @@
 {-# LANGUAGE TemplateHaskell #-}
-import Mutate.Derive
+import FitSpec.Derive
 import Test.Types.Mutate
 import System.Exit (exitFailure)
 import Data.List (elemIndices,sort)

@@ -1,8 +1,6 @@
 {-# LANGUAGE CPP #-}
 import FitSpec
-import Mutate.Show
 import Test.Check
-import Mutate
 import AVLTree
 #if __GLASGOW_HASKELL__ >= 706
 import Prelude hiding (insert,find)

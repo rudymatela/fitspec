@@ -10,7 +10,7 @@ where
 import FitSpec.Engine
 import System.Console.CmdArgs hiding (args)
 import Control.Monad (liftM)
-import Mutate
+import FitSpec.Mutable
 
 data Override = Override
   { mutants__             :: Maybe Int
