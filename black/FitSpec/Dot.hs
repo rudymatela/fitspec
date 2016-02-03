@@ -1,4 +1,4 @@
-module FitSpecDot where
+module FitSpec.Dot where
 
 import FitSpec
 import Mutate
