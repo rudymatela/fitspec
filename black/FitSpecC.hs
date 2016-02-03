@@ -1,4 +1,9 @@
--- Version of FitSpec that classifies mutants into two categories
+-- | Alternate implementation fo FitSpec.
+-- this classifies mutants into two categories:
+-- ones that has un-exercised mutated cases;
+-- ones that did have not.
+--
+-- This version is much less flexible and is still very experimental.
 module FitSpecC where
 
 import Test.Check
