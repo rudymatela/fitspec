@@ -1,10 +1,8 @@
 {-# Language DeriveDataTypeable #-}
 import System.Console.CmdArgs hiding (args)
-import FitSpec.Main
+import FitSpec
 import Data.List
 import Test.Check
-import Test.Types
-import Test.Types.Mutate
 
 type Cons a = a -> [a] -> [a]
 type Head a = [a] -> a

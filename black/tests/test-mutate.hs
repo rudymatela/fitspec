@@ -2,12 +2,10 @@ import System.Exit (exitFailure)
 import Data.List (elemIndices, sort)
 
 import Test.Check
-import Test.Check.Utils
 import FitSpec.Utils (errorToNothing,contained)
 import Data.Tuple (swap)
 
-import Test.Types
-import Test.Types.Mutate
+import FitSpec.TestTypes
 
 import FitSpec.Mutable
 import FitSpec.ShowMutable

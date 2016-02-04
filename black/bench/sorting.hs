@@ -1,8 +1,5 @@
 import Data.List
-
-import FitSpec.Main
-import Test.Check
-import Test.Types.Mutate
+import FitSpec
 
 
 ordered :: Ord a => [a] -> Bool

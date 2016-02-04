@@ -1,6 +1,3 @@
-import Test.Check
-import Test.Types
-import Test.Types.Mutate
 import FitSpec
 import Data.List
 

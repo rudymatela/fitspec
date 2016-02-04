@@ -1,10 +1,7 @@
 -- Example benchmark that mutation tests properties over the function id
 {-# Language DeriveDataTypeable #-}
 import System.Console.CmdArgs hiding (args)
-import FitSpec.Main
-import Test.Check
-import Test.Types
-import Test.Types.Mutate
+import FitSpec
 
 type Ty a = a -> a
 

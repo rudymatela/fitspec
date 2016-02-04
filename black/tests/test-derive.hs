@@ -1,6 +1,6 @@
 {-# LANGUAGE TemplateHaskell #-}
 import FitSpec.Derive
-import Test.Types.Mutate
+import FitSpec.TestTypes
 import System.Exit (exitFailure)
 import Data.List (elemIndices,sort)
 

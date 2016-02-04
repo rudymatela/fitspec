@@ -1,9 +1,7 @@
 {-# Language DeriveDataTypeable #-}
 import System.Console.CmdArgs hiding (args)
-import FitSpec.Main
+import FitSpec
 import Data.List
-import Test.Check
-import Test.Types.Mutate
 
 type Add  a = a -> a -> a
 type Prod a = a -> a -> a

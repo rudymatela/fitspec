@@ -1,4 +1,12 @@
-module Test.Types.Mutate (module Test.Types) where
+-- | FitSpec Test Types:
+-- Nat,
+-- Int2, Int3, Int4,
+-- UInt2, UInt3, UInt4.
+--
+-- This module basically re-exports llcheck's Test.Types module
+-- and defines Mutable and ShowMutable instances for the types
+-- defined there.
+module FitSpec.TestTypes (module Test.Types) where
 
 import FitSpec.Mutable
 import FitSpec.ShowMutable

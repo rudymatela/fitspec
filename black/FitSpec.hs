@@ -6,8 +6,8 @@ module FitSpec
   , module FitSpec.Mutable
   , module FitSpec.ShowMutable
   , module FitSpec.Derive
+  , module FitSpec.TestTypes
 
-  , module Test.Types.Mutate
   , module Test.Check
   )
 where
@@ -20,6 +20,6 @@ import FitSpec.Main
 import FitSpec.Mutable
 import FitSpec.ShowMutable hiding (showMutantN)
 import FitSpec.Derive hiding (showMutantN)
+import FitSpec.TestTypes
 
-import Test.Types.Mutate
 import Test.Check
