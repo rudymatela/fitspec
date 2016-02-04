@@ -1,4 +1,6 @@
 -- | FitSpec
+--
+-- FitSpec was tested on GHC 7.10, 7.8, 7.6 and 7.4.
 module FitSpec
   ( module FitSpec.Engine
   , module FitSpec.Main
