@@ -1,6 +1,6 @@
 {-# LANGUAGE CPP #-}
--- | General purpose utility functions.
-module Utils
+-- | General purpose utility functions for FitSpec
+module FitSpec.Utils
   ( (...)
   , uncurry3
   , count
@@ -24,6 +24,7 @@ module Utils
   , (***)
   )
 where
+-- TODO: Cleanup FitSpec.Utils (split module / move functions)
 
 #if __GLASGOW_HASKELL__ <= 704
 import Prelude hiding (catch)

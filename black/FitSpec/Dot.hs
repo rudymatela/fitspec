@@ -1,7 +1,7 @@
 module FitSpec.Dot where
 
 import FitSpec
-import Utils
+import FitSpec.Utils
 import Data.List
 
 relevantSI :: Eq i => [[i]] -> ([[i]],[i])

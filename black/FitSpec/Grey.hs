@@ -19,7 +19,7 @@ import Data.Monoid
 import Data.Maybe (catMaybes, listToMaybe)
 import PPPrint
 import FitSpec.Grey.Mutation
-import Utils
+import FitSpec.Utils
 import Data.Either (lefts, rights)
 import Control.Applicative (liftA2)
 import FitSpec.Grey.CatchEvaluation

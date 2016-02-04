@@ -54,7 +54,7 @@ import Control.Monad (unless)
 import FitSpec.Mutable
 import FitSpec.ShowMutable (ShowMutable)
 import qualified FitSpec.ShowMutable (showMutantN)
-import Utils
+import FitSpec.Utils
 import PPPrint
 
 -- | Extra arguments / configuration for 'reportWith'.

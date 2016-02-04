@@ -3,7 +3,7 @@ import Data.List (elemIndices, sort)
 
 import Test.Check
 import Test.Check.Utils
-import Utils (errorToNothing,contained)
+import FitSpec.Utils (errorToNothing,contained)
 import Data.Tuple (swap)
 
 import Test.Types

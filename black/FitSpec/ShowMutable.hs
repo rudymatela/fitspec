@@ -5,7 +5,7 @@ module FitSpec.ShowMutable
 where
 
 import PPPrint
-import Utils (errorToNothing)
+import FitSpec.Utils (errorToNothing)
 import Test.Check
 import Data.Maybe (mapMaybe,isNothing)
 import Control.Monad (join)

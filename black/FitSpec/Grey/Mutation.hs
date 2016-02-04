@@ -7,7 +7,7 @@ import Data.List (intercalate)
 import PPPrint
 import Data.Maybe
 import FitSpec.Grey.CatchEvaluation
-import Utils (spread,errorToNothing)
+import FitSpec.Utils (spread,errorToNothing)
 
 type Mutation a b = [(a,b)]
 
