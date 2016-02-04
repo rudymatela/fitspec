@@ -4,7 +4,7 @@ module FitSpec.Grey.Mutation where
 import Test.Check
 import Test.Check.Utils
 import Data.List (intercalate)
-import PPPrint
+import FitSpec.PrettyPrint
 import Data.Maybe
 import FitSpec.Grey.CatchEvaluation
 import FitSpec.Utils (spread,errorToNothing)

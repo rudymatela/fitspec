@@ -17,7 +17,7 @@ import Data.List
 import Data.Ord
 import Data.Monoid
 import Data.Maybe (catMaybes, listToMaybe)
-import PPPrint
+import FitSpec.PrettyPrint
 import FitSpec.Grey.Mutation
 import FitSpec.Utils
 import Data.Either (lefts, rights)

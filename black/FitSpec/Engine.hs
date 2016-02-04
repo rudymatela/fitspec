@@ -55,7 +55,7 @@ import FitSpec.Mutable
 import FitSpec.ShowMutable (ShowMutable)
 import qualified FitSpec.ShowMutable (showMutantN)
 import FitSpec.Utils
-import PPPrint
+import FitSpec.PrettyPrint
 
 -- | Extra arguments / configuration for 'reportWith'.
 --   See 'args' for default values.
