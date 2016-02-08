@@ -1,3 +1,4 @@
+-- | Generate dotfiles (graphviz)
 module FitSpec.Dot where
 
 import FitSpec

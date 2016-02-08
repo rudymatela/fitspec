@@ -1,3 +1,4 @@
+-- | Show mutant variations
 module FitSpec.ShowMutable
   ( ShowMutable (..)
   , mutantSEq

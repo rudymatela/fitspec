@@ -1,3 +1,8 @@
+-- | Exports "main" functions for FitSpec.
+-- They work exactly by 'report' and 'reportWith' but can be customized by
+-- command line arguments.
+--
+-- > main = mainWith args { ... } functions properties
 {-# Language DeriveDataTypeable #-}
 module FitSpec.Main
   ( mainWith

@@ -13,7 +13,7 @@ Four different versions are being developed in parallel:
   see the [black](black) folder;
 
 * grey-box functions under test, grey-box properties:
-  see also the [black](black) folder (`FitSpecC` file);
+  see also the [black](black) folder (`FitSpec.Grey` file);
 
 * black-box functions under test, white-box properties -- mutation by demand:
   see the [white](white) folder;

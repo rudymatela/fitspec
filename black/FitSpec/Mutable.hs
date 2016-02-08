@@ -1,4 +1,4 @@
--- Enumeration of function mutations
+-- | Enumeration of function mutations
 module FitSpec.Mutable
   ( Mutable (..)
   , lsMutantsEq

@@ -1,11 +1,11 @@
-{-# LANGUAGE TemplateHaskell, CPP #-}
--- Experimental module for deriving Mutable instances
+-- | Experimental module for deriving Mutable instances
 --
 -- Needs GHC and Template Haskell (tested on GHC 7.4, 7.6, 7.8 and 7.10)
 --
 -- Despite Mutable instances being actually very simple, this module can be
 -- used to derive those.  However, it will not work on all cases: when that
 -- happens, you should write your instances manually.
+{-# LANGUAGE TemplateHaskell, CPP #-}
 module FitSpec.Derive 
   ( deriveMutable
   , deriveMutableE

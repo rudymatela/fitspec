@@ -1,33 +1,6 @@
--- | FitSpec tries to find minimal and complete subsets of a specification via
---   black-box mutation testing.
+-- | FitSpec: guidance towards minimality and completeness of property sets
 --
--- This module contains the main FitSpec Engine
--- (aside from the Mutation engine).
--- If you want to use FitSpec, import 'FitSpec'.
---
--- NOTE:
---   * The API is likely to change in the near future.
---
--- Example -- properties over not:
---
--- > import Test.Check
--- > import MinProps
--- >
--- > propertyMap :: Int -> (Bool -> Bool) -> [Bool]
--- > propertyMap not n =
--- >   [ holds n $ \p -> not (not p) == p
--- >   , holds n $ \p -> not p /= p
--- >   ,                 not True == False
--- >   ]
--- >
--- > main = report not pMap
---
--- FitSpec should report that the minimal (equivalent) specifications are
--- either:
---
---   * 2
---   * 1 and 3
-
+-- This is the main engine, besides FitSpec.Mutable.
 module FitSpec.Engine
   ( Args(..)
   , args

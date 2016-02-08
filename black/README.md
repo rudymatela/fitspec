@@ -95,7 +95,7 @@ Clone both llcheck and fitspec:
 	$ git clone git@github.com:rudymatela/fitspec
 
 
-The general rule, if you want to compile a file that uses FitSpec on GHC, you do:
+If you want to compile a file that uses FitSpec on GHC, you do:
 
 	$ ghc -ipath/to/llcheck:path/to/fitspec file.hs
 
@@ -127,32 +127,31 @@ We can use FitSpec to guide property creation.
 
 We first import what is needed:
 
-	import Test.Check
 	import FitSpec
 	import Data.List (sort)
 
 
-Then we need a property map: given the number of tests and a sorting
-implementation, return whether each property holds.  Since we don't have any
+Then we need a property list function: given a sorting implementation, return
+the properties applied to *that* implementation.  Since we don't have any
 properties, we will start by returning and empty list:
 
-	pmap :: (Show a, Ord a, Listable a)
-	     => Int -> ([a] -> [a]) -> [Bool]
-	pmap n sort' =
+	properties :: (Show a, Ord a, Listable a)
+	           => ([a] -> [a]) -> [Properties]
+	properties sort' =
 	  []
 
 
 Then, we need a main function, that calls the FitSpec's `report` function,
 which will report the results of mutation testing.
-It needs a function to be mutated and the property map.
+It needs a function to be mutated and the property list.
 
-	main = report (sort::[Int]->[Int]) pmap
+	main = report (sort::[Int]->[Int]) properties
 
 Optionally, for a nicer output, you might want to use the reportWith function,
 which allows specifying function and argument names (among other options):
 
 	main = reportWith args { callNames = ["sort xs"] }
-	                  (sort::[Int]->[Int]) pmap
+	                  (sort::[Int]->[Int]) properties
 
 By having the three sections above in a file called sorting.hs,
 we then compile and run:
@@ -182,10 +181,11 @@ implementation of sort.  For the empty list, it returns `[0]`.  We should
 improve our property set by killing that mutant.  Lets start very simple by
 adding a property stating that sorting an empty list must yield an empty list:
 
-	pmap n sort' =
-	  [ sort' [] == []
+	properties sort' =
+	  [ property $ sort' [] == []
 	  ]
 
+Above, we need to apply the function `property` to each property in the list.
 Now:
 
 	$ ./sorting
@@ -209,14 +209,12 @@ shown on the third column.  It sorts `[0]` to `[]`, which is not valid.  Lets
 still be very simple -- sorting a list with one value must yield a list with
 the same value:
 
-	pmap n sort' =
-	  [                  sort' [] == []
-	  , holds n $ \x -> sort' [x] == [x]
+	properties sort' =
+	  [ property $        sort' [] == []
+	  , property $ \x -> sort' [x] == [x]
 	  ]
 
-Note that, our new property (2) has a free variable, that is why `holds` is
-needed: it checks whether a property holds for a given number of tests (`n`).
-Now:
+Note that, our new property (2) has a free variable.  Now:
 
 	$ ./sorting
 	Results based on at most 1000 test cases for each of 500 mutant variations.
@@ -232,10 +230,10 @@ Now:
 Only 27% of mutants to go, perhaps a property stating that the length of the
 sorted list should not change?
 
-	pmap n sort' =
-	  [                           sort' [] == []
-	  , holds n $ \x  ->         sort' [x] == [x]
-	  , holds n $ \xs -> length (sort' xs) == length xs
+	properties sort' =
+	  [ property $                 sort' [] == []
+	  , property $ \x  ->         sort' [x] == [x]
+	  , property $ \xs -> length (sort' xs) == length xs
 	  ]
 
 Now:
@@ -260,10 +258,10 @@ When possible, FitSpec also reports *conjectures* based on test results.  In
 this case, that property `sort [] == []` (1) follows from the length property
 (3).  Since that is *clearly* true, we can safely remove that property.
 
-	pmap n sort' =
-	  [ holds n $ \x    ->         sort' [x] == [x]
-	  , holds n $ \xs   -> length (sort' xs) == length xs
-	  , holds n $ \x xs -> elem x (sort' xs) == elem x xs
+	properties sort' =
+	  [ property $ \x    ->         sort' [x] == [x]
+	  , property $ \xs   -> length (sort' xs) == length xs
+	  , property $ \x xs -> elem x (sort' xs) == elem x xs
 	  ]
 
 Now:
@@ -279,10 +277,10 @@ Now:
 	Conjectures based on at most 1000 test cases for each of 500 mutant variations:
 	[2,3] ==> [1]     99% killed (possible+)
 
-We could go on, but *at this point, you got the point*.  As an exercise you can
-try to improve our property-set over `sort` by killing the above mutant by
-adding a new property.  Later, you can try to improve the results by increasing
-the time limit (`minimumTime = 10` on args).
+We could go on, but *at this point, you probably got how it works*.  As an
+exercise you can try to improve our property-set over `sort` by killing the
+above mutant by adding a new property.  Later, you can try to improve the
+results by increasing the time limit (`minimumTime = 10` on args).
 
 
 ### To analyse minimality and completeness of property-sets
@@ -298,26 +296,25 @@ Important modules
 -----------------
 
 * [FitSpec](FitSpec.hs):
-  the entry point, implements the calculations behind minimality and completeness
+  the entry point, import this to use FitSpec;
 
-* [Mutate](Mutate.hs):
-  list mutations of a given function without repetitions
+* [FitSpec.Engine](FitSpec/Engine.hs):
+  main engine that does calculations and generate reports;
 
-* [Mutate.Show](Mutate/Show.hs):
-  show mutations
+* [FitSpec.Mutable](FitSpec/Mutable.hs):
+  list mutations of a given function without repetitions;
+
+* [FitSpec.ShowMutable](FitSpec/ShowMutable.hs):
+  show mutations;
 
 * [example benchmarks](bench):
   example use cases for FitSpec,
   some are customizable using command line arguments
-  (sorting, booleans, lists, pretty-printing, etc)
-
-* [Utils](Utils.hs):
-  miscellaneous utility functions
+  (sorting, booleans, lists, pretty-printing, etc).
 
 
-The modules FitSpecC and Mutation refer to the "grey-box" version, that does
-mutant classification.  Normal FitSpec is simpler, you should probably start
-with it.
+The modules FitSpec.Grey refer to the "grey-box" version, that does mutant
+classification.  Normal FitSpec is simpler, you should probably start with it.
 
 
 [llcheck]: https://github.com/rudymatela/llcheck
