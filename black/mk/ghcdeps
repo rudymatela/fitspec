@@ -36,6 +36,8 @@ do
 	obj=`echo $fn | sed -e 's,^\./,,;s/\.hs$/.o/'`
 	bin=`echo $fn | sed -e 's,^\./,,;s/\.hs$//'`
 	echo "$obj: $deps"
-	grep -q "main" "$fn" && echo "$bin:   $deps"
+	grep -q "main" "$fn" && echo "$bin: $deps"
 	rm -f tmp.mk
-done | sort
+done |
+sort |
+sed -e 's, , \\\n  ,g'
