@@ -200,12 +200,11 @@ reportWith' args f properties = do
 
   putStrLn $ "Results based on"
   putStr   . unlines
-           . map (\(ps,n) -> "  "
-                          ++ showNTests n
-                          ++ " for "
-                          ++ showProperties ps)
-           . sortAndGroupFstBySnd
-           $ zip [1..] nts
+           . sortGroupAndCollapse fst snd (\n ps -> "  "
+                                                 ++ showNTests n
+                                                 ++ " for "
+                                                 ++ showProperties ps)
+           $ zip nts [1..]
   putStrLn $ "  for each of " ++ show nm ++ " mutant variations.\n"
 
   putStrLn . table "   "
