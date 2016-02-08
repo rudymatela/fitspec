@@ -19,7 +19,7 @@ where
 
 import Test.Check
 import Test.Check.Utils
-import Data.List ((\\), intersperse, union, transpose)
+import Data.List ((\\), intercalate, intersperse, union, transpose)
 import Data.Ord
 import Data.Monoid
 import Data.Maybe (catMaybes, listToMaybe, isJust, isNothing)
@@ -155,6 +155,11 @@ propertiesCE n = listToMaybe
                . zipWith (\n -> fmap ((show n ++ ":  ") ++)) [1..]
                . map (propertyCE n)
 
+propertiesNTests :: Int -> [Property] -> [Int]
+propertiesNTests n = map (length . take n)
+
+propertiesTestsExhausted :: Int -> [Property] -> [Bool]
+propertiesTestsExhausted n = map (< n) . propertiesNTests n
 
 -- | Report minimality and completeness results.
 --   Uses standard configuration (see 'args').
@@ -191,8 +196,18 @@ reportWith' args f properties = do
   results <- lastTimeout (minimumTime args) resultss
   let nm = totalMutants $ head results
       nt = nTestsF args nm
+      nts = propertiesNTests nt (properties f)
 
-  putStrLn $ "Results based on " ++ showNTM nt nm ++ ".\n"
+  putStrLn $ "Results based on"
+  putStr   . unlines
+           . map (\(n,ps) -> "  "
+                          ++ showNTests n
+                          ++ " for "
+                          ++ showProperties ps)
+           . sortGroupAndCollapse snd fst
+           $ zip [1..] nts
+  putStrLn $ "  for each of " ++ show nm ++ " mutant variations.\n"
+
   putStrLn . table "   "
            . intersperse [ "\n" ]
            . ([ "Property\n sets"
@@ -206,7 +221,7 @@ reportWith' args f properties = do
   let eis = showEIs (showVeryWeakEI args) (showMoreEI args) results
   putStrLn $ if null eis
     then "No conjectures."
-    else "Conjectures based on " ++ showNTM nt nm ++ ":"
+    else "Conjectures based on " ++ showNTM (sum nts) nm ++ ":"
   putStrLn (table " " eis)
   where
     pmap n f = propertiesToMap (properties f) n
@@ -221,8 +236,16 @@ reportWith' args f properties = do
     showI = showPropertySets args . map show
     showM (Nothing) = ""
     showM (Just m)  = showMutant args f m
-    showNTM nt nm = "at most " ++ show nt ++ " test cases"
-            ++ " for each of " ++ show nm ++ " mutant variations"
+    showNTests 1 =          "1 test case"
+    showNTests n = show n ++ " test cases"
+    showProperties [p] = "property "   ++ show p
+    showProperties ps  = "each of properties "
+                      ++ intercalate ", " (map show $ init ps)
+                      ++ " and "
+                      ++ show (last ps)
+    showNTM nt nm = showNTests nt ++ " for each of "
+                 ++ show nm ++ " mutant variations"
+
 
 
 showEIs :: Bool -> Bool -> [Result a] -> [[String]]

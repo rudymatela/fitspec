@@ -19,6 +19,7 @@ module FitSpec.Utils
   , errorToNothing
   , errorToFalse
   , sortAndGroupOn
+  , sortGroupAndCollapse
   , takeWhileIncreasing
   , takeWhileIncreasingOn
   , lastTimeout
@@ -154,6 +155,11 @@ sortAndGroupOn :: Ord b => (a -> b) -> [a] -> [[a]]
 sortAndGroupOn f = groupBy ((==) `on` f)
                  . sortOn f
 
+sortGroupAndCollapse :: Ord b => (a -> b) -> (a -> c) -> [a] -> [(b,[c])]
+sortGroupAndCollapse f g = map collapse
+                         . sortAndGroupOn f
+  where collapse []     = error "sortGroupAndCollapse: this should not happen"
+        collapse (x:xs) = (f x, map g (x:xs))
 
 -- | Takes values from a list while the values increase.  If the original list
 --   is non-empty, the returning list will also be non-empty
