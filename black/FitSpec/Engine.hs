@@ -43,6 +43,7 @@ data Args a = Args
   , extraMutants :: [a]   -- ^ extra mutants to try to kill alongside mutations
   , showPropertySets :: [String] -> String -- ^ function to show property sets.
   , showMoreEI :: Bool    -- ^ show more equivalences and implications
+  , showVeryWeakEI :: Bool -- ^ show hidden equivalences and implications
   , showMutantN :: [String] -> a -> a -> String -- ^ special mutant show
   }
 
@@ -99,6 +100,7 @@ args = Args { nMutants = 500
 
             , extraMutants = []
             , showPropertySets = unwords -- join by spaces
+            , showVeryWeakEI = False
             , showMoreEI = False
             , showMutantN = FitSpec.ShowMutable.showMutantN
             }
@@ -201,7 +203,7 @@ reportWith' args f properties = do
            . maybe id take (limitResults args)
            $ results
 
-  let eis = showEIs (showMoreEI args) results
+  let eis = showEIs (showVeryWeakEI args) (showMoreEI args) results
   putStrLn $ if null eis
     then "No conjectures."
     else "Conjectures based on " ++ showNTM nt nm ++ ":"
@@ -223,18 +225,19 @@ reportWith' args f properties = do
             ++ " for each of " ++ show nm ++ " mutant variations"
 
 
-showEIs :: Bool -> [Result a] -> [[String]]
-showEIs showMore = concatMap showEI
-                 . sortOn (abs . (50-) . score)
-                 . (if False -- TODO: on showEI, add showVeryWeak parameter
-                      then id
-                      else filter (\r -> nKilled r    /= 0
-                                      && nSurvivors r /= 0))
-                 . (if showMore
-                      then id
-                      else reduceImplications
-                         . filterNonCanon
-                         . reverse)
+showEIs :: Bool -> Bool -> [Result a] -> [[String]]
+showEIs showVeryWeak showMore =
+    concatMap showEI
+  . sortOn (abs . (50-) . score)
+  . (if showVeryWeak
+       then id
+       else filter (\r -> nKilled r    /= 0
+                       && nSurvivors r /= 0))
+  . (if showMore
+       then id
+       else reduceImplications
+          . filterNonCanon
+          . reverse)
 
 
 showEI :: Result a -> [[String]]
