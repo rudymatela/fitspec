@@ -200,11 +200,11 @@ reportWith' args f properties = do
 
   putStrLn $ "Results based on"
   putStr   . unlines
-           . map (\(n,ps) -> "  "
+           . map (\(ps,n) -> "  "
                           ++ showNTests n
                           ++ " for "
                           ++ showProperties ps)
-           . sortGroupAndCollapse snd fst
+           . sortAndGroupFstBySnd
            $ zip [1..] nts
   putStrLn $ "  for each of " ++ show nm ++ " mutant variations.\n"
 
@@ -379,8 +379,7 @@ getRawResults ems nms f pmap = map (mapSnd (zipWith boolToMaybe ms))
 -- > length (pssurv is pmap ms) == length (pmap f)
 pssurv :: [i] -> (a -> [Bool]) -> [a] -> [([[i]],[Bool])]
 pssurv is pmap = sortOn (count id . snd)
-               . map collapse
-               . sortAndGroupOn snd
+               . sortAndGroupFstBySnd
                . zip (subsets is)
                . transpose
                . map (compositions . pmap)
