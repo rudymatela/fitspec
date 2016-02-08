@@ -1,11 +1,11 @@
 FitSpec
 =======
 
-Find minimal and complete sub-sets of properties
-describing a Haskell program
+FitSpec assists you in refining property-sets for functional testing
+by offering guidance towards a minimal and complete property set
 using black-box mutation testing.
 
-**This a work in progress: currently in very early stage**
+**This a work in progress: currently in early stage**
 
 
 Compiling and Running

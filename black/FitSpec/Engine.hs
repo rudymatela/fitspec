@@ -1,4 +1,4 @@
--- | FitSpec: guidance towards minimality and completeness of property sets
+-- | FitSpec: refining property-sets for functional testing
 --
 -- This is the main engine, besides FitSpec.Mutable.
 module FitSpec.Engine

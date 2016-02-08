@@ -1,4 +1,4 @@
--- | FitSpec: guidance towards minimality and completeness of property sets
+-- | FitSpec: refining property-sets for functional testing
 --
 -- Example, properties over 'not':
 --
