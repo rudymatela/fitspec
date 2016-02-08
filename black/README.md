@@ -34,7 +34,7 @@ Clone then install llcheck:
 	$ cabal install
 
 
-Clone then run a FitSpec example benchmark, in this case, sorting:
+Clone FitSpec, then run an example benchmark, e.g.:
 
 	$ git clone git@github.com:rudymatela/fitspec
 	$ cd fitspec/black
