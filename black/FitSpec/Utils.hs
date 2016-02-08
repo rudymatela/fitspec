@@ -16,8 +16,6 @@ module FitSpec.Utils
   , filterU
   , indexDefault
   , bindArgumentType
-  , errorToNothing
-  , errorToFalse
   , sortAndGroupOn
   , sortAndGroupFstBySnd
   , sortGroupAndCollapse
@@ -119,34 +117,6 @@ indexDefault (_:xs) n x = indexDefault xs (n-1) x
 --   the function to the type of the value.
 bindArgumentType :: a -> (a -> b) -> a -> b
 bindArgumentType _ f = f
-
--- | Transforms a value into 'Just' that value or 'Nothing' on error.
-anyErrorToNothing :: a -> Maybe a
-anyErrorToNothing x = unsafePerformIO $
-  (Just `liftM` evaluate x) `catch` \e -> do let _ = e :: SomeException
-                                             return Nothing
-
--- | Transforms a value into 'Just' that value or 'Nothing' on some errors:
---
---   * ArithException
---   * ArrayException
---   * ErrorCall
---   * PatternMatchFail
-errorToNothing :: a -> Maybe a
-errorToNothing x = unsafePerformIO $
-  (Just `liftM` evaluate x) `catches` map ($ return Nothing)
-                                      [ hf (undefined :: ArithException)
-                                      , hf (undefined :: ArrayException)
-                                      , hf (undefined :: ErrorCall)
-                                      , hf (undefined :: PatternMatchFail)
-                                      ]
-  where hf :: Exception e => e -> IO a -> Handler a -- handlerFor
-        hf e h = Handler $ bindArgumentType e (\_ -> h)
-
-errorToFalse :: Bool -> Bool
-errorToFalse p = case errorToNothing p of
-                   Just p' -> p
-                   Nothing -> False
 
 sortOn :: Ord b => (a -> b) -> [a] -> [a]
 sortOn f =

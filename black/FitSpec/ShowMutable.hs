@@ -6,8 +6,7 @@ module FitSpec.ShowMutable
 where
 
 import FitSpec.PrettyPrint
-import FitSpec.Utils (errorToNothing)
-import Test.Check
+import Test.Check.Error (errorToNothing, Listable(..))
 import Data.Maybe (mapMaybe,isNothing)
 import Control.Monad (join)
 import Data.List (intercalate)

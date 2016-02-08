@@ -2,7 +2,8 @@ import System.Exit (exitFailure)
 import Data.List (elemIndices, sort)
 
 import Test.Check
-import FitSpec.Utils (errorToNothing,contained)
+import Test.Check.Error (errorToNothing)
+import FitSpec.Utils (contained)
 import Data.Tuple (swap)
 
 import FitSpec.TestTypes

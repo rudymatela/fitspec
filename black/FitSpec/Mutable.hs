@@ -9,7 +9,7 @@ where
 import Test.Check
 import Data.List (intercalate, delete)
 import Data.Maybe
-import FitSpec.Utils (errorToNothing)
+import Test.Check.Error (errorToNothing)
 
 -- The first mutant returned by szMutants and mutants is the actual function
 -- without mutation.

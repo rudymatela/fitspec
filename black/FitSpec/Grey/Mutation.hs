@@ -1,13 +1,13 @@
 -- Enumeration of function mutations
 module FitSpec.Grey.Mutation where
 
-import Test.Check
+import Test.Check.Error
 import Test.Check.Utils
 import Data.List (intercalate)
 import FitSpec.PrettyPrint
 import Data.Maybe
 import FitSpec.Grey.CatchEvaluation
-import FitSpec.Utils (spread,errorToNothing)
+import FitSpec.Utils (spread)
 
 type Mutation a b = [(a,b)]
 

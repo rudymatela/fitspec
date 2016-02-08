@@ -17,7 +17,7 @@ module FitSpec.Engine
   )
 where
 
-import Test.Check
+import Test.Check.Error
 import Test.Check.Utils
 import Data.List ((\\), intercalate, intersperse, union, transpose)
 import Data.Ord
