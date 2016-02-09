@@ -7,7 +7,7 @@ using black-box mutation testing.
 
 **This a work in progress: currently in very early stage**
 
-Four different versions are being developed in parallel:
+Different versions are being developed in parallel:
 
 * black-box functions under test, black-box properties:
   see the [black](black) folder;
@@ -15,13 +15,8 @@ Four different versions are being developed in parallel:
 * grey-box functions under test, grey-box properties:
   see also the [black](black) folder (`FitSpec.Grey` file);
 
-* black-box functions under test, white-box properties -- mutation by demand:
-  see the [white](white) folder;
-
 * mutation via patterns:
   see the [patterns](patterns) folder.
-
-See each respective folder.
 
 
 Running
@@ -29,7 +24,7 @@ Running
 
 You'll need [llcheck] to run this.  To run using cabal sandboxes:
 
-	cd black   # or: cd white
+	cd black
 	cabal sandbox init
 	cabal sandbox add-source path/to/llcheck
 	cabal install --only-dependencies
