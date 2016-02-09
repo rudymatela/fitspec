@@ -1,6 +1,8 @@
 #!/bin/bash
 #
 # benchmark runner, stores results in the results folder
+#
+# TODO: fix this (bin/bench) script (it doesn't work after dir renames)
 
 ROOT="`dirname $0`/.."
 
