@@ -436,31 +436,6 @@ FitSpec: \
   ../llcheck/Test/Check/Core.hs \
   FitSpec/PrettyPrint.hs \
   FitSpec/Utils.hs
-FitSpec/Grey/CatchEvaluation.o: \
-  FitSpec/Grey/CatchEvaluation.hs
-FitSpec/Grey/Mutation.o: \
-  FitSpec/Grey/Mutation.hs \
-  ../llcheck/Test/Check/Error.hs \
-  ../llcheck/Test/Check.hs \
-  ../llcheck/Test/Check/Utils.hs \
-  FitSpec/PrettyPrint.hs \
-  FitSpec/Grey/CatchEvaluation.hs \
-  FitSpec/Utils.hs \
-  ../llcheck/Test/Check/Derive.hs \
-  ../llcheck/Test/Check/Basic.hs \
-  ../llcheck/Test/Check/Core.hs
-FitSpec/Grey.o: \
-  FitSpec/Grey.hs \
-  FitSpec/Grey/Mutation.hs \
-  ../llcheck/Test/Check/Error.hs \
-  ../llcheck/Test/Check.hs \
-  ../llcheck/Test/Check/Utils.hs \
-  FitSpec/PrettyPrint.hs \
-  FitSpec/Utils.hs \
-  FitSpec/Grey/CatchEvaluation.hs \
-  ../llcheck/Test/Check/Derive.hs \
-  ../llcheck/Test/Check/Basic.hs \
-  ../llcheck/Test/Check/Core.hs
 FitSpec/Main: \
   FitSpec/Main.hs \
   FitSpec/Engine.hs \
