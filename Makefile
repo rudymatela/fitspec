@@ -46,6 +46,16 @@ legacy-test:
 	make clean && make -C $(LLCHECKPATH) clean && make test GHC=ghc-7.4 GHCFLAGS="-Werror -fno-warn-unrecognised-pragmas"
 	make clean
 
+test-via-cabal:
+	cabal test
+
+prepare-test-via-cabal:
+	rm -rf .cabal-sandbox cabal.sandbox.config
+	cabal sandbox init
+	cabal sandbox add-source $(LLCHECKPATH)
+	cabal install --only-dependencies
+	cabal configure --enable-tests --enable-benchmarks
+
 legacy-test-via-cabal:
 	cabal clean && cd $(LLCHECKPATH) && cabal clean && cd -
 	cabal-ghc-7.8 configure --enable-tests --enable-benchmarks && cabal-ghc-7.8 build && cabal-ghc-7.8 test
