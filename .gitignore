@@ -16,18 +16,18 @@
 **/*.dyn_o
 **/*.dyn_hi
 
-# black benchmarks
-black/bench/avltrees
-black/bench/bools
-black/bench/heaps
-black/bench/id
-black/bench/list
-black/bench/pretty
-black/bench/sieve
-black/bench/sorting
-black/bench/spring
-black/eg/sorting
+# benchmark binaries
+bench/avltrees
+bench/bools
+bench/heaps
+bench/id
+bench/list
+bench/pretty
+bench/sieve
+bench/sorting
+bench/spring
+eg/sorting
 
-# black tests
-black/tests/test-mutate
-black/tests/test-derive
+# test binaries
+tests/test-mutate
+tests/test-derive

@@ -10,17 +10,16 @@
 # rebuilding everything for each of those.
 
 # Configuration variables
-LLCHECKPATH = ../../llcheck
+LLCHECKPATH = ../llcheck
 
 # Misc variables
 GHCIMPORTDIRS = $(LLCHECKPATH):bench
 GHCFLAGS = -dynamic
-FINDHS=find -name \*.hs \
+LISTHS=find -name \*.hs \
             -a \! \( -path "./dist/*" \
-                  -o -path "./bench/*" \
-                  -o -path "./tests/*" \
+                  -o -path "./patterns/*" \
                   -o -path "./Setup.hs" \)
-OBJS = $(shell $(FINDHS) | sed -e 's/hs$$/o/')
+OBJS = $(shell $(LISTHS) | sed -e 's/hs$$/o/')
 BENCHS = bench/avltrees \
          bench/bools \
 		 bench/heaps \
@@ -73,7 +72,7 @@ clean: clean-hi-o
 
 # Debug: just list all source files compiled normally
 list:
-	$(FINDHS)
+	$(LISTHS)
 
 hlint:
 	hlint \
