@@ -37,7 +37,7 @@ Clone then install llcheck:
 Clone FitSpec, then run an example benchmark, e.g.:
 
 	$ git clone git@github.com:rudymatela/fitspec
-	$ cd fitspec/black
+	$ cd fitspec
 	$ cabal bench sorting
 
 
@@ -49,15 +49,11 @@ you have to reinstall it after pulling.
 
 *Cabal > 1.18 is needed*
 
-Clone llcheck and fitspec
+Clone llcheck and fitspec and enter fitspec folder:
 
 	$ git clone git@github.com:rudymatela/llcheck
 	$ git clone git@github.com:rudymatela/fitspec
-
-
-Enter FitSpec black-box version folder:
-
-	$ cd fitspec/black
+	$ cd fitspec
 
 
 Initialize a sandbox, add llcheck as a source, then install dependencies:
@@ -105,8 +101,8 @@ directory, do this to run the sorting example benchmark:
 
 	$ ls
 	fitspec llcheck
-	$ cd fitspec/black/bench
-	$ ghc -i..:../../../llcheck sorting.hs
+	$ cd fitspec/bench
+	$ ghc -i..:../../llcheck sorting.hs
 	$ ./sorting
 	...
 	...
@@ -156,7 +152,7 @@ which allows specifying function and argument names (among other options):
 By having the three sections above in a file called sorting.hs,
 we then compile and run:
 
-	$ ghc -ipath/to/llcheck:path/to/fitspec/black sorting.hs
+	$ ghc -ipath/to/llcheck:path/to/fitspec sorting.hs
 	[9 of 9] Compiling Main             ( sorting.hs, sorting.o )
 	Linking sorting ...
 
