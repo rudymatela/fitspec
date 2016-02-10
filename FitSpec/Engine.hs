@@ -104,6 +104,7 @@ args = Args { nMutants = 500
             , showMoreEI = False
             , showMutantN = FitSpec.ShowMutable.showMutantN
             }
+-- TODO: change showMutantN name to avoid clash with showMutantN
 
 -- Non timed-out default arguments.
 -- Make conjectures based on a fixed number of mutants and tests, e.g.:
