@@ -401,10 +401,10 @@ FitSpec/Engine: \
   FitSpec/ShowMutable.hs \
   ../llcheck/Test/Check/Error.hs \
   ../llcheck/Test/Check.hs \
-  ../llcheck/Test/Check/Utils.hs \
   FitSpec/Utils.hs \
   FitSpec/PrettyPrint.hs \
   ../llcheck/Test/Check/Derive.hs \
+  ../llcheck/Test/Check/Utils.hs \
   ../llcheck/Test/Check/Basic.hs \
   ../llcheck/Test/Check/Core.hs
 FitSpec/Engine.o: \
@@ -413,10 +413,10 @@ FitSpec/Engine.o: \
   FitSpec/ShowMutable.hs \
   ../llcheck/Test/Check/Error.hs \
   ../llcheck/Test/Check.hs \
-  ../llcheck/Test/Check/Utils.hs \
   FitSpec/Utils.hs \
   FitSpec/PrettyPrint.hs \
   ../llcheck/Test/Check/Derive.hs \
+  ../llcheck/Test/Check/Utils.hs \
   ../llcheck/Test/Check/Basic.hs \
   ../llcheck/Test/Check/Core.hs
 FitSpec: \

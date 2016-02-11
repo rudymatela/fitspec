@@ -18,10 +18,8 @@ module FitSpec.Engine
 where
 
 import Test.Check.Error
-import Test.Check.Utils
 import Data.List ((\\), intercalate, intersperse, union, transpose)
 import Data.Ord
-import Data.Monoid
 import Data.Maybe (catMaybes, listToMaybe, isJust, isNothing)
 import Control.Monad (unless)
 import FitSpec.Mutable
