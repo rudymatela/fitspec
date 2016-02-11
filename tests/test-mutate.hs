@@ -1,15 +1,11 @@
 import System.Exit (exitFailure)
 import Data.List (elemIndices, sort)
-
-import Test.Check
-import Test.Check.Error (errorToNothing)
-import FitSpec.Utils (contained)
 import Data.Tuple (swap)
 
-import FitSpec.TestTypes
+import FitSpec
+import FitSpec.Utils (contained)
+import Test.Check.Error (errorToNothing)
 
-import FitSpec.Mutable
-import FitSpec.ShowMutable
 
 
 main :: IO ()

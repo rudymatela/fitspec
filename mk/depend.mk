@@ -532,23 +532,49 @@ FitSpec/Utils.o: \
   FitSpec/Utils.hs
 tests/test-derive.o: \
   tests/test-derive.hs \
-  FitSpec/Derive.hs \
+  FitSpec.hs \
+  FitSpec/Main.hs \
+  FitSpec/Engine.hs \
   FitSpec/TestTypes.hs \
-  ../llcheck/Test/Types.hs \
+  FitSpec/Derive.hs \
   FitSpec/Mutable.hs \
   FitSpec/ShowMutable.hs \
   ../llcheck/Test/Check/Error.hs \
+  ../llcheck/Test/Types.hs \
   ../llcheck/Test/Check.hs \
   ../llcheck/Test/Check/Derive.hs \
   ../llcheck/Test/Check/Utils.hs \
   ../llcheck/Test/Check/Basic.hs \
   ../llcheck/Test/Check/Core.hs \
-  FitSpec/PrettyPrint.hs
+  FitSpec/PrettyPrint.hs \
+  FitSpec/Utils.hs
 tests/test-derive: \
   tests/test-derive.hs \
+  FitSpec.hs \
+  FitSpec/Main.hs \
+  FitSpec/Engine.hs \
+  FitSpec/TestTypes.hs \
   FitSpec/Derive.hs \
+  FitSpec/Mutable.hs \
+  FitSpec/ShowMutable.hs \
+  ../llcheck/Test/Check/Error.hs \
+  ../llcheck/Test/Types.hs \
+  ../llcheck/Test/Check.hs \
+  ../llcheck/Test/Check/Derive.hs \
+  ../llcheck/Test/Check/Utils.hs \
+  ../llcheck/Test/Check/Basic.hs \
+  ../llcheck/Test/Check/Core.hs \
+  FitSpec/PrettyPrint.hs \
+  FitSpec/Utils.hs
+tests/test-mutate.o: \
+  tests/test-mutate.hs \
+  FitSpec.hs \
+  FitSpec/Main.hs \
+  FitSpec/Engine.hs \
+  FitSpec/Utils.hs \
   FitSpec/TestTypes.hs \
   ../llcheck/Test/Types.hs \
+  FitSpec/Derive.hs \
   FitSpec/Mutable.hs \
   FitSpec/ShowMutable.hs \
   ../llcheck/Test/Check/Error.hs \
@@ -558,31 +584,21 @@ tests/test-derive: \
   ../llcheck/Test/Check/Basic.hs \
   ../llcheck/Test/Check/Core.hs \
   FitSpec/PrettyPrint.hs
-tests/test-mutate.o: \
-  tests/test-mutate.hs \
-  FitSpec/TestTypes.hs \
-  ../llcheck/Test/Types.hs \
-  FitSpec/Mutable.hs \
-  FitSpec/ShowMutable.hs \
-  ../llcheck/Test/Check/Error.hs \
-  ../llcheck/Test/Check.hs \
-  FitSpec/Utils.hs \
-  FitSpec/PrettyPrint.hs \
-  ../llcheck/Test/Check/Derive.hs \
-  ../llcheck/Test/Check/Utils.hs \
-  ../llcheck/Test/Check/Basic.hs \
-  ../llcheck/Test/Check/Core.hs
 tests/test-mutate: \
   tests/test-mutate.hs \
+  FitSpec.hs \
+  FitSpec/Main.hs \
+  FitSpec/Engine.hs \
+  FitSpec/Utils.hs \
   FitSpec/TestTypes.hs \
   ../llcheck/Test/Types.hs \
+  FitSpec/Derive.hs \
   FitSpec/Mutable.hs \
   FitSpec/ShowMutable.hs \
   ../llcheck/Test/Check/Error.hs \
   ../llcheck/Test/Check.hs \
-  FitSpec/Utils.hs \
-  FitSpec/PrettyPrint.hs \
   ../llcheck/Test/Check/Derive.hs \
   ../llcheck/Test/Check/Utils.hs \
   ../llcheck/Test/Check/Basic.hs \
-  ../llcheck/Test/Check/Core.hs
+  ../llcheck/Test/Check/Core.hs \
+  FitSpec/PrettyPrint.hs
