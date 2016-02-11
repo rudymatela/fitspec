@@ -39,7 +39,7 @@ data Args a = Args
   , callNames :: [String] -- ^ function call templates: @["foo x y","goo x y"]@
   , limitResults :: Maybe Int -- ^ Just a limit for results, 'Nothing' for all
 
-  -- * advanced options:
+  -- advanced options:
   , extraMutants :: [a]   -- ^ extra mutants to try to kill alongside mutations
   , showPropertySets :: [String] -> String -- ^ function to show property sets.
   , showMoreEI :: Bool    -- ^ show more equivalences and implications
