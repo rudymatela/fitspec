@@ -19,7 +19,13 @@ LISTHS=find -name \*.hs \
             -a \! \( -path "./dist/*" \
                   -o -path "./patterns/*" \
                   -o -path "./Setup.hs" \)
-OBJS = $(shell $(LISTHS) | sed -e 's/hs$$/o/')
+LISTLIBS=find -name \*.hs \
+              -a \! \( -path "./dist/*" \
+                    -o -path "./patterns/*" \
+                    -o -path "./tests/*" \
+                    -o -path "./bench/*" \
+                    -o -path "./Setup.hs" \)
+OBJS = $(shell $(LISTLIBS) | sed -e 's/hs$$/o/')
 BENCHS = bench/avltrees \
          bench/bools \
          bench/heaps \
