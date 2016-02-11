@@ -22,13 +22,13 @@ LISTHS=find -name \*.hs \
 OBJS = $(shell $(LISTHS) | sed -e 's/hs$$/o/')
 BENCHS = bench/avltrees \
          bench/bools \
-		 bench/heaps \
-		 bench/id \
-		 bench/list \
-		 bench/pretty \
-		 bench/sieve \
-		 bench/sorting \
-		 bench/spring
+         bench/heaps \
+         bench/id \
+         bench/list \
+         bench/pretty \
+         bench/sieve \
+         bench/sorting \
+         bench/spring
 TESTS = tests/test-mutate \
         tests/test-derive
 
