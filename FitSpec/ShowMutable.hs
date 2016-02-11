@@ -345,7 +345,3 @@ instance (ShowMutable a, ShowMutable b, ShowMutable c, ShowMutable d,
     , showMutant o o'
     , showMutant p p'
     , showMutant q q' ]
-
-(+-+) :: String -> String -> String
-cs +-+ ds = cs ++ " " ++ ds
-infixr 5 +-+
