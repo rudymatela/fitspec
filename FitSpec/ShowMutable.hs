@@ -4,6 +4,10 @@ module FitSpec.ShowMutable
   , mutantSEq
   )
 where
+-- The code in this module is very hacky and
+-- probably needs refactoring in the future.
+--
+-- But hey!  It works for most cases.
 
 import FitSpec.PrettyPrint
 import Test.Check.Error (errorToNothing, Listable(..))
