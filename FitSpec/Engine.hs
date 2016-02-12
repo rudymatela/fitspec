@@ -125,22 +125,22 @@ showMutant :: Args a -> a -> a -> String
 showMutant as = showMutantN as (callNames as)
 
 
-type Property = [(Bool,[String])]
+type Property = [([String],Bool)]
 type Properties = [Property]
 
 property :: Testable a
          => a -> Property
-property = resultArguments
+property = results
 
 propertyE :: Testable a
           => a -> Property
-propertyE = map (errorToFalse *** id) . resultArguments
+propertyE = map (id *** errorToFalse) . property
 
 propertyHolds :: Int -> Property -> Bool
-propertyHolds n = and . map fst . take n
+propertyHolds n = and . map snd . take n
 
 propertyCE :: Int -> Property -> Maybe String
-propertyCE n = listToMaybe . map (unwords . snd) . filter (not . fst) . take n
+propertyCE n = listToMaybe . map (unwords . fst) . filter (not . snd) . take n
 
 propertiesToMap :: [Property] -> Int -> [Bool]
 propertiesToMap ps n = map (propertyHolds n) ps
