@@ -36,6 +36,7 @@ BENCHS = bench/avltrees \
          bench/sorting \
          bench/spring
 TESTS = tests/test-mutate \
+        tests/test-showmutable \
         tests/test-derive
 
 all: $(OBJS)
@@ -44,6 +45,7 @@ benchs: $(BENCHS) all
 
 test: all benchs $(TESTS)
 	./tests/test-mutate
+	./tests/test-showmutable
 	./tests/test-derive
 
 legacy-test:

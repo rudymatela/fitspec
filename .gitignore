@@ -30,4 +30,5 @@ eg/sorting
 
 # test binaries
 tests/test-mutate
+tests/test-showmutable
 tests/test-derive
