@@ -5,6 +5,7 @@ module FitSpec.ShowMutable
   , showMutant
   , showMutantN
   , showMutantNested
+  , showMutantBind
   , MutantS ()
   )
 where
@@ -85,10 +86,32 @@ showMutantS (ns:_) (Function bs) = (("\\" ++ unwords bound ++ " -> ") `beside`)
     unbound = drop (length bound) vns
     application = apply fn bound
 
+showMutantSBind :: [String] -> MutantS -> String
+showMutantSBind ns (Tuple ms) = concatMap (uncurry showMutantSBind1)
+                              $ (ns ++ defVns) `zip` ms
+showMutantSBind ns m          = showMutantSBind1 (head (ns ++ defVns)) m
+
+showMutantSBind1 :: String -> MutantS -> String
+showMutantSBind1 _ (Unmutated s) = ""
+showMutantSBind1 n (Atom s)      = fname n ++ "' = " ++ s -- TODO: What about infix?
+showMutantSBind1 n (Tuple ms)    = fname n ++ "' = " ++ showTuple (showMutantS [] `map` ms)
+showMutantSBind1 n (Function bs) = unlines (uncurry showBind `map` bs)
+                                ++ apply fn' bound ++ " = " ++ apply fn bound ++ "\n"
+  where showBind [a1,a2] r | isInfix fn = unwords [a1,fn',a2] ++ " = " ++ showMutantS [] r
+        showBind as r = unwords (fn':as) ++ " = " ++ showMutantS [] r
+        (fn,vns) = fvnames n
+        fn' = prime fn
+        bound = zipWith const vns (fst $ head bs)
+
 showMutantN :: ShowMutable a => [String] -> a -> a -> String
 showMutantN names f f' = showMutantS (map (uncurry (:) . fvnames) names)
                        $ flatten
                        $ mutantS f f'
+
+showMutantBind :: ShowMutable a => [String] -> a -> a -> String
+showMutantBind names f f' = showMutantSBind names
+                          $ flatten
+                          $ mutantS f f'
 
 showMutantNested :: ShowMutable a => [String] -> a -> a -> String
 showMutantNested names f f' = showMutantS (map (uncurry (:) . fvnames) names)
@@ -111,6 +134,9 @@ fvnames = fvns' . words
         fvns' [a,o,b] | isInfix o = (o,[a,b])
         fvns' []      = (defFn,[])
         fvns' (f:vs)  = (f,vs)
+
+fname :: String -> String
+fname = fst . fvnames
 
 -- TODO: Check if 'f' is intended to be used as an infix operator and operate accordingly
 -- even if 'f' is (10 +).  Transform into (10 + 2).
@@ -138,6 +164,14 @@ isInfix (c:cs) = c /= '(' && not (isLetter c)
 toPrefix :: String -> String
 toPrefix ('`':cs) = init cs
 toPrefix cs = '(':cs ++ ")"
+
+-- Primeify the name of a function
+prime :: String -> String
+prime ('`':cs) = '`':init cs ++ "'`" -- `foo` to `foo'`
+prime ('(':cs) = '(':init cs ++ "-)" -- (+) to (+-)
+prime cs | isInfix cs = cs ++ "-"    -- + to +-
+         | otherwise  = cs ++ "'"    -- foo to foo'
+
 
 class ShowMutable a where
   mutantS :: a -> a -> MutantS
