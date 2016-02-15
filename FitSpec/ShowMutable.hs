@@ -95,10 +95,11 @@ showMutantSBind1 :: String -> MutantS -> String
 showMutantSBind1 _ (Unmutated s) = ""
 showMutantSBind1 n (Atom s)      = fname n ++ "' = " ++ s -- TODO: What about infix?
 showMutantSBind1 n (Tuple ms)    = fname n ++ "' = " ++ showTuple (showMutantS [] `map` ms)
-showMutantSBind1 n (Function bs) = unlines (uncurry showBind `map` bs)
-                                ++ apply fn' bound ++ " = " ++ apply fn bound ++ "\n"
-  where showBind [a1,a2] r | isInfix fn = unwords [a1,fn',a2] ++ " = " ++ showMutantS [] r
-        showBind as r = unwords (fn':as) ++ " = " ++ showMutantS [] r
+showMutantSBind1 n (Function bs) = table " "
+                                 $ (uncurry showBind `map` bs)
+                                ++ [words (apply fn' bound) ++ ["=", apply fn bound]]
+  where showBind [a1,a2] r | isInfix fn = [a1,fn',a2,"=",showMutantS [] r]
+        showBind as r = [fn'] ++ as ++ ["=",showMutantS [] r]
         (fn,vns) = fvnames n
         fn' = prime fn
         bound = zipWith const vns (fst $ head bs)
