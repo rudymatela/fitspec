@@ -48,9 +48,6 @@ test: all benchs $(TESTS)
 	./tests/test-showmutable
 	./tests/test-derive
 
-test-%: tests/test-%
-	time -p ./tests/test-$*
-
 legacy-test:
 	make clean && make -C $(LLCHECKPATH) clean && make test GHC=ghc-7.8 GHCFLAGS="-Werror -dynamic"
 	make clean && make -C $(LLCHECKPATH) clean && make test GHC=ghc-7.6 GHCFLAGS="-Werror -fno-warn-unrecognised-pragmas"
