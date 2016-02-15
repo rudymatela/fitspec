@@ -87,10 +87,17 @@ tests n =
   , h11 (id ->: int)  (id ->: bool)
   , h11 (id ->: bool) (id ->: int)
   , h11 (swap ->: ((int,int),int)) (swap ->: (int,(int,int)))
+
+  , h111 (id ->: int)  (id ->: bool) (id ->: char)
+  , h111 (id ->: bool) (id ->: char) (id ->: int)
+  , h111 (swap ->: ((int,int),(int,int)))
+         (swap ->: ((int,int),int))
+         (swap ->: (int,(int,int)))
   ]
   where h1 = holds n . prop_1
         h2 = holds n . prop_2
         h11 f = holds n . prop_11 f
+        h111 f g = holds n . prop_111 f g
 
 -- prop_N, asserts the format of a mutation of a value of N arguments
 -- prop_MN, asserts the format of a pair of values of M and N arguments
@@ -134,6 +141,24 @@ prop_11 :: ( Eq a, Show a, Listable a, ShowMutable a
 prop_11 f g x y z w = y /= f x && w /= g z
                   ==> showMutantN ["f x","g x"] (f,g) (mutate f x y, mutate g z w)
                    == showTuple [showMutant1 "f" x y, showMutant1 "g" z w]
+
+prop_111 :: ( Eq a, Show a, Listable a, ShowMutable a
+            , Eq b, Show b, Listable b, ShowMutable b
+            , Eq c, Show c, Listable c, ShowMutable c
+            , Eq d, Show d, Listable d, ShowMutable d
+            , Eq e, Show e, Listable e, ShowMutable e
+            , Eq f, Show f, Listable f, ShowMutable f )
+         => (a->b) -> (c->d) -> (e->f) -> a -> b -> c -> d -> e -> f -> Bool
+prop_111 f g h xf yf xg yg xh yh = yf /= f xf
+                                && yg /= g xg
+                                && yh /= h xh
+                               ==> showMutantN ["f x","g x","h x"] (f,g,h)
+                                               ( mutate f xf yf
+                                               , mutate g xg yg
+                                               , mutate h xh yh )
+                                == showTuple [ showMutant1 "f" xf yf
+                                             , showMutant1 "g" xg yg
+                                             , showMutant1 "h" xh yh ]
 
 prop_2 :: ( Eq a, Show a, Listable a, ShowMutable a
           , Eq b, Show b, Listable b, ShowMutable b
