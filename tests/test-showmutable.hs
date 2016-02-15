@@ -93,11 +93,18 @@ tests n =
   , h111 (swap ->: ((int,int),(int,int)))
          (swap ->: ((int,int),int))
          (swap ->: (int,(int,int)))
+
+  , h11' (id ->: int)  (id ->: bool) (id ->: char)
+  , h11' (id ->: bool) (id ->: char) (id ->: int)
+  , h11' (swap ->: ((int,int),(int,int)))
+         (swap ->: ((int,int),int))
+         (swap ->: (int,(int,int)))
   ]
   where h1 = holds n . prop_1
         h2 = holds n . prop_2
         h11 f = holds n . prop_11 f
         h111 f g = holds n . prop_111 f g
+        h11' f g = holds n . prop_11' f g
 
 -- prop_N, asserts the format of a mutation of a value of N arguments
 -- prop_MN, asserts the format of a pair of values of M and N arguments
@@ -159,6 +166,27 @@ prop_111 f g h xf yf xg yg xh yh = yf /= f xf
                                 == showTuple [ showMutant1 "f" xf yf
                                              , showMutant1 "g" xg yg
                                              , showMutant1 "h" xh yh ]
+
+prop_11' :: ( Eq a, Show a, Listable a, ShowMutable a
+            , Eq b, Show b, Listable b, ShowMutable b
+            , Eq c, Show c, Listable c, ShowMutable c
+            , Eq d, Show d, Listable d, ShowMutable d
+            , Eq e, Show e, Listable e, ShowMutable e
+            , Eq f, Show f, Listable f, ShowMutable f )
+         => (a->b) -> (c->d) -> (e->f) -> a -> b -> c -> d -> e -> f -> Bool
+prop_11' f g h xf yf xg yg xh yh = yf /= f xf
+                                && yg /= g xg
+                                && yh /= h xh
+                               ==> showMutantN ["f x","g x","h x"] (f,(g,h))
+                                               ( mutate f xf yf
+                                               , ( mutate g xg yg
+                                                 , mutate h xh yh ) )
+                                == showTuple [ showMutant1 "f" xf yf  -- is!
+                                             , showMutant1 "g" xg yg
+                                             , showMutant1 "h" xh yh ]
+                             -- == showTuple [ showMutant1 "f" xf yf  -- should be!
+                             --              , showTuple [ showMutant1 "g" xg yg
+                             --                          , showMutant1 "h" xh yh ] ]
 
 prop_2 :: ( Eq a, Show a, Listable a, ShowMutable a
           , Eq b, Show b, Listable b, ShowMutable b
