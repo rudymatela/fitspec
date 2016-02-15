@@ -17,7 +17,6 @@ instance (Ord a, Listable a) => Mutable (Tree a) where
 
 instance (Ord a, Show a, Listable a) => ShowMutable (Tree a) where
   mutantS = mutantSEq
-  showMutant _ = show
 
 
 -- * Tree Invariants:

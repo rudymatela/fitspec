@@ -78,6 +78,7 @@ tests n =
   , h2 $ const ->: int  ->>: bool
   , h2 $ const ->: bool ->>: int  -- fails (1000 tests)!
   , h2 $ (+) ->: int
+  , hI $ (+) ->: int
   , h2 $ (*) ->: int
   , h2 $ (&&)
   , h2 $ (||)
@@ -102,6 +103,7 @@ tests n =
   ]
   where h1 = holds n . prop_1
         h2 = holds n . prop_2
+        hI = holds n . prop_I
         h11 f = holds n . prop_11 f
         h111 f g = holds n . prop_111 f g
         h11' f g = holds n . prop_11' f g
@@ -181,12 +183,12 @@ prop_11' f g h xf yf xg yg xh yh = yf /= f xf
                                                ( mutate f xf yf
                                                , ( mutate g xg yg
                                                  , mutate h xh yh ) )
-                                == showTuple [ showMutant1 "f" xf yf  -- is!
-                                             , showMutant1 "g" xg yg
-                                             , showMutant1 "h" xh yh ]
-                             -- == showTuple [ showMutant1 "f" xf yf  -- should be!
-                             --              , showTuple [ showMutant1 "g" xg yg
-                             --                          , showMutant1 "h" xh yh ] ]
+                             -- == showTuple [ showMutant1 "f" xf yf  -- is!
+                             --              , showMutant1 "g" xg yg
+                             --              , showMutant1 "h" xh yh ]
+                                == showTuple [ showMutant1 "f" xf yf  -- should be!
+                                             , showTuple [ showMutant1 "g" xg yg
+                                                         , showMutant1 "h" xh yh ] ]
 
 prop_2 :: ( Eq a, Show a, Listable a, ShowMutable a
           , Eq b, Show b, Listable b, ShowMutable b
@@ -195,6 +197,14 @@ prop_2 :: ( Eq a, Show a, Listable a, ShowMutable a
 prop_2 f x y z = z /= f x y
              ==> showMutantN ["f x y"] f (mutate2 f x y z)
               == showMutant2 "f" x y z
+
+prop_I :: ( Eq a, Show a, Listable a, ShowMutable a
+          , Eq b, Show b, Listable b, ShowMutable b
+          , Eq c, Show c, Listable c, ShowMutable c )
+        => (a->b->c) -> a -> b -> c -> Bool
+prop_I f x y z = z /= f x y
+             ==> showMutantN ["x + y"] f (mutate2 f x y z)
+              == showMutantI "+" x y z
 
 mutate :: Eq a => (a -> b) -> a -> b -> (a -> b)
 mutate f x y x' | x' == x   = y
@@ -217,3 +227,11 @@ showMutant2 f x y z = "\\x y -> case (x,y) of\n"
                    ++ "          (" ++ show x ++ "," ++ show y ++ ") -> "
                                     ++ show z ++ "\n"
                    ++ "          _ -> " ++ f ++ " x y\n"
+
+-- | Show a mutant of an infix
+showMutantI :: (Show a, Show b, Show c)
+            => String -> a -> b -> c -> String
+showMutantI o x y z = "\\x y -> case (x,y) of\n"
+                   ++ "          (" ++ show x ++ "," ++ show y ++ ") -> "
+                                    ++ show z ++ "\n"
+                   ++ "          _ -> x " ++ o ++ " y\n"

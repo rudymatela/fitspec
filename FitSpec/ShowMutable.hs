@@ -2,6 +2,10 @@
 module FitSpec.ShowMutable
   ( ShowMutable (..)
   , mutantSEq
+  , showMutant
+  , showMutantN
+  , showMutantNested
+  , MutantS ()
   )
 where
 -- The code in this module is very hacky and
@@ -13,8 +17,15 @@ import FitSpec.PrettyPrint
 import Test.Check.Error (errorToNothing, Listable(..))
 import Data.Maybe (mapMaybe,isNothing)
 import Control.Monad (join)
-import Data.List (intercalate)
+import Data.List (intercalate,tails)
 import Data.Char (isLetter)
+
+-- | Structure of a mutant.
+data MutantS = Unmutated String
+             | Atom String
+             | Tuple [MutantS]
+             | Function [([String],MutantS)]
+  deriving Show
 
 -- | Default function name, when none given
 defFn :: String
@@ -23,47 +34,68 @@ defFn  = head defFns
 defFns :: [String]
 defFns = ["f","g","h","i"] ++ map (++"'") defFns
 
-defVn :: String
-defVn = head defVns
-
 -- | Default variable names, when none given
 defVns :: [String]
 defVns = ["x","y","z","w"] ++ map (++"'") defVns
 
+isUnmutated (Unmutated _) = True
+isUnmutated (Tuple ms)    = all isUnmutated ms
+isUnmutated (Function bs) = all (isUnmutated . snd) bs
+isUnmutated _             = False
 
-{-
-  Atomic value mutants:
-    Int, mutated:     [[([],10)]] 
-    Int, not mutated: [[]]
-    (),  not mutated: [[]]
+isFunction (Function _) = True
+isFunction _            = False
 
-  Functional value mutants:
-    Int -> Int, not mutated:  [[]]
-    Int -> Int, mutated:      [[([10],10)]]
-    Int -> Int -> Int, mutated:  [[([10,10,10],10)]]
+flatten :: MutantS -> MutantS
+flatten (Tuple ms) = Tuple $ map flatten ms
+flatten (Function [([],s)])  = flatten s
+flatten (Function (([],s):_)) = error "flatten: ambiguous value"
+flatten (Function bs) = let bs' = map (mapSnd flatten) bs in
+  if any (not . isFunction . snd) bs'
+    then Function bs'
+    else Function
+       $ take 10
+       $ concatMap (\(as,Function bs'') -> map (mapFst (as++)) bs'') bs'
+flatten m = m
 
-  Paired mutants:
-    (Int,Int):    [[([],10)],[]]
-
-  invalid:
-    []
--}
-flatLambdas :: [String] -> [[([String],String)]] -> String
-flatLambdas names = showTuple . zipWith flatLambda (names ++ defFns)
-
-flatLambda :: String -> [([String],String)] -> String
-flatLambda name []       = fname name
-flatLambda _    [([],s)] = s
-flatLambda name bs = (("\\" ++ unwords varnames ++ " -> ") `beside`)
-                   $ "case " ++ showTuple varnames ++ " of\n"
-                  ++ "  " `beside` cases
+-- TODO: refactor showMutantS to a two-level function
+-- one that has top-level names
+-- another that does not
+showMutantS :: [[String]] -> MutantS -> String
+showMutantS ((n:_):_) (Unmutated s) = apply n []
+showMutantS _  (Unmutated s) = s
+showMutantS _  (Atom s)      = s
+showMutantS ns (Tuple ms)    = showTuple . map (uncurry showMutantS)
+                             $ drops ns `zip` ms
+showMutantS [] f             = showMutantS [defFn:defVns] f
+showMutantS ((n:_):_) (Function []) = apply n []
+showMutantS _  (Function [([],s)])   = showMutantS [] s
+showMutantS _  (Function (([],s):_)) = error "showMutantS: ambiguous value"
+showMutantS (ns:_) (Function bs) = (("\\" ++ unwords bound ++ " -> ") `beside`)
+                                 $ "case " ++ showTuple bound ++ " of\n"
+                                ++ "  " `beside` cases
   where
-    cases = unlines (map (\(as,r) -> showTuple as ++ " -> " ++ r) bs)
-         ++ "_ -> " ++ name
-    varnames = zipWith const
-                       (vnames name ++ defVns)
-                       (fst $ head bs)
+    cases = concatMap
+              (\(as,r) -> (showTuple as ++ " -> ")
+                 `beside` showMutantS [application:unbound | isFunction r] r)
+              bs
+         ++ "_ -> " ++ application
+    (fn:vns) = ns +- (defFn:defVns)
+    bound = zipWith const vns (fst $ head bs)
+    unbound = drop (length bound) vns
+    application = apply fn bound
 
+showMutantN :: ShowMutable a => [String] -> a -> a -> String
+showMutantN names f f' = showMutantS (map (uncurry (:) . fvnames) names)
+                       $ flatten
+                       $ mutantS f f'
+
+showMutantNested :: ShowMutable a => [String] -> a -> a -> String
+showMutantNested names f f' = showMutantS (map (uncurry (:) . fvnames) names)
+                            $ mutantS f f'
+
+showMutant :: ShowMutable a => a -> a -> String
+showMutant = showMutantN []
 
 -- | Separate function from variable names in a simple Haskell expr.
 --
@@ -76,272 +108,206 @@ flatLambda name bs = (("\\" ++ unwords varnames ++ " -> ") `beside`)
 fvnames :: String -> (String,[String])
 fvnames = fvns' . words
   where fvns' :: [String] -> (String,[String])
-        fvns' [a,b:bs,c] | b /= '(' && not (isLetter b)
-                         = if b == '`'
-                             then (init bs,[a,c])         -- `o` -> o
-                             else ('(':b:bs ++ ")",[a,c]) --  +  -> (+)
-        fvns' []         = (defFn,[])
-        fvns' (f:vs)     = (f,vs)
+        fvns' [a,o,b] | isInfix o = (o,[a,b])
+        fvns' []      = (defFn,[])
+        fvns' (f:vs)  = (f,vs)
 
--- | Separate the function name from a simple Haskell expression.
---   See the docs for 'fvnames'
-fname :: String -> String
-fname = fst . fvnames
+-- TODO: Check if 'f' is intended to be used as an infix operator and operate accordingly
+-- even if 'f' is (10 +).  Transform into (10 + 2).
+--
+-- For the sake of clarity, in the following examples, double-quotes are ommited:
+-- > apply f       == f
+-- > apply f x     == f x
+-- > apply f x y   == f x y
+-- > apply (+)     == (+)
+-- > apply (+) x   == (+) x
+-- > apply (+) x y == (+) x y
+-- > apply +       == (+)
+-- > apply + x     == (+) x
+-- > apply + x y   == (x + y)
+-- > apply + x y z == (+) x y z
+apply :: String -> [String] -> String
+apply f [x,y] | isInfix f = unwords [x,f,y]
+apply f xs = if isInfix f
+               then unwords (toPrefix f:xs)
+               else unwords (f:xs)
 
--- | Separate the variable names from a simple Haskell expression.
---   See the docs for 'fvnames'
-vnames :: String -> [String]
-vnames = snd . fvnames
+isInfix :: String -> Bool
+isInfix (c:cs) = c /= '(' && not (isLetter c)
+
+toPrefix :: String -> String
+toPrefix ('`':cs) = init cs
+toPrefix cs = '(':cs ++ ")"
 
 class ShowMutable a where
-  mutantS :: a -> a -> [[([String],String)]]
-
-  showMutantN :: [String] -> a -> a -> String
-  showMutantN ns f = flatLambdas ns . mutantS f
-
-  showMutant :: a -> a -> String
-  showMutant = showMutantN []
+  mutantS :: a -> a -> MutantS
 
 mutantSEq :: (Eq a, Show a)
-          => a -> a -> [[([String],String)]]
+           => a -> a -> MutantS
 mutantSEq x x' = if x == x'
-                   then [ [] ]
-                   else [ [([],show x')] ]
+                    then Unmutated $ show x
+                    else Atom      $ show x'
 
-instance ShowMutable ()   where mutantS = mutantSEq; showMutant _ = show
-instance ShowMutable Int  where mutantS = mutantSEq; showMutant _ = show
-instance ShowMutable Char where mutantS = mutantSEq; showMutant _ = show
-instance ShowMutable Bool where mutantS = mutantSEq; showMutant _ = show
-instance (Eq a, Show a) => ShowMutable [a]       where mutantS = mutantSEq; showMutant _ = show
-instance (Eq a, Show a) => ShowMutable (Maybe a) where mutantS = mutantSEq; showMutant _ = show
+instance ShowMutable ()   where mutantS = mutantSEq
+instance ShowMutable Int  where mutantS = mutantSEq
+instance ShowMutable Char where mutantS = mutantSEq
+instance ShowMutable Bool where mutantS = mutantSEq
+instance (Eq a, Show a) => ShowMutable [a]       where mutantS = mutantSEq
+instance (Eq a, Show a) => ShowMutable (Maybe a) where mutantS = mutantSEq
 
 
 instance (Listable a, Show a, ShowMutable b) => ShowMutable (a->b) where
-  -- TODO: maybe somehow let the user provide how many values should be tried
-  -- when printing the mutant
-  mutantS f f' = (:[])
+  -- TODO: let the user provide how many values should be tried when printing
+  mutantS f f' = Function
                . take 10
-               . concat
-               . mapMaybe bindingsFor
+               . filter (not . isUnmutated . snd)
+               . mapMaybe bindingFor
                . take 200
                $ list
-    where
-   -- bindingsFor :: a -> Maybe [([String],String)]
-      bindingsFor x =
-        case errorToNothing $ mutantS (f x) (f' x) of
-          Nothing   -> Nothing -- error
-          Just []   -> Nothing -- returned (), null mutant
-          Just [[]] -> Nothing -- null mutant
-          Just [bs] -> Just $ map (\(xs,y) -> (show x:xs,y)) bs -- valid mutant, prepend x arg
-          Just ys  ->  if all null ys
-                         then Nothing
-                         else Just [([show x],showMutant (f x) (f' x))] -- tuple
-                          -- in the above else clause, no error should be raised,
-                          -- it is already catched by the enclosing case expression
+    where bindingFor x = fmap ((,) [show x])
+                       $ errorToNothing (mutantS (f x) (f' x))
 
 instance (ShowMutable a, ShowMutable b) => ShowMutable (a,b) where
-  mutantS (f,g) (f',g') = mutantS f f'
-                       ++ mutantS g g'
-  showMutant (f,g) (f',g') = showTuple [ showMutant f f'
-                                       , showMutant g g' ]
+  mutantS (f,g) (f',g') = Tuple [ mutantS f f'
+                                , mutantS g g' ]
 
 instance (ShowMutable a, ShowMutable b, ShowMutable c)
       => ShowMutable (a,b,c) where
-  mutantS (f,g,h) (f',g',h') = mutantS f f'
-                            ++ mutantS g g'
-                            ++ mutantS h h'
-  showMutant (f,g,h) (f',g',h') = showTuple [ showMutant f f'
-                                            , showMutant g g'
-                                            , showMutant h h' ]
+  mutantS (f,g,h) (f',g',h') = Tuple [ mutantS f f'
+                                     , mutantS g g'
+                                     , mutantS h h' ]
 
 instance (ShowMutable a, ShowMutable b, ShowMutable c, ShowMutable d)
       => ShowMutable (a,b,c,d) where
-  mutantS (f,g,h,i) (f',g',h',i') = mutantS f f'
-                                 ++ mutantS g g'
-                                 ++ mutantS h h'
-                                 ++ mutantS i i'
-  showMutant (f,g,h,i) (f',g',h',i') = showTuple [ showMutant f f'
-                                                 , showMutant g g'
-                                                 , showMutant h h'
-                                                 , showMutant i i' ]
+  mutantS (f,g,h,i) (f',g',h',i') = Tuple [ mutantS f f'
+                                          , mutantS g g'
+                                          , mutantS h h'
+                                          , mutantS i i' ]
 
 instance (ShowMutable a, ShowMutable b, ShowMutable c,
           ShowMutable d, ShowMutable e)
       => ShowMutable (a,b,c,d,e) where
-  mutantS (f,g,h,i,j) (f',g',h',i',j') = mutantS f f'
-                                      ++ mutantS g g'
-                                      ++ mutantS h h'
-                                      ++ mutantS i i'
-                                      ++ mutantS j j'
-  showMutant (f,g,h,i,j) (f',g',h',i',j') = showTuple [ showMutant f f'
-                                                      , showMutant g g'
-                                                      , showMutant h h'
-                                                      , showMutant i i'
-                                                      , showMutant j j' ]
+  mutantS (f,g,h,i,j) (f',g',h',i',j') = Tuple [ mutantS f f'
+                                               , mutantS g g'
+                                               , mutantS h h'
+                                               , mutantS i i'
+                                               , mutantS j j' ]
 
 instance (ShowMutable a, ShowMutable b, ShowMutable c,
           ShowMutable d, ShowMutable e, ShowMutable f)
       => ShowMutable (a,b,c,d,e,f) where
-  mutantS (f,g,h,i,j,k) (f',g',h',i',j',k') = mutantS f f'
-                                           ++ mutantS g g'
-                                           ++ mutantS h h'
-                                           ++ mutantS i i'
-                                           ++ mutantS j j'
-                                           ++ mutantS k k'
-  showMutant (f,g,h,i,j,k) (f',g',h',i',j',k') = showTuple [ showMutant f f'
-                                                           , showMutant g g'
-                                                           , showMutant h h'
-                                                           , showMutant i i'
-                                                           , showMutant j j'
-                                                           , showMutant k k' ]
+  mutantS (f,g,h,i,j,k) (f',g',h',i',j',k') = Tuple [ mutantS f f'
+                                                    , mutantS g g'
+                                                    , mutantS h h'
+                                                    , mutantS i i'
+                                                    , mutantS j j'
+                                                    , mutantS k k' ]
 
 instance (ShowMutable a, ShowMutable b, ShowMutable c, ShowMutable d,
           ShowMutable e, ShowMutable f, ShowMutable g)
       => ShowMutable (a,b,c,d,e,f,g) where
-  mutantS (f,g,h,i,j,k,l) (f',g',h',i',j',k',l') = mutantS f f'
-                                                ++ mutantS g g'
-                                                ++ mutantS h h'
-                                                ++ mutantS i i'
-                                                ++ mutantS j j'
-                                                ++ mutantS k k'
-                                                ++ mutantS l l'
-  showMutant (f,g,h,i,j,k,l) (f',g',h',i',j',k',l') = showTuple
-                                                    [ showMutant f f'
-                                                    , showMutant g g'
-                                                    , showMutant h h'
-                                                    , showMutant i i'
-                                                    , showMutant j j'
-                                                    , showMutant k k'
-                                                    , showMutant l l' ]
+  mutantS (f,g,h,i,j,k,l) (f',g',h',i',j',k',l') = Tuple
+                                                    [ mutantS f f'
+                                                    , mutantS g g'
+                                                    , mutantS h h'
+                                                    , mutantS i i'
+                                                    , mutantS j j'
+                                                    , mutantS k k'
+                                                    , mutantS l l' ]
 
 instance (ShowMutable a, ShowMutable b, ShowMutable c, ShowMutable d,
           ShowMutable e, ShowMutable f, ShowMutable g, ShowMutable h)
       => ShowMutable (a,b,c,d,e,f,g,h) where
-  mutantS (f,g,h,i,j,k,l,m) (f',g',h',i',j',k',l',m') = mutantS f f'
-                                                     ++ mutantS g g'
-                                                     ++ mutantS h h'
-                                                     ++ mutantS i i'
-                                                     ++ mutantS j j'
-                                                     ++ mutantS k k'
-                                                     ++ mutantS l l'
-                                                     ++ mutantS m m'
-  showMutant (f,g,h,i,j,k,l,m) (f',g',h',i',j',k',l',m') = showTuple
-                                                         [ showMutant f f'
-                                                         , showMutant g g'
-                                                         , showMutant h h'
-                                                         , showMutant i i'
-                                                         , showMutant j j'
-                                                         , showMutant k k'
-                                                         , showMutant l l'
-                                                         , showMutant m m' ]
+  mutantS (f,g,h,i,j,k,l,m) (f',g',h',i',j',k',l',m') = Tuple
+                                                      [ mutantS f f'
+                                                      , mutantS g g'
+                                                      , mutantS h h'
+                                                      , mutantS i i'
+                                                      , mutantS j j'
+                                                      , mutantS k k'
+                                                      , mutantS l l'
+                                                      , mutantS m m' ]
 
 instance (ShowMutable a, ShowMutable b, ShowMutable c, ShowMutable d,
           ShowMutable e, ShowMutable f, ShowMutable g, ShowMutable h,
           ShowMutable i)
       => ShowMutable (a,b,c,d,e,f,g,h,i) where
-  mutantS (f,g,h,i,j,k,l,m,n) (f',g',h',i',j',k',l',m',n') = mutantS f f'
-                                                          ++ mutantS g g'
-                                                          ++ mutantS h h'
-                                                          ++ mutantS i i'
-                                                          ++ mutantS j j'
-                                                          ++ mutantS k k'
-                                                          ++ mutantS l l'
-                                                          ++ mutantS m m'
-                                                          ++ mutantS n n'
-  showMutant (f,g,h,i,j,k,l,m,n) (f',g',h',i',j',k',l',m',n') = showTuple
-    [ showMutant f f'
-    , showMutant g g'
-    , showMutant h h'
-    , showMutant i i'
-    , showMutant j j'
-    , showMutant k k'
-    , showMutant l l'
-    , showMutant m m'
-    , showMutant n n' ]
+  mutantS (f,g,h,i,j,k,l,m,n) (f',g',h',i',j',k',l',m',n') = Tuple
+    [ mutantS f f'
+    , mutantS g g'
+    , mutantS h h'
+    , mutantS i i'
+    , mutantS j j'
+    , mutantS k k'
+    , mutantS l l'
+    , mutantS m m'
+    , mutantS n n' ]
 
 instance (ShowMutable a, ShowMutable b, ShowMutable c, ShowMutable d,
           ShowMutable e, ShowMutable f, ShowMutable g, ShowMutable h,
           ShowMutable i, ShowMutable j)
       => ShowMutable (a,b,c,d,e,f,h,g,i,j) where
-  mutantS (f,g,h,i,j,k,l,m,n,o)
-          (f',g',h',i',j',k',l',m',n',o') = mutantS f f'
-                                         ++ mutantS g g'
-                                         ++ mutantS h h'
-                                         ++ mutantS i i'
-                                         ++ mutantS j j'
-                                         ++ mutantS k k'
-                                         ++ mutantS l l'
-                                         ++ mutantS m m'
-                                         ++ mutantS n n'
-                                         ++ mutantS o o'
-  showMutant (f,g,h,i,j,k,l,m,n,o) (f',g',h',i',j',k',l',m',n',o') = showTuple
-    [ showMutant f f'
-    , showMutant g g'
-    , showMutant h h'
-    , showMutant i i'
-    , showMutant j j'
-    , showMutant k k'
-    , showMutant l l'
-    , showMutant m m'
-    , showMutant n n'
-    , showMutant o o' ]
+  mutantS (f,g,h,i,j,k,l,m,n,o) (f',g',h',i',j',k',l',m',n',o') = Tuple
+    [ mutantS f f'
+    , mutantS g g'
+    , mutantS h h'
+    , mutantS i i'
+    , mutantS j j'
+    , mutantS k k'
+    , mutantS l l'
+    , mutantS m m'
+    , mutantS n n'
+    , mutantS o o' ]
 
 instance (ShowMutable a, ShowMutable b, ShowMutable c, ShowMutable d,
           ShowMutable e, ShowMutable f, ShowMutable g, ShowMutable h,
           ShowMutable i, ShowMutable j, ShowMutable k)
       => ShowMutable (a,b,c,d,e,f,g,h,i,j,k) where
-  mutantS (f,g,h,i,j,k,l,m,n,o,p)
-          (f',g',h',i',j',k',l',m',n',o',p') = mutantS f f'
-                                            ++ mutantS g g'
-                                            ++ mutantS h h'
-                                            ++ mutantS i i'
-                                            ++ mutantS j j'
-                                            ++ mutantS k k'
-                                            ++ mutantS l l'
-                                            ++ mutantS m m'
-                                            ++ mutantS n n'
-                                            ++ mutantS o o'
-                                            ++ mutantS p p'
-  showMutant (f,g,h,i,j,k,l,m,n,o,p) (f',g',h',i',j',k',l',m',n',o',p') = showTuple
-    [ showMutant f f'
-    , showMutant g g'
-    , showMutant h h'
-    , showMutant i i'
-    , showMutant j j'
-    , showMutant k k'
-    , showMutant l l'
-    , showMutant m m'
-    , showMutant n n'
-    , showMutant o o'
-    , showMutant p p' ]
+  mutantS (f,g,h,i,j,k,l,m,n,o,p) (f',g',h',i',j',k',l',m',n',o',p') = Tuple
+    [ mutantS f f'
+    , mutantS g g'
+    , mutantS h h'
+    , mutantS i i'
+    , mutantS j j'
+    , mutantS k k'
+    , mutantS l l'
+    , mutantS m m'
+    , mutantS n n'
+    , mutantS o o'
+    , mutantS p p' ]
 
 instance (ShowMutable a, ShowMutable b, ShowMutable c, ShowMutable d,
           ShowMutable e, ShowMutable f, ShowMutable g, ShowMutable h,
           ShowMutable i, ShowMutable j, ShowMutable k, ShowMutable l)
       => ShowMutable (a,b,c,d,e,f,g,h,i,j,k,l) where
-  mutantS (f,g,h,i,j,k,l,m,n,o,p,q)
-          (f',g',h',i',j',k',l',m',n',o',p',q') = mutantS f f'
-                                               ++ mutantS g g'
-                                               ++ mutantS h h'
-                                               ++ mutantS i i'
-                                               ++ mutantS j j'
-                                               ++ mutantS k k'
-                                               ++ mutantS l l'
-                                               ++ mutantS m m'
-                                               ++ mutantS n n'
-                                               ++ mutantS o o'
-                                               ++ mutantS p p'
-                                               ++ mutantS q q'
-  showMutant (f,g,h,i,j,k,l,m,n,o,p,q) (f',g',h',i',j',k',l',m',n',o',p',q') = showTuple
-    [ showMutant f f'
-    , showMutant g g'
-    , showMutant h h'
-    , showMutant i i'
-    , showMutant j j'
-    , showMutant k k'
-    , showMutant l l'
-    , showMutant m m'
-    , showMutant n n'
-    , showMutant o o'
-    , showMutant p p'
-    , showMutant q q' ]
+  mutantS (f,g,h,i,j,k,l,m,n,o,p,q) (f',g',h',i',j',k',l',m',n',o',p',q') = Tuple
+    [ mutantS f f'
+    , mutantS g g'
+    , mutantS h h'
+    , mutantS i i'
+    , mutantS j j'
+    , mutantS k k'
+    , mutantS l l'
+    , mutantS m m'
+    , mutantS n n'
+    , mutantS o o'
+    , mutantS p p'
+    , mutantS q q' ]
+
+-- Like tails, but returns an infinite list of empty lists at the end
+drops :: [a] -> [[a]]
+drops xs = tails xs ++ repeat []
+
+mapFst :: (a->b) -> (a,c) -> (b,c)
+mapFst f (x,y) = (f x,y)
+
+mapSnd :: (a->b) -> (c,a) -> (c,b)
+mapSnd f (x,y) = (x,f y)
+
+-- | @xs +- ys@ superimposes @xs@ over @ys@.
+--
+-- [1,2,3] +- [0,0,0,0,0,0,0] == [1,2,3,0,0,0,0]
+-- [x,y,z] +- [a,b,c,d,e,f,g] == [x,y,z,d,e,f,g]
+-- "asdf" +- "this is a test" == "asdf is a test"
+(+-) :: Eq a => [a] -> [a] -> [a]
+xs +- ys = xs ++ drop (length xs) ys

@@ -18,7 +18,6 @@ instance Mutable Doc where
 
 instance ShowMutable Doc where
   mutantS = mutantSEq
-  showMutant _ = show
 
 properties :: (Doc->Doc->Doc) -> (Doc->Doc->Doc) -> (Int->Doc->Doc) -> [Property]
 properties (<>) ($$) nest =
