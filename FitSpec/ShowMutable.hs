@@ -95,7 +95,7 @@ showMutantSTuple ns (Tuple ms) = showTuple $ zipWith show1 (ns ++ defFns) ms
 showMutantSTuple ns m          = showMutantSTuple ns (Tuple [m])
 
 showMutantSBind :: [String] -> MutantS -> String
-showMutantSBind ns (Tuple ms) = concatMap (uncurry show1) $ zip (ns++defVns) ms
+showMutantSBind ns (Tuple ms) = concatMap (uncurry show1) $ zip (ns++defFns) ms
   where show1 _ (Unmutated s) = ""
         show1 _ (Function []) = ""
         show1 n (Function bs) = showBindings (fvnames n) bs
