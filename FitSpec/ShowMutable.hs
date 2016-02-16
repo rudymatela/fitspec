@@ -3,9 +3,9 @@ module FitSpec.ShowMutable
   ( ShowMutable (..)
   , mutantSEq
   , showMutant
-  , showMutantN
+  , showMutantAsTuple
   , showMutantNested
-  , showMutantBind
+  , showMutantBindings'
   , showMutantBindings
   , MutantS ()
   )
@@ -133,15 +133,15 @@ showBindings new ns bs =
     bound    = zipWith const vns (fst $ head bs)
     (fn:vns) = ns +- defaultNames
 
-showMutantN :: ShowMutable a => [String] -> a -> a -> String
-showMutantN names f f' = showMutantSTuple names
+showMutantAsTuple :: ShowMutable a => [String] -> a -> a -> String
+showMutantAsTuple names f f' = showMutantSTuple names
                        $ flatten
                        $ mutantS f f'
 
-showMutantBind :: ShowMutable a => [String] -> a -> a -> String
-showMutantBind names f f' = showMutantSBind True names
-                          $ flatten
-                          $ mutantS f f'
+showMutantBindings' :: ShowMutable a => [String] -> a -> a -> String
+showMutantBindings' names f f' = showMutantSBind True names
+                               $ flatten
+                               $ mutantS f f'
 
 showMutantBindings :: ShowMutable a => [String] -> a -> a -> String
 showMutantBindings names f f' = showMutantSBind False names
@@ -153,7 +153,7 @@ showMutantNested names f f' = showMutantSTuple names
                             $ mutantS f f'
 
 showMutant :: ShowMutable a => a -> a -> String
-showMutant = showMutantN []
+showMutant = showMutantAsTuple []
 
 -- | Separate function from variable names in a simple Haskell expr.
 --

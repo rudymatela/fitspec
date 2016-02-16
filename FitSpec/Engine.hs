@@ -23,8 +23,7 @@ import Data.Ord
 import Data.Maybe (catMaybes, listToMaybe, isJust, isNothing)
 import Control.Monad (unless)
 import FitSpec.Mutable
-import FitSpec.ShowMutable (ShowMutable)
-import qualified FitSpec.ShowMutable (showMutantN)
+import FitSpec.ShowMutable (ShowMutable, showMutantAsTuple)
 import FitSpec.Utils
 import FitSpec.PrettyPrint
 
@@ -100,7 +99,7 @@ args = Args { nMutants = 500
             , showPropertySets = unwords -- join by spaces
             , showVeryWeakEI = False
             , showMoreEI = False
-            , showMutantN = FitSpec.ShowMutable.showMutantN
+            , showMutantN = showMutantAsTuple
             }
 -- TODO: change showMutantN name to avoid clash with showMutantN
 
