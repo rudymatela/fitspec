@@ -33,7 +33,7 @@ import Data.Char (isLetter)
 -- Can be easily copy pasted into an interactive session for manipulation.
 -- On GHCi, use @:{@ and @:}@ to allow multi-line expressions and definitions.
 showMutantAsTuple :: ShowMutable a => [String] -> a -> a -> String
-showMutantAsTuple names f f' = showMutantSTuple names
+showMutantAsTuple names f f' = showMutantSAsTuple names
                              $ flatten
                              $ mutantS f f'
 
@@ -48,7 +48,7 @@ showMutantAsTuple names f f' = showMutantSTuple names
 -- Can possibly be copied into the source of the original function for
 -- manipulation.
 showMutantBindings :: ShowMutable a => [String] -> a -> a -> String
-showMutantBindings names f f' = showMutantSBind False names
+showMutantBindings names f f' = showMutantSBindings False names
                               $ flatten
                               $ mutantS f f'
 
@@ -62,7 +62,7 @@ showMutantBindings names f f' = showMutantSBind False names
 -- > not' True  = True
 -- > not' p     = not p
 showMutantBindings' :: ShowMutable a => [String] -> a -> a -> String
-showMutantBindings' names f f' = showMutantSBind True names
+showMutantBindings' names f f' = showMutantSBindings True names
                                $ flatten
                                $ mutantS f f'
 
@@ -71,7 +71,7 @@ showMutantBindings' names f f' = showMutantSBind True names
 -- not flatten: so the output is as close as possible to the underlying
 -- representation.
 showMutantNested :: ShowMutable a => [String] -> a -> a -> String
-showMutantNested names f f' = showMutantSTuple names
+showMutantNested names f f' = showMutantSAsTuple names
                             $ mutantS f f'
 
 -- | Show a Mutant without providing a default name.
@@ -173,13 +173,37 @@ flatten (Function bs) = let bs' = map (mapSnd flatten) bs in
        $ concatMap (\(as,Function bs'') -> map (mapFst (as++)) bs'') bs'
 flatten m = m
 
--- | Show a nameless mutant
--- Functions (can but) should not be shown using this.
+
+-- | Show a nameless mutant.
+-- Functions should not (but can) be shown using this.
 showMutantS :: MutantS -> String
 showMutantS (Unmutated s) = s
 showMutantS (Atom s)      = s
 showMutantS (Tuple ms)    = showTuple $ map showMutantS ms
 showMutantS (Function bs) = showLambda ["??"] bs
+
+-- | Show top-level (maybe tuple) named 'MutantS' as a tuple.
+showMutantSAsTuple :: [String] -> MutantS -> String
+showMutantSAsTuple ns (Tuple ms) = showTuple $ zipWith show1 (ns +- defaultNames) ms
+  where show1 n  (Unmutated _) = n
+        show1 n  (Function bs) = showLambda (fvnames n) bs
+        show1 _  m             = showMutantS m
+showMutantSAsTuple ns m = showMutantSAsTuple ns (Tuple [m])
+
+-- | Show top-level (maybe tuple) named 'MutantS' as a bindings.
+showMutantSBindings :: Bool -> [String] -> MutantS -> String
+showMutantSBindings new ns (Tuple ms) = concatMap (uncurry show1)
+                                  $ zip (ns ++ defaultFunctionNames) ms
+  where show1 _ (Unmutated s) = ""
+        show1 _ (Function []) = ""
+        show1 n (Function bs) = showBindings new (fvnames n) bs
+        show1 n m             = let fn = head $ fvnames n
+                                    fn' | new = prime fn
+                                        | otherwise = fn
+                                in (apply fn' [] ++ " = ")
+                          `beside` showMutantS m
+showMutantSBindings new ns m = showMutantSBindings new ns (Tuple [m])
+
 
 -- | Given a list with the function and variable names and a list of bindings,
 -- show a function as a case expression enclosed in a lambda.
@@ -200,27 +224,6 @@ showLambda ns bs = (("\\" ++ unwords bound ++ " -> ") `beside`)
     bound    = zipWith const vns (fst $ head bs)
     (fn:vns) = ns +- defaultNames
 
--- | Top-level (maybe tuple) named mutant.
-showMutantSTuple :: [String] -> MutantS -> String
-showMutantSTuple ns (Tuple ms) = showTuple $ zipWith show1 (ns +- defaultNames) ms
-  where show1 n  (Unmutated _) = n
-        show1 n  (Function bs) = showLambda (fvnames n) bs
-        show1 _  m             = showMutantS m
-showMutantSTuple ns m          = showMutantSTuple ns (Tuple [m])
-
-showMutantSBind :: Bool -> [String] -> MutantS -> String
-showMutantSBind new ns (Tuple ms) = concatMap (uncurry show1)
-                                  $ zip (ns ++ defaultFunctionNames) ms
-  where show1 _ (Unmutated s) = ""
-        show1 _ (Function []) = ""
-        show1 n (Function bs) = showBindings new (fvnames n) bs
-        show1 n m             = let fn = head $ fvnames n
-                                    fn' | new = prime fn
-                                        | otherwise = fn
-                                in (apply fn' [] ++ " = ")
-                          `beside` showMutantS m
-showMutantSBind new ns m = showMutantSBind new ns (Tuple [m])
-
 -- | Given a list with the function and variable names and a list of bindings,
 -- show function binding declarations.
 --
@@ -237,6 +240,7 @@ showBindings new ns bs =
         | otherwise = fn
     bound    = zipWith const vns (fst $ head bs)
     (fn:vns) = ns +- defaultNames
+
 
 -- | Separate function from variable names in a simple Haskell expr.
 --
@@ -258,10 +262,9 @@ fvnames = fvns' . words
         fvns' []      = defaultNames
         fvns' fvs     = fvs
 
--- TODO: Check if 'f' is intended to be used as an infix operator and operate accordingly
--- even if 'f' is (10 +).  Transform into (10 + 2).
+-- | Apply a function ('String') to a list of variables ('[String]').
 --
--- For the sake of clarity, in the following examples, double-quotes are ommited:
+-- For the sake of clarity, in the following examples, double-quotes are omitted:
 -- > apply f       == f
 -- > apply f x     == f x
 -- > apply f x y   == f x y
@@ -278,20 +281,53 @@ apply f xs = if isInfix f
                then unwords (toPrefix f:xs)
                else unwords (f:xs)
 
+-- | Check if a function / operator is infix
+--
+-- > isInfix "foo"   == False
+-- > isInfix "(+)"   == False
+-- > isInfix "`foo`" == True
+-- > isInfix "+"     == True
 isInfix :: String -> Bool
 isInfix (c:cs) = c /= '(' && not (isLetter c)
 
+-- | Transform an infix operator into an infix function:
+--
+-- > toPrefix "`foo`" == "foo"
+-- > toPrefix "+"     == "(+)"
 toPrefix :: String -> String
 toPrefix ('`':cs) = init cs
 toPrefix cs = '(':cs ++ ")"
 
--- Primeify the name of a function
+-- Primeify the name of a function by appending prime @'@ to functions and
+-- minus @-@ to operators.
+--
+-- > prime "(+)"   == "(+-)"
+-- > prime "foo"   == "foo'"
+-- > prime "`foo`" == "`foo'`"
+-- > prime "*"     == "*-
 prime :: String -> String
 prime ('`':cs) = '`':init cs ++ "'`" -- `foo` to `foo'`
 prime ('(':cs) = '(':init cs ++ "-)" -- (+) to (+-)
 prime cs | isInfix cs = cs ++ "-"    -- + to +-
          | otherwise  = cs ++ "'"    -- foo to foo'
 
+
+mapFst :: (a->b) -> (a,c) -> (b,c)
+mapFst f (x,y) = (f x,y)
+
+mapSnd :: (a->b) -> (c,a) -> (c,b)
+mapSnd f (x,y) = (x,f y)
+
+-- | @xs +- ys@ superimposes @xs@ over @ys@.
+--
+-- [1,2,3] +- [0,0,0,0,0,0,0] == [1,2,3,0,0,0,0]
+-- [x,y,z] +- [a,b,c,d,e,f,g] == [x,y,z,d,e,f,g]
+-- "asdf" +- "this is a test" == "asdf is a test"
+(+-) :: Eq a => [a] -> [a] -> [a]
+xs +- ys = xs ++ drop (length xs) ys
+
+
+-- Instances of ShowMutable for up to 12-tuples are given here:
 
 instance (ShowMutable a, ShowMutable b, ShowMutable c, ShowMutable d)
       => ShowMutable (a,b,c,d) where
@@ -409,21 +445,3 @@ instance (ShowMutable a, ShowMutable b, ShowMutable c, ShowMutable d,
     , mutantS o o'
     , mutantS p p'
     , mutantS q q' ]
-
--- Like tails, but returns an infinite list of empty lists at the end
-drops :: [a] -> [[a]]
-drops xs = tails xs ++ repeat []
-
-mapFst :: (a->b) -> (a,c) -> (b,c)
-mapFst f (x,y) = (f x,y)
-
-mapSnd :: (a->b) -> (c,a) -> (c,b)
-mapSnd f (x,y) = (x,f y)
-
--- | @xs +- ys@ superimposes @xs@ over @ys@.
---
--- [1,2,3] +- [0,0,0,0,0,0,0] == [1,2,3,0,0,0,0]
--- [x,y,z] +- [a,b,c,d,e,f,g] == [x,y,z,d,e,f,g]
--- "asdf" +- "this is a test" == "asdf is a test"
-(+-) :: Eq a => [a] -> [a] -> [a]
-xs +- ys = xs ++ drop (length xs) ys
