@@ -72,9 +72,10 @@ sargs = args
   }
 
 main :: IO ()
-main = do reportWith sargs {nMutants = 5000}
-                     (insert :: Int -> Tree Int -> Tree Int, remove, find)
-                     (uncurry3 properties)
+main =
+  reportWith sargs {nMutants = 5000}
+             (insert :: Int -> Tree Int -> Tree Int, remove, find)
+             (uncurry3 properties)
 
 uncurry3 :: (a -> b -> c -> d) -> (a,b,c) -> d
 uncurry3 f = \(x,y,z) -> f x y z
