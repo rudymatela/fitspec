@@ -195,6 +195,14 @@ prop_11' f g h x fx y gy z hz = fx /= f x
                              == showTuple [ showMutantF "f" x fx
                                           , showTuple [ showMutantF "(??)" y gy
                                                       , showMutantF "(??)" z hz ] ]
+                             && showMutantBind ["f x","g x","h x"] (f,(g,h))
+                                               ( mutate f x fx
+                                               , ( mutate g y gy
+                                                 , mutate h z hz ) )
+                             == concat [ showMutantB "f" x fx
+                                       , "g' = "
+                                `beside` showTuple [ showMutantF "(??)" y gy
+                                                   , showMutantF "(??)" z hz ] ]
 
 prop_2 :: ( Eq a, Show a, Listable a, ShowMutable a
           , Eq b, Show b, Listable b, ShowMutable b

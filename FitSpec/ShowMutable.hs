@@ -99,7 +99,8 @@ showMutantSBind ns (Tuple ms) = concatMap (uncurry show1) $ zip (ns++defVns) ms
   where show1 _ (Unmutated s) = ""
         show1 _ (Function []) = ""
         show1 n (Function bs) = showBindings (fvnames n) bs
-        show1 n m             = fname n ++ "' = " ++ showMutantS m -- TODO: What about infix?
+        show1 n m             = ((prime (fname n) `apply` []) ++ " = ")
+                       `beside` showMutantS m
 showMutantSBind ns m          = showMutantSBind ns (Tuple [m])
 
 -- | Given a list with the function and variable names and a list of bindings,
