@@ -58,8 +58,8 @@ import FitSpec.Engine
 import FitSpec.Main
 
 import FitSpec.Mutable
-import FitSpec.ShowMutable hiding (showMutantN)
-import FitSpec.Derive hiding (showMutantN)
+import FitSpec.ShowMutable
+import FitSpec.Derive
 import FitSpec.TestTypes
 
 import Test.Check
