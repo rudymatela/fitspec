@@ -33,7 +33,7 @@ defFn :: String
 defFn  = head defFns
 
 defFns :: [String]
-defFns = ["f","g","h","i"] ++ map (++"'") defFns
+defFns = ["f","g","h"] ++ map (++"'") defFns
 
 -- | Default variable names, when none given
 defVns :: [String]
@@ -59,32 +59,40 @@ flatten (Function bs) = let bs' = map (mapSnd flatten) bs in
        $ concatMap (\(as,Function bs'') -> map (mapFst (as++)) bs'') bs'
 flatten m = m
 
--- TODO: refactor showMutantS to a two-level function
--- one that has top-level names
--- another that does not
-showMutantS :: [[String]] -> MutantS -> String
-showMutantS ((n:_):_) (Unmutated s) = apply n []
-showMutantS _  (Unmutated s) = s
-showMutantS _  (Atom s)      = s
-showMutantS ns (Tuple ms)    = showTuple . map (uncurry showMutantS)
-                             $ drops ns `zip` ms
-showMutantS [] f             = showMutantS [defFn:defVns] f
-showMutantS ((n:_):_) (Function []) = apply n []
-showMutantS _  (Function [([],s)])   = showMutantS [] s
-showMutantS _  (Function (([],s):_)) = error "showMutantS: ambiguous value"
-showMutantS (ns:_) (Function bs) = (("\\" ++ unwords bound ++ " -> ") `beside`)
-                                 $ "case " ++ showTuple bound ++ " of\n"
-                                ++ "  " `beside` cases
+-- | Show a nameless mutant
+-- Functions (can but) should not be shown using this.
+showMutantS :: MutantS -> String
+showMutantS (Unmutated s) = s
+showMutantS (Atom s)      = s
+showMutantS (Tuple ms)    = showTuple $ map showMutantS ms
+showMutantS (Function bs) = showLambda ["??"] bs
+
+-- | Given a list with the function and variable names and a list of bindings,
+-- show a function as a case expression enclosed in a lambda.
+showLambda :: [String] -> [([String],MutantS)] -> String
+showLambda []    [] = "undefined {- (err?) unmutated -}"
+showLambda (n:_) [] = apply n []
+showLambda _ [([],m)]   = showMutantS m
+showLambda _ (([],_):_) = "undefined {- (err?) ambiguous value -}"
+showLambda ns bs = (("\\" ++ unwords bound ++ " -> ") `beside`)
+                 $ "case " ++ showTuple bound ++ " of\n"
+                ++ "  " `beside` cases
   where
-    cases = concatMap
-              (\(as,r) -> (showTuple as ++ " -> ")
-                 `beside` showMutantS [application:unbound | isFunction r] r)
-              bs
-         ++ "_ -> " ++ application
+    cases = concatMap (\(as,r) -> (showTuple as ++ " -> ") `beside` showResult r) bs
+         ++ "_ -> " ++ apply fn bound
+    showResult (Function bs') = showLambda (apply fn bound:unbound) bs'
+    showResult m              = showMutantS m
+    unbound  = drop (length bound) vns
+    bound    = zipWith const vns (fst $ head bs)
     (fn:vns) = ns +- (defFn:defVns)
-    bound = zipWith const vns (fst $ head bs)
-    unbound = drop (length bound) vns
-    application = apply fn bound
+
+-- | Top-level (maybe tuple) named mutant.
+showMutantSTuple :: [String] -> MutantS -> String
+showMutantSTuple ns (Tuple ms) = showTuple $ zipWith show1 (ns ++ defFns) ms
+  where show1 n  (Unmutated _) = n
+        show1 n  (Function bs) = showLambda (fvnames n) bs
+        show1 _  m             = showMutantS m
+showMutantSTuple ns m          = showMutantSTuple ns (Tuple [m])
 
 showMutantSBind :: [String] -> MutantS -> String
 showMutantSBind ns (Tuple ms) = concatMap (uncurry showMutantSBind1)
@@ -94,18 +102,18 @@ showMutantSBind ns m          = showMutantSBind1 (head (ns ++ defVns)) m
 showMutantSBind1 :: String -> MutantS -> String
 showMutantSBind1 _ (Unmutated s) = ""
 showMutantSBind1 n (Atom s)      = fname n ++ "' = " ++ s -- TODO: What about infix?
-showMutantSBind1 n (Tuple ms)    = fname n ++ "' = " ++ showTuple (showMutantS [] `map` ms)
+showMutantSBind1 n (Tuple ms)    = fname n ++ "' = " ++ showTuple (map showMutantS ms)
 showMutantSBind1 n (Function bs) = table " "
                                  $ (uncurry showBind `map` bs)
                                 ++ [words (apply fn' bound) ++ ["=", apply fn bound]]
-  where showBind [a1,a2] r | isInfix fn = [a1,fn',a2,"=",showMutantS [] r]
-        showBind as r = [fn'] ++ as ++ ["=",showMutantS [] r]
+  where showBind [a1,a2] r | isInfix fn = [a1, fn', a2,   "=", showMutantS r]
+        showBind as r                   = [fn'] ++ as ++ ["=", showMutantS r]
         (fn:vns) = fvnames n
         fn' = prime fn
         bound = zipWith const vns (fst $ head bs)
 
 showMutantN :: ShowMutable a => [String] -> a -> a -> String
-showMutantN names f f' = showMutantS (map fvnames names)
+showMutantN names f f' = showMutantSTuple names
                        $ flatten
                        $ mutantS f f'
 
@@ -115,7 +123,7 @@ showMutantBind names f f' = showMutantSBind names
                           $ mutantS f f'
 
 showMutantNested :: ShowMutable a => [String] -> a -> a -> String
-showMutantNested names f f' = showMutantS (map fvnames names)
+showMutantNested names f f' = showMutantSTuple names
                             $ mutantS f f'
 
 showMutant :: ShowMutable a => a -> a -> String

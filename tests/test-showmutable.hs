@@ -133,7 +133,7 @@ prop_1 :: ( Eq a, Show a, Listable a, ShowMutable a
         => (a->b) -> a -> b -> Bool
 prop_1 f x y = y /= f x
            ==> showMutantN ["f x"] f (mutate f x y)
-            == showMutant1 "f" x y
+            == showMutantF "f" x y
 -- TODO: fix above property that fails for 'showMutant'
 --       instead of showMutantN ["f x"], see:
 --
@@ -149,7 +149,7 @@ prop_11 :: ( Eq a, Show a, Listable a, ShowMutable a
         => (a->b) -> (c->d) -> a -> b -> c -> d -> Bool
 prop_11 f g x y z w = y /= f x && w /= g z
                   ==> showMutantN ["f x","g x"] (f,g) (mutate f x y, mutate g z w)
-                   == showTuple [showMutant1 "f" x y, showMutant1 "g" z w]
+                   == showTuple [showMutantF "f" x y, showMutantF "g" z w]
 
 prop_111 :: ( Eq a, Show a, Listable a, ShowMutable a
             , Eq b, Show b, Listable b, ShowMutable b
@@ -165,9 +165,9 @@ prop_111 f g h xf yf xg yg xh yh = yf /= f xf
                                                ( mutate f xf yf
                                                , mutate g xg yg
                                                , mutate h xh yh )
-                                == showTuple [ showMutant1 "f" xf yf
-                                             , showMutant1 "g" xg yg
-                                             , showMutant1 "h" xh yh ]
+                                == showTuple [ showMutantF "f" xf yf
+                                             , showMutantF "g" xg yg
+                                             , showMutantF "h" xh yh ]
 
 prop_11' :: ( Eq a, Show a, Listable a, ShowMutable a
             , Eq b, Show b, Listable b, ShowMutable b
@@ -183,12 +183,12 @@ prop_11' f g h xf yf xg yg xh yh = yf /= f xf
                                                ( mutate f xf yf
                                                , ( mutate g xg yg
                                                  , mutate h xh yh ) )
-                             -- == showTuple [ showMutant1 "f" xf yf  -- is!
-                             --              , showMutant1 "g" xg yg
-                             --              , showMutant1 "h" xh yh ]
-                                == showTuple [ showMutant1 "f" xf yf  -- should be!
-                                             , showTuple [ showMutant1 "g" xg yg
-                                                         , showMutant1 "h" xh yh ] ]
+                             -- == showTuple [ showMutantF "f" xf yf  -- is!
+                             --              , showMutantF "g" xg yg
+                             --              , showMutantF "h" xh yh ]
+                                == showTuple [ showMutantF "f" xf yf  -- should be!
+                                             , showTuple [ showMutantF "(??)" xg yg
+                                                         , showMutantF "(??)" xh yh ] ]
 
 prop_2 :: ( Eq a, Show a, Listable a, ShowMutable a
           , Eq b, Show b, Listable b, ShowMutable b
@@ -196,7 +196,7 @@ prop_2 :: ( Eq a, Show a, Listable a, ShowMutable a
         => (a->b->c) -> a -> b -> c -> Bool
 prop_2 f x y z = z /= f x y
              ==> showMutantN ["f x y"] f (mutate2 f x y z)
-              == showMutant2 "f" x y z
+              == showMutantF2 "f" x y z
 
 prop_I :: ( Eq a, Show a, Listable a, ShowMutable a
           , Eq b, Show b, Listable b, ShowMutable b
@@ -214,19 +214,19 @@ mutate2 :: (Eq a, Eq b) => (a -> b -> c) -> a -> b -> c -> (a -> b -> c)
 mutate2 f x y z = curry (mutate (uncurry f) (x,y) z)
 
 -- | Show a mutant of a function of one argument
-showMutant1 :: (Show a, Show b)
+showMutantF :: (Show a, Show b)
             => String -> a -> b -> String
-showMutant1 f x y = "\\x -> case x of\n"
+showMutantF f x y = "\\x -> case x of\n"
                  ++ "        " ++ show x ++ " -> " ++ show y ++ "\n"
                  ++ "        _ -> " ++ f ++ " x\n"
 
 -- | Show a mutant of a function of two arguments
-showMutant2 :: (Show a, Show b, Show c)
-            => String -> a -> b -> c -> String
-showMutant2 f x y z = "\\x y -> case (x,y) of\n"
-                   ++ "          (" ++ show x ++ "," ++ show y ++ ") -> "
-                                    ++ show z ++ "\n"
-                   ++ "          _ -> " ++ f ++ " x y\n"
+showMutantF2 :: (Show a, Show b, Show c)
+             => String -> a -> b -> c -> String
+showMutantF2 f x y z = "\\x y -> case (x,y) of\n"
+                    ++ "          (" ++ show x ++ "," ++ show y ++ ") -> "
+                                     ++ show z ++ "\n"
+                    ++ "          _ -> " ++ f ++ " x y\n"
 
 -- | Show a mutant of an infix
 showMutantI :: (Show a, Show b, Show c)
