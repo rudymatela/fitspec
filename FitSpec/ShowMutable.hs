@@ -198,7 +198,7 @@ class ShowMutable a where
   mutantS :: a -> a -> MutantS
 
 mutantSEq :: (Eq a, Show a)
-           => a -> a -> MutantS
+          => a -> a -> MutantS
 mutantSEq x x' = if x == x'
                     then Unmutated $ show x
                     else Atom      $ show x'
