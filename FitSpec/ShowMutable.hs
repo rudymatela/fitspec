@@ -22,7 +22,8 @@ import Control.Monad (join)
 import Data.List (intercalate,tails)
 import Data.Char (isLetter)
 
--- | Structure of a mutant.
+-- | (Show) Structure of a mutant.
+-- This format is indended for processing then pretty-printing.
 data MutantS = Unmutated String
              | Atom String
              | Tuple [MutantS]
@@ -42,14 +43,19 @@ defaultNames :: [String]
 defaultNames = head defaultFunctionNames : defVarNames
   where defVarNames = ["x","y","z","w"] ++ map (++"'") defVarNames
 
+-- | Check if a 'MutantS' is null
+isUnmutated :: MutantS -> Bool
 isUnmutated (Unmutated _) = True
 isUnmutated (Tuple ms)    = all isUnmutated ms
 isUnmutated (Function bs) = all (isUnmutated . snd) bs
 isUnmutated _             = False
 
+-- | Check if a 'MutantS' is a function.
+isFunction :: MutantS -> Bool
 isFunction (Function _) = True
 isFunction _            = False
 
+-- | Flatten a MutantS by merging nested 'Function's.
 flatten :: MutantS -> MutantS
 flatten (Tuple ms) = Tuple $ map flatten ms
 flatten (Function [([],s)])  = flatten s
