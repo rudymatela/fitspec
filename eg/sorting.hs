@@ -16,7 +16,7 @@ properties sort =
   ]
   where count x = length . filter (==x)
 
-main = do
+main =
   reportWith args { callNames = ["sort xs"]
                   , minimumTime = 30 -- or 0, and:
                -- , nMutants = 4000
