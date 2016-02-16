@@ -1,4 +1,3 @@
-{-# Language DeriveDataTypeable #-}
 import System.Console.CmdArgs hiding (args)
 import FitSpec
 import Data.List

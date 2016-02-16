@@ -1,5 +1,4 @@
 -- Example benchmark that mutation tests properties over the function id
-{-# Language DeriveDataTypeable #-}
 import System.Console.CmdArgs hiding (args)
 import FitSpec
 
