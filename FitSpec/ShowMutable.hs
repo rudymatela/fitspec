@@ -10,10 +10,6 @@ module FitSpec.ShowMutable
   , MutantS ()
   )
 where
--- The code in this module is very hacky and
--- probably needs refactoring in the future.
---
--- But hey!  It works for most cases.
 
 import FitSpec.PrettyPrint
 import Test.Check.Error (errorToNothing, Listable(..))
@@ -22,8 +18,69 @@ import Control.Monad (join)
 import Data.List (intercalate,tails)
 import Data.Char (isLetter)
 
+
+-- | Show a Mutant as a tuple of lambdas.
+--
+-- > > putStrLn $ showMutantAsTuple ["p && q","not p"] ((&&),not) ((||),id)
+-- > ( \p q -> case (p,q) of
+-- >            (False,False) -> True
+-- >            _ -> p && q
+-- >, \p -> case p of
+-- >          False -> False
+-- >          True -> True
+-- >          _ -> not p )
+--
+-- Can be easily copy pasted into an interactive session for manipulation.
+-- On GHCi, use @:{@ and @:}@ to allow multi-line expressions and definitions.
+showMutantAsTuple :: ShowMutable a => [String] -> a -> a -> String
+showMutantAsTuple names f f' = showMutantSTuple names
+                             $ flatten
+                             $ mutantS f f'
+
+-- | Show a Mutant as the list of bindings that differ from the original
+--   function(s).
+--
+-- > > putStrLn $ showMutantBindings ["p && q","not p"] ((&&),not) ((==),id)
+-- > False && False = True
+-- > not False = False
+-- > not True  = True
+--
+-- Can possibly be copied into the source of the original function for
+-- manipulation.
+showMutantBindings :: ShowMutable a => [String] -> a -> a -> String
+showMutantBindings names f f' = showMutantSBind False names
+                              $ flatten
+                              $ mutantS f f'
+
+-- | Show a Mutant as a new top-level definition, with a prime appended to the
+--   name of the mutant.
+--
+-- > > putStrLn $ showMutantBindings' ["p && q","not p"] ((&&),not) ((==),id)
+-- > False &&- False = True
+-- > p     &&- q     = p && q
+-- > not' False = False
+-- > not' True  = True
+-- > not' p     = not p
+showMutantBindings' :: ShowMutable a => [String] -> a -> a -> String
+showMutantBindings' names f f' = showMutantSBind True names
+                               $ flatten
+                               $ mutantS f f'
+
+-- | Show a Mutant as a tuple of nested lambdas.
+-- Very similar to 'showMutantAsTuple', but the underlying data structure is
+-- not flatten: so the output is as close as possible to the underlying
+-- representation.
+showMutantNested :: ShowMutable a => [String] -> a -> a -> String
+showMutantNested names f f' = showMutantSTuple names
+                            $ mutantS f f'
+
+-- | Show a Mutant without providing a default name.
+-- An alias for @showMutantAsTuple []@.
+showMutant :: ShowMutable a => a -> a -> String
+showMutant = showMutantAsTuple []
+
 -- | (Show) Structure of a mutant.
--- This format is indended for processing then pretty-printing.
+-- This format is intended for processing then pretty-printing.
 data MutantS = Unmutated String
              | Atom String
              | Tuple [MutantS]
@@ -132,28 +189,6 @@ showBindings new ns bs =
         | otherwise = fn
     bound    = zipWith const vns (fst $ head bs)
     (fn:vns) = ns +- defaultNames
-
-showMutantAsTuple :: ShowMutable a => [String] -> a -> a -> String
-showMutantAsTuple names f f' = showMutantSTuple names
-                       $ flatten
-                       $ mutantS f f'
-
-showMutantBindings' :: ShowMutable a => [String] -> a -> a -> String
-showMutantBindings' names f f' = showMutantSBind True names
-                               $ flatten
-                               $ mutantS f f'
-
-showMutantBindings :: ShowMutable a => [String] -> a -> a -> String
-showMutantBindings names f f' = showMutantSBind False names
-                              $ flatten
-                              $ mutantS f f'
-
-showMutantNested :: ShowMutable a => [String] -> a -> a -> String
-showMutantNested names f f' = showMutantSTuple names
-                            $ mutantS f f'
-
-showMutant :: ShowMutable a => a -> a -> String
-showMutant = showMutantAsTuple []
 
 -- | Separate function from variable names in a simple Haskell expr.
 --
