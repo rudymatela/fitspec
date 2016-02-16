@@ -131,9 +131,9 @@ prop_00 (x,y) (x',y') | x == x' && y == y' = s == "(x,y)"
 prop_1 :: ( Eq a, Show a, Listable a, ShowMutable a
           , Eq b, Show b, Listable b, ShowMutable b )
         => (a->b) -> a -> b -> Bool
-prop_1 f x y = y /= f x
-           ==> showMutantN    ["f x"] f (mutate f x y) == showMutantF "f" x y
-            && showMutantBind ["f x"] f (mutate f x y) == showMutantB "f" x y
+prop_1 f x fx = fx /= f x
+           ==> showMutantN    ["f x"] f (mutate f x fx) == showMutantF "f" x fx
+            && showMutantBind ["f x"] f (mutate f x fx) == showMutantB "f" x fx
 -- TODO: fix above property that fails for 'showMutant'
 --       instead of showMutantN ["f x"], see:
 --
@@ -147,11 +147,11 @@ prop_11 :: ( Eq a, Show a, Listable a, ShowMutable a
            , Eq c, Show c, Listable c, ShowMutable c
            , Eq d, Show d, Listable d, ShowMutable d )
         => (a->b) -> (c->d) -> a -> b -> c -> d -> Bool
-prop_11 f g x y z w = y /= f x && w /= g z
-                  ==> showMutantN    ["f x","g x"] (f,g) (mutate f x y, mutate g z w)
-                   == showTuple [showMutantF "f" x y, showMutantF "g" z w]
-                   && showMutantBind ["f x","g x"] (f,g) (mutate f x y, mutate g z w)
-                   == concat    [showMutantB "f" x y, showMutantB "g" z w]
+prop_11 f g x fx y gy = fx /= f x && gy /= g y
+                  ==> showMutantN    ["f x","g x"] (f,g) (mutate f x fx, mutate g y gy)
+                   == showTuple [showMutantF "f" x fx, showMutantF "g" y gy]
+                   && showMutantBind ["f x","g x"] (f,g) (mutate f x fx, mutate g y gy)
+                   == concat    [showMutantB "f" x fx, showMutantB "g" y gy]
 
 prop_111 :: ( Eq a, Show a, Listable a, ShowMutable a
             , Eq b, Show b, Listable b, ShowMutable b
@@ -160,23 +160,23 @@ prop_111 :: ( Eq a, Show a, Listable a, ShowMutable a
             , Eq e, Show e, Listable e, ShowMutable e
             , Eq f, Show f, Listable f, ShowMutable f )
          => (a->b) -> (c->d) -> (e->f) -> a -> b -> c -> d -> e -> f -> Bool
-prop_111 f g h xf yf xg yg xh yh = yf /= f xf
-                                && yg /= g xg
-                                && yh /= h xh
-                               ==> showMutantN ["f x","g x","h x"] (f,g,h)
-                                               ( mutate f xf yf
-                                               , mutate g xg yg
-                                               , mutate h xh yh )
-                                == showTuple [ showMutantF "f" xf yf
-                                             , showMutantF "g" xg yg
-                                             , showMutantF "h" xh yh ]
-                               ==> showMutantBind ["f x","g x","h x"] (f,g,h)
-                                                  ( mutate f xf yf
-                                                  , mutate g xg yg
-                                                  , mutate h xh yh )
-                                == concat    [ showMutantB "f" xf yf
-                                             , showMutantB "g" xg yg
-                                             , showMutantB "h" xh yh ]
+prop_111 f g h x fx y gy z hz = fx /= f x
+                             && gy /= g y
+                             && hz /= h z
+                            ==> showMutantN ["f x","g x","h x"] (f,g,h)
+                                            ( mutate f x fx
+                                            , mutate g y gy
+                                            , mutate h z hz )
+                             == showTuple [ showMutantF "f" x fx
+                                          , showMutantF "g" y gy
+                                          , showMutantF "h" z hz ]
+                             && showMutantBind ["f x","g x","h x"] (f,g,h)
+                                               ( mutate f x fx
+                                               , mutate g y gy
+                                               , mutate h z hz )
+                             == concat    [ showMutantB "f" x fx
+                                          , showMutantB "g" y gy
+                                          , showMutantB "h" z hz ]
 
 prop_11' :: ( Eq a, Show a, Listable a, ShowMutable a
             , Eq b, Show b, Listable b, ShowMutable b
