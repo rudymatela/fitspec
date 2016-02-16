@@ -196,14 +196,12 @@ reportWith' args f properties = do
       nt = nTestsF args nm
       nts = propertiesNTests nt (properties f)
 
-  putStrLn $ "Results based on"
+  putStrLn $ "Apparent " ++ qualifyCM results ++ " specification based on"
   putStr   . unlines
-           . sortGroupAndCollapse fst snd (\n ps -> "  "
-                                                 ++ showNTests n
-                                                 ++ " for "
-                                                 ++ showProperties ps)
+           . sortGroupAndCollapse fst snd
+               (\n ps -> showNTests n ++ " for " ++ showProperties ps)
            $ zip nts [1..]
-  putStrLn $ "  for each of " ++ show nm ++ " mutant variations.\n"
+  putStrLn $ "for each of " ++ show nm ++ " mutant variations.\n"
 
   putStrLn . table "   "
            . intersperse [ "\n" ]
@@ -339,6 +337,21 @@ processRawResult iss mms = Result
         nm = length mms
         ns = length ms
         nk = nm - ns
+
+minimal :: Results a -> Bool
+minimal (r:_) = null (implied r)
+             && length (sets r) == 1
+
+complete :: Results a -> Bool
+complete (r:_) = nSurvivors r == 0
+
+qualifyCM :: Results a -> String
+qualifyCM rs | c && m    = "complete and minimal"
+             | c         = "complete but non-minimal"
+             |      m    = "minimal but incomplete"
+             | otherwise = "incomplete and non-minimal"
+  where c = complete rs
+        m = minimal rs
 
 relevantPropertySets :: Eq i => [[i]] -> [[i]]
 relevantPropertySets = filterU (not ... contained) . sortOn length
