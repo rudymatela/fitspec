@@ -6,6 +6,7 @@ module FitSpec.ShowMutable
   , showMutantN
   , showMutantNested
   , showMutantBind
+  , showMutantBindings
   , MutantS ()
   )
 where
@@ -96,26 +97,32 @@ showMutantSTuple ns (Tuple ms) = showTuple $ zipWith show1 (ns +- defaultNames) 
         show1 _  m             = showMutantS m
 showMutantSTuple ns m          = showMutantSTuple ns (Tuple [m])
 
-showMutantSBind :: [String] -> MutantS -> String
-showMutantSBind ns (Tuple ms) = concatMap (uncurry show1)
-                              $ zip (ns ++ defaultFunctionNames) ms
+showMutantSBind :: Bool -> [String] -> MutantS -> String
+showMutantSBind new ns (Tuple ms) = concatMap (uncurry show1)
+                                  $ zip (ns ++ defaultFunctionNames) ms
   where show1 _ (Unmutated s) = ""
         show1 _ (Function []) = ""
-        show1 n (Function bs) = showBindings (fvnames n) bs
-        show1 n m             = ((prime (fname n) `apply` []) ++ " = ")
-                       `beside` showMutantS m
-showMutantSBind ns m          = showMutantSBind ns (Tuple [m])
+        show1 n (Function bs) = showBindings new (fvnames n) bs
+        show1 n m             = let fn' | new = prime (fname n)
+                                        | otherwise = (fname n)
+                                in (apply fn' [] ++ " = ")
+                          `beside` showMutantS m
+showMutantSBind new ns m = showMutantSBind new ns (Tuple [m])
 
 -- | Given a list with the function and variable names and a list of bindings,
 -- show function binding declarations.
-showBindings :: [String] -> [([String],MutantS)] -> String
-showBindings ns bs = table " "
-                   $ (uncurry showBind `map` bs)
-                  ++ [words (apply fn' bound) ++ ["=", apply fn bound]]
+--
+-- The 'new' boolean argument indicates wether if the function should be shown
+-- as a new definition.
+showBindings :: Bool -> [String] -> [([String],MutantS)] -> String
+showBindings new ns bs =
+  table " " $ (uncurry showBind `map` bs)
+           ++ [words (apply fn' bound) ++ ["=", apply fn bound] | new]
   where
     showBind [a1,a2] r | isInfix fn' = [a1, fn', a2,   "=", showMutantS r]
     showBind as r                    = [fn'] ++ as ++ ["=", showMutantS r]
-    fn'      = prime fn
+    fn' | new = prime fn
+        | otherwise = fn
     bound    = zipWith const vns (fst $ head bs)
     (fn:vns) = ns +- defaultNames
 
@@ -125,9 +132,14 @@ showMutantN names f f' = showMutantSTuple names
                        $ mutantS f f'
 
 showMutantBind :: ShowMutable a => [String] -> a -> a -> String
-showMutantBind names f f' = showMutantSBind names
+showMutantBind names f f' = showMutantSBind True names
                           $ flatten
                           $ mutantS f f'
+
+showMutantBindings :: ShowMutable a => [String] -> a -> a -> String
+showMutantBindings names f f' = showMutantSBind False names
+                              $ flatten
+                              $ mutantS f f'
 
 showMutantNested :: ShowMutable a => [String] -> a -> a -> String
 showMutantNested names f f' = showMutantSTuple names
