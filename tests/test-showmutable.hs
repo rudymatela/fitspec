@@ -185,33 +185,33 @@ prop_11' :: ( Eq a, Show a, Listable a, ShowMutable a
             , Eq e, Show e, Listable e, ShowMutable e
             , Eq f, Show f, Listable f, ShowMutable f )
          => (a->b) -> (c->d) -> (e->f) -> a -> b -> c -> d -> e -> f -> Bool
-prop_11' f g h xf yf xg yg xh yh = yf /= f xf
-                                && yg /= g xg
-                                && yh /= h xh
-                               ==> showMutantN ["f x","g x","h x"] (f,(g,h))
-                                               ( mutate f xf yf
-                                               , ( mutate g xg yg
-                                                 , mutate h xh yh ) )
-                                == showTuple [ showMutantF "f" xf yf
-                                             , showTuple [ showMutantF "(??)" xg yg
-                                                         , showMutantF "(??)" xh yh ] ]
+prop_11' f g h x fx y gy z hz = fx /= f x
+                             && gy /= g y
+                             && hz /= h z
+                            ==> showMutantN ["f x","g x","h x"] (f,(g,h))
+                                            ( mutate f x fx
+                                            , ( mutate g y gy
+                                              , mutate h z hz ) )
+                             == showTuple [ showMutantF "f" x fx
+                                          , showTuple [ showMutantF "(??)" y gy
+                                                      , showMutantF "(??)" z hz ] ]
 
 prop_2 :: ( Eq a, Show a, Listable a, ShowMutable a
           , Eq b, Show b, Listable b, ShowMutable b
           , Eq c, Show c, Listable c, ShowMutable c )
         => (a->b->c) -> a -> b -> c -> Bool
-prop_2 f x y z = z /= f x y ==>
-  showMutantN    ["f x y"] f (mutate2 f x y z) == showMutantF2 "f" x y z &&
-  showMutantBind ["f x y"] f (mutate2 f x y z) == showMutantB2 "f" x y z
+prop_2 f x y fxy = fxy /= f x y ==>
+  showMutantN    ["f x y"] f (mutate2 f x y fxy) == showMutantF2 "f" x y fxy &&
+  showMutantBind ["f x y"] f (mutate2 f x y fxy) == showMutantB2 "f" x y fxy
 
 
 prop_I :: ( Eq a, Show a, Listable a, ShowMutable a
           , Eq b, Show b, Listable b, ShowMutable b
           , Eq c, Show c, Listable c, ShowMutable c )
         => (a->b->c) -> a -> b -> c -> Bool
-prop_I f x y z = z /= f x y ==>
-  showMutantN    ["x + y"] f (mutate2 f x y z) == showMutantI  "+" x y z &&
-  showMutantBind ["x + y"] f (mutate2 f x y z) == showMutantBI "+" x y z
+prop_I f x y fxy = fxy /= f x y ==>
+  showMutantN    ["x + y"] f (mutate2 f x y fxy) == showMutantI  "+" x y fxy &&
+  showMutantBind ["x + y"] f (mutate2 f x y fxy) == showMutantBI "+" x y fxy
 
 mutate :: Eq a => (a -> b) -> a -> b -> (a -> b)
 mutate f x y x' | x' == x   = y
