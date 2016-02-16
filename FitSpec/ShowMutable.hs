@@ -95,22 +95,25 @@ showMutantSTuple ns (Tuple ms) = showTuple $ zipWith show1 (ns ++ defFns) ms
 showMutantSTuple ns m          = showMutantSTuple ns (Tuple [m])
 
 showMutantSBind :: [String] -> MutantS -> String
-showMutantSBind ns (Tuple ms) = concatMap (uncurry showMutantSBind1)
-                              $ (ns ++ defVns) `zip` ms
-showMutantSBind ns m          = showMutantSBind1 (head (ns ++ defVns)) m
+showMutantSBind ns (Tuple ms) = concatMap (uncurry show1) $ zip (ns++defVns) ms
+  where show1 _ (Unmutated s) = ""
+        show1 _ (Function []) = ""
+        show1 n (Function bs) = showBindings (fvnames n) bs
+        show1 n m             = fname n ++ "' = " ++ showMutantS m -- TODO: What about infix?
+showMutantSBind ns m          = showMutantSBind ns (Tuple [m])
 
-showMutantSBind1 :: String -> MutantS -> String
-showMutantSBind1 _ (Unmutated s) = ""
-showMutantSBind1 n (Atom s)      = fname n ++ "' = " ++ s -- TODO: What about infix?
-showMutantSBind1 n (Tuple ms)    = fname n ++ "' = " ++ showTuple (map showMutantS ms)
-showMutantSBind1 n (Function bs) = table " "
-                                 $ (uncurry showBind `map` bs)
-                                ++ [words (apply fn' bound) ++ ["=", apply fn bound]]
-  where showBind [a1,a2] r | isInfix fn = [a1, fn', a2,   "=", showMutantS r]
-        showBind as r                   = [fn'] ++ as ++ ["=", showMutantS r]
-        (fn:vns) = fvnames n
-        fn' = prime fn
-        bound = zipWith const vns (fst $ head bs)
+-- | Given a list with the function and variable names and a list of bindings,
+-- show function binding declarations.
+showBindings :: [String] -> [([String],MutantS)] -> String
+showBindings ns bs = table " "
+                   $ (uncurry showBind `map` bs)
+                  ++ [words (apply fn' bound) ++ ["=", apply fn bound]]
+  where
+    showBind [a1,a2] r | isInfix fn' = [a1, fn', a2,   "=", showMutantS r]
+    showBind as r                    = [fn'] ++ as ++ ["=", showMutantS r]
+    fn'      = prime fn
+    bound    = zipWith const vns (fst $ head bs)
+    (fn:vns) = ns +- (defFn:defVns)
 
 showMutantN :: ShowMutable a => [String] -> a -> a -> String
 showMutantN names f f' = showMutantSTuple names
