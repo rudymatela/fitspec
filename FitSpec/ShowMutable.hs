@@ -100,12 +100,12 @@ showMutantSBind1 n (Function bs) = table " "
                                 ++ [words (apply fn' bound) ++ ["=", apply fn bound]]
   where showBind [a1,a2] r | isInfix fn = [a1,fn',a2,"=",showMutantS [] r]
         showBind as r = [fn'] ++ as ++ ["=",showMutantS [] r]
-        (fn,vns) = fvnames n
+        (fn:vns) = fvnames n
         fn' = prime fn
         bound = zipWith const vns (fst $ head bs)
 
 showMutantN :: ShowMutable a => [String] -> a -> a -> String
-showMutantN names f f' = showMutantS (map (uncurry (:) . fvnames) names)
+showMutantN names f f' = showMutantS (map fvnames names)
                        $ flatten
                        $ mutantS f f'
 
@@ -115,7 +115,7 @@ showMutantBind names f f' = showMutantSBind names
                           $ mutantS f f'
 
 showMutantNested :: ShowMutable a => [String] -> a -> a -> String
-showMutantNested names f f' = showMutantS (map (uncurry (:) . fvnames) names)
+showMutantNested names f f' = showMutantS (map fvnames names)
                             $ mutantS f f'
 
 showMutant :: ShowMutable a => a -> a -> String
@@ -123,21 +123,26 @@ showMutant = showMutantN []
 
 -- | Separate function from variable names in a simple Haskell expr.
 --
--- > fvarnames "f x y" == ("f",["x","y"])
--- > fvarnames "x + y" == ("(+)",["x","y"])
--- > fvarnames "aa bb cc dd" == ("aa",["bb","cc","dd"])
+-- > fvarnames "f x y" == ["f","x","y"]
+-- > fvarnames "aa bb cc dd" == ["aa","bb","cc","dd"]
 --
 -- When there are three lexemes, the function checks for a potential infix
 -- operator in the middle.
-fvnames :: String -> (String,[String])
+--
+-- > fvarnames "x + y" == ["(+)","x","y"]
+-- 
+-- This function always returns a "head"
+--
+-- > fvarnames "" == ["f"]
+fvnames :: String -> [String]
 fvnames = fvns' . words
-  where fvns' :: [String] -> (String,[String])
-        fvns' [a,o,b] | isInfix o = (o,[a,b])
-        fvns' []      = (defFn,[])
-        fvns' (f:vs)  = (f,vs)
+  where fvns' :: [String] -> [String]
+        fvns' [a,o,b] | isInfix o = o:[a,b]
+        fvns' []      = [defFn]
+        fvns' fvs     = fvs
 
 fname :: String -> String
-fname = fst . fvnames
+fname = head . fvnames
 
 -- TODO: Check if 'f' is intended to be used as an infix operator and operate accordingly
 -- even if 'f' is (10 +).  Transform into (10 + 2).
