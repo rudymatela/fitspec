@@ -52,8 +52,8 @@ showMutantBindings names f f' = showMutantSBind False names
                               $ flatten
                               $ mutantS f f'
 
--- | Show a Mutant as a new top-level definition, with a prime appended to the
---   name of the mutant.
+-- | Show a Mutant as a new complete top-level definition, with a prime
+-- appended to the name of the mutant.
 --
 -- > > putStrLn $ showMutantBindings' ["p && q","not p"] ((&&),not) ((==),id)
 -- > False &&- False = True
@@ -79,13 +79,6 @@ showMutantNested names f f' = showMutantSTuple names
 showMutant :: ShowMutable a => a -> a -> String
 showMutant = showMutantAsTuple []
 
--- | (Show) Structure of a mutant.
--- This format is intended for processing then pretty-printing.
-data MutantS = Unmutated String
-             | Atom String
-             | Tuple [MutantS]
-             | Function [([String],MutantS)]
-  deriving Show
 
 -- | Default function names (when none given):
 --
@@ -99,6 +92,61 @@ defaultFunctionNames = ["f","g","h"] ++ map (++"'") defaultFunctionNames
 defaultNames :: [String]
 defaultNames = head defaultFunctionNames : defVarNames
   where defVarNames = ["x","y","z","w"] ++ map (++"'") defVarNames
+
+
+-- | Types that can have their mutation shown.
+-- Has only one function 'mutantS' that returns a simple AST ('MutantS')
+-- representing the mutant.  A standard implementation of 'mutantS' for 'Eq'
+-- types is given by 'mutantSEq'.
+class ShowMutable a where
+  mutantS :: a -> a -> MutantS
+
+-- | For a given type @Type@ instance of @Eq@ and @Show@,
+-- define the 'ShowMutable' instance as:
+--
+-- > instance ShowMutable Type where mutantS = mutantSEq
+mutantSEq :: (Eq a, Show a)
+          => a -> a -> MutantS
+mutantSEq x x' = if x == x'
+                    then Unmutated $ show x
+                    else Atom      $ show x'
+
+instance ShowMutable ()   where mutantS = mutantSEq
+instance ShowMutable Int  where mutantS = mutantSEq
+instance ShowMutable Char where mutantS = mutantSEq
+instance ShowMutable Bool where mutantS = mutantSEq
+instance (Eq a, Show a) => ShowMutable [a]       where mutantS = mutantSEq
+instance (Eq a, Show a) => ShowMutable (Maybe a) where mutantS = mutantSEq
+
+instance (Listable a, Show a, ShowMutable b) => ShowMutable (a->b) where
+  -- TODO: let the user provide how many values should be tried when printing
+  mutantS f f' = Function
+               . take 10
+               . filter (not . isUnmutated . snd)
+               . mapMaybe bindingFor
+               . take 200
+               $ list
+    where bindingFor x = fmap ((,) [show x])
+                       $ errorToNothing (mutantS (f x) (f' x))
+
+instance (ShowMutable a, ShowMutable b) => ShowMutable (a,b) where
+  mutantS (f,g) (f',g') = Tuple [ mutantS f f'
+                                , mutantS g g' ]
+
+instance (ShowMutable a, ShowMutable b, ShowMutable c)
+      => ShowMutable (a,b,c) where
+  mutantS (f,g,h) (f',g',h') = Tuple [ mutantS f f'
+                                     , mutantS g g'
+                                     , mutantS h h' ]
+
+
+-- | (Show) Structure of a mutant.
+-- This format is intended for processing then pretty-printing.
+data MutantS = Unmutated String
+             | Atom String
+             | Tuple [MutantS]
+             | Function [([String],MutantS)]
+  deriving Show
 
 -- | Check if a 'MutantS' is null
 isUnmutated :: MutantS -> Bool
@@ -244,44 +292,6 @@ prime ('(':cs) = '(':init cs ++ "-)" -- (+) to (+-)
 prime cs | isInfix cs = cs ++ "-"    -- + to +-
          | otherwise  = cs ++ "'"    -- foo to foo'
 
-
-class ShowMutable a where
-  mutantS :: a -> a -> MutantS
-
-mutantSEq :: (Eq a, Show a)
-          => a -> a -> MutantS
-mutantSEq x x' = if x == x'
-                    then Unmutated $ show x
-                    else Atom      $ show x'
-
-instance ShowMutable ()   where mutantS = mutantSEq
-instance ShowMutable Int  where mutantS = mutantSEq
-instance ShowMutable Char where mutantS = mutantSEq
-instance ShowMutable Bool where mutantS = mutantSEq
-instance (Eq a, Show a) => ShowMutable [a]       where mutantS = mutantSEq
-instance (Eq a, Show a) => ShowMutable (Maybe a) where mutantS = mutantSEq
-
-
-instance (Listable a, Show a, ShowMutable b) => ShowMutable (a->b) where
-  -- TODO: let the user provide how many values should be tried when printing
-  mutantS f f' = Function
-               . take 10
-               . filter (not . isUnmutated . snd)
-               . mapMaybe bindingFor
-               . take 200
-               $ list
-    where bindingFor x = fmap ((,) [show x])
-                       $ errorToNothing (mutantS (f x) (f' x))
-
-instance (ShowMutable a, ShowMutable b) => ShowMutable (a,b) where
-  mutantS (f,g) (f',g') = Tuple [ mutantS f f'
-                                , mutantS g g' ]
-
-instance (ShowMutable a, ShowMutable b, ShowMutable c)
-      => ShowMutable (a,b,c) where
-  mutantS (f,g,h) (f',g',h') = Tuple [ mutantS f f'
-                                     , mutantS g g'
-                                     , mutantS h h' ]
 
 instance (ShowMutable a, ShowMutable b, ShowMutable c, ShowMutable d)
       => ShowMutable (a,b,c,d) where
