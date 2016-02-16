@@ -64,11 +64,11 @@ reallyDeriveMutable :: [Name] -> Name -> DecsQ
 reallyDeriveMutable cs t = do
   (nt,vs) <- normalizeType t
 #if __GLASGOW_HASKELL__ >= 710
-  cxt <- sequence $ [ [t| $(conT c) $(return v) |]
+  cxt <- sequence [ [t| $(conT c) $(return v) |]
 #else
-  cxt <- sequence $ [ classP c [return v]
+  cxt <- sequence [ classP c [return v]
 #endif
-                    | v <- vs, c <- ''Eq:''Listable:''Show:cs ]
+                  | v <- vs, c <- ''Eq:''Listable:''Show:cs ]
 #if __GLASGOW_HASKELL__ >= 708
   cxt |=>| [d| instance Mutable $(return nt)
                  where lsMutants = lsMutantsEq
@@ -107,10 +107,10 @@ normalizeType t = do
   return (foldl AppT (ConT t) vs, vs)
   where
     newNames :: [String] -> Q [Name]
-    newNames ss = mapM newName ss
+    newNames = mapM newName
     newVarTs :: Int -> Q [Type]
-    newVarTs n = newNames (take n . map (:[]) . cycle $ ['a'..'z'])
-             >>= return . map VarT
+    newVarTs n = liftM (map VarT)
+               $ newNames (take n . map (:[]) $ cycle ['a'..'z'])
 
 -- Normalizes a type by applying it to units (`()`) while possible.
 --
