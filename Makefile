@@ -94,9 +94,10 @@ list:
 
 hlint:
 	hlint \
+	  --ignore "Use import/export shortcut" \
 	  --ignore "Use first" \
 	  --ignore "Use ***" \
-	  .
+	  FitSpec.hs FitSpec bench tests
 
 bench/avltrees: bench/AVLTree.o
 
