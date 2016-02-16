@@ -192,10 +192,7 @@ prop_11' f g h xf yf xg yg xh yh = yf /= f xf
                                                ( mutate f xf yf
                                                , ( mutate g xg yg
                                                  , mutate h xh yh ) )
-                             -- == showTuple [ showMutantF "f" xf yf  -- is!
-                             --              , showMutantF "g" xg yg
-                             --              , showMutantF "h" xh yh ]
-                                == showTuple [ showMutantF "f" xf yf  -- should be!
+                                == showTuple [ showMutantF "f" xf yf
                                              , showTuple [ showMutantF "(??)" xg yg
                                                          , showMutantF "(??)" xh yh ] ]
 
