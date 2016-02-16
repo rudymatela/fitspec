@@ -137,7 +137,7 @@ propertyE :: Testable a
 propertyE = map (id *** errorToFalse) . property
 
 propertyHolds :: Int -> Property -> Bool
-propertyHolds n = and . map snd . take n
+propertyHolds n = all snd . take n
 
 propertyCE :: Int -> Property -> Maybe String
 propertyCE n = listToMaybe . map (unwords . fst) . filter (not . snd) . take n
@@ -146,7 +146,7 @@ propertiesToMap :: [Property] -> Int -> [Bool]
 propertiesToMap ps n = map (propertyHolds n) ps
 
 propertiesHold :: Int -> [Property] -> Bool
-propertiesHold n = and . map (propertyHolds n)
+propertiesHold n = all (propertyHolds n)
 
 propertiesCE :: Int -> [Property] -> Maybe String
 propertiesCE n = listToMaybe
@@ -232,8 +232,8 @@ reportWith' args f properties = do
                    , showM $ smallestSurvivor r
                    ]
     showI = showPropertySets args . map show
-    showM (Nothing) = ""
-    showM (Just m)  = showMutant args f m
+    showM Nothing  = ""
+    showM (Just m) = showMutant args f m
     showNTests 1 =          "1 test case"
     showNTests n = show n ++ " test cases"
     showProperties [p] = "property "   ++ show p
