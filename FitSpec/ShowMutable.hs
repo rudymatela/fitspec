@@ -5,7 +5,7 @@ module FitSpec.ShowMutable
   , showMutant
   , showMutantAsTuple
   , showMutantNested
-  , showMutantBindings'
+  , showMutantDefinition
   , showMutantBindings
   , MutantS ()
   )
@@ -55,14 +55,14 @@ showMutantBindings names f f' = showMutantSBindings False names
 -- | Show a Mutant as a new complete top-level definition, with a prime
 -- appended to the name of the mutant.
 --
--- > > putStrLn $ showMutantBindings' ["p && q","not p"] ((&&),not) ((==),id)
+-- > > putStrLn $ showMutantDefinition ["p && q","not p"] ((&&),not) ((==),id)
 -- > False &&- False = True
 -- > p     &&- q     = p && q
 -- > not' False = False
 -- > not' True  = True
 -- > not' p     = not p
-showMutantBindings' :: ShowMutable a => [String] -> a -> a -> String
-showMutantBindings' names f f' = showMutantSBindings True names
+showMutantDefinition :: ShowMutable a => [String] -> a -> a -> String
+showMutantDefinition names f f' = showMutantSBindings True names
                                $ flatten
                                $ mutantS f f'
 
@@ -191,6 +191,8 @@ showMutantSAsTuple ns (Tuple ms) = showTuple $ zipWith show1 (ns +- defaultNames
 showMutantSAsTuple ns m = showMutantSAsTuple ns (Tuple [m])
 
 -- | Show top-level (maybe tuple) named 'MutantS' as a bindings.
+-- In general, you want to 'flatten' the 'MutantS' before applying this
+-- function.
 showMutantSBindings :: Bool -> [String] -> MutantS -> String
 showMutantSBindings new ns (Tuple ms) = concatMap (uncurry show1)
                                   $ zip (ns ++ defaultFunctionNames) ms
@@ -227,7 +229,7 @@ showLambda ns bs = (("\\" ++ unwords bound ++ " -> ") `beside`)
 -- | Given a list with the function and variable names and a list of bindings,
 -- show function binding declarations.
 --
--- The 'new' boolean argument indicates wether if the function should be shown
+-- The 'new' boolean argument indicates whether if the function should be shown
 -- as a new definition.
 showBindings :: Bool -> [String] -> [([String],MutantS)] -> String
 showBindings new ns bs =

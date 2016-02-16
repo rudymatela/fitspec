@@ -132,8 +132,8 @@ prop_1 :: ( Eq a, Show a, Listable a, ShowMutable a
           , Eq b, Show b, Listable b, ShowMutable b )
         => (a->b) -> a -> b -> Bool
 prop_1 f x fx = fx /= f x
-           ==> showMutantAsTuple   ["f x"] f (mutate f x fx) == showMutantF "f" x fx
-            && showMutantBindings' ["f x"] f (mutate f x fx) == showMutantB "f" x fx
+           ==> showMutantAsTuple    ["f x"] f (mutate f x fx) == showMutantF "f" x fx
+            && showMutantDefinition ["f x"] f (mutate f x fx) == showMutantB "f" x fx
 -- TODO: fix above property that fails for 'showMutant'
 --       instead of showMutantN ["f x"], see:
 --
@@ -148,9 +148,9 @@ prop_11 :: ( Eq a, Show a, Listable a, ShowMutable a
            , Eq d, Show d, Listable d, ShowMutable d )
         => (a->b) -> (c->d) -> a -> b -> c -> d -> Bool
 prop_11 f g x fx y gy = fx /= f x && gy /= g y
-                  ==> showMutantAsTuple   ["f x","g x"] (f,g) (mutate f x fx, mutate g y gy)
+                  ==> showMutantAsTuple    ["f x","g x"] (f,g) (mutate f x fx, mutate g y gy)
                    == showTuple [showMutantF "f" x fx, showMutantF "g" y gy]
-                   && showMutantBindings' ["f x","g x"] (f,g) (mutate f x fx, mutate g y gy)
+                   && showMutantDefinition ["f x","g x"] (f,g) (mutate f x fx, mutate g y gy)
                    == concat    [showMutantB "f" x fx, showMutantB "g" y gy]
 
 prop_111 :: ( Eq a, Show a, Listable a, ShowMutable a
@@ -170,10 +170,10 @@ prop_111 f g h x fx y gy z hz = fx /= f x
                              == showTuple [ showMutantF "f" x fx
                                           , showMutantF "g" y gy
                                           , showMutantF "h" z hz ]
-                             && showMutantBindings' ["f x","g x","h x"] (f,g,h)
-                                                    ( mutate f x fx
-                                                    , mutate g y gy
-                                                    , mutate h z hz )
+                             && showMutantDefinition ["f x","g x","h x"] (f,g,h)
+                                                     ( mutate f x fx
+                                                     , mutate g y gy
+                                                     , mutate h z hz )
                              == concat    [ showMutantB "f" x fx
                                           , showMutantB "g" y gy
                                           , showMutantB "h" z hz ]
@@ -195,10 +195,10 @@ prop_11' f g h x fx y gy z hz = fx /= f x
                              == showTuple [ showMutantF "f" x fx
                                           , showTuple [ showMutantF "(??)" y gy
                                                       , showMutantF "(??)" z hz ] ]
-                             && showMutantBindings' ["f x","g x","h x"] (f,(g,h))
-                                                    ( mutate f x fx
-                                                    , ( mutate g y gy
-                                                      , mutate h z hz ) )
+                             && showMutantDefinition ["f x","g x","h x"] (f,(g,h))
+                                                     ( mutate f x fx
+                                                     , ( mutate g y gy
+                                                       , mutate h z hz ) )
                              == concat [ showMutantB "f" x fx
                                        , "g' = "
                                 `beside` showTuple [ showMutantF "(??)" y gy
@@ -209,8 +209,8 @@ prop_2 :: ( Eq a, Show a, Listable a, ShowMutable a
           , Eq c, Show c, Listable c, ShowMutable c )
         => (a->b->c) -> a -> b -> c -> Bool
 prop_2 f x y fxy = fxy /= f x y ==>
-  showMutantAsTuple   ["f x y"] f (mutate2 f x y fxy) == showMutantF2 "f" x y fxy &&
-  showMutantBindings' ["f x y"] f (mutate2 f x y fxy) == showMutantB2 "f" x y fxy
+  showMutantAsTuple    ["f x y"] f (mutate2 f x y fxy) == showMutantF2 "f" x y fxy &&
+  showMutantDefinition ["f x y"] f (mutate2 f x y fxy) == showMutantB2 "f" x y fxy
 
 
 prop_I :: ( Eq a, Show a, Listable a, ShowMutable a
@@ -218,8 +218,8 @@ prop_I :: ( Eq a, Show a, Listable a, ShowMutable a
           , Eq c, Show c, Listable c, ShowMutable c )
         => (a->b->c) -> a -> b -> c -> Bool
 prop_I f x y fxy = fxy /= f x y ==>
-  showMutantAsTuple   ["x + y"] f (mutate2 f x y fxy) == showMutantI  "+" x y fxy &&
-  showMutantBindings' ["x + y"] f (mutate2 f x y fxy) == showMutantBI "+" x y fxy
+  showMutantAsTuple    ["x + y"] f (mutate2 f x y fxy) == showMutantI  "+" x y fxy &&
+  showMutantDefinition ["x + y"] f (mutate2 f x y fxy) == showMutantBI "+" x y fxy
 
 mutate :: Eq a => (a -> b) -> a -> b -> (a -> b)
 mutate f x y x' | x' == x   = y
