@@ -28,16 +28,18 @@ data MutantS = Unmutated String
              | Function [([String],MutantS)]
   deriving Show
 
--- | Default function name, when none given
-defFn :: String
-defFn  = head defFns
+-- | Default function names (when none given):
+--
+-- > f g h f' g' h' f'' g'' h''
+defaultFunctionNames :: [String]
+defaultFunctionNames = ["f","g","h"] ++ map (++"'") defaultFunctionNames
 
-defFns :: [String]
-defFns = ["f","g","h"] ++ map (++"'") defFns
-
--- | Default variable names, when none given
-defVns :: [String]
-defVns = ["x","y","z","w"] ++ map (++"'") defVns
+-- | Default names in a call (function and variables):
+--
+-- > f x y z w x' y' z' w' x'' y'' z'' w'' ...
+defaultNames :: [String]
+defaultNames = head defaultFunctionNames : defVarNames
+  where defVarNames = ["x","y","z","w"] ++ map (++"'") defVarNames
 
 isUnmutated (Unmutated _) = True
 isUnmutated (Tuple ms)    = all isUnmutated ms
@@ -84,18 +86,19 @@ showLambda ns bs = (("\\" ++ unwords bound ++ " -> ") `beside`)
     showResult m              = showMutantS m
     unbound  = drop (length bound) vns
     bound    = zipWith const vns (fst $ head bs)
-    (fn:vns) = ns +- (defFn:defVns)
+    (fn:vns) = ns +- defaultNames
 
 -- | Top-level (maybe tuple) named mutant.
 showMutantSTuple :: [String] -> MutantS -> String
-showMutantSTuple ns (Tuple ms) = showTuple $ zipWith show1 (ns ++ defFns) ms
+showMutantSTuple ns (Tuple ms) = showTuple $ zipWith show1 (ns +- defaultNames) ms
   where show1 n  (Unmutated _) = n
         show1 n  (Function bs) = showLambda (fvnames n) bs
         show1 _  m             = showMutantS m
 showMutantSTuple ns m          = showMutantSTuple ns (Tuple [m])
 
 showMutantSBind :: [String] -> MutantS -> String
-showMutantSBind ns (Tuple ms) = concatMap (uncurry show1) $ zip (ns++defFns) ms
+showMutantSBind ns (Tuple ms) = concatMap (uncurry show1)
+                              $ zip (ns ++ defaultFunctionNames) ms
   where show1 _ (Unmutated s) = ""
         show1 _ (Function []) = ""
         show1 n (Function bs) = showBindings (fvnames n) bs
@@ -114,7 +117,7 @@ showBindings ns bs = table " "
     showBind as r                    = [fn'] ++ as ++ ["=", showMutantS r]
     fn'      = prime fn
     bound    = zipWith const vns (fst $ head bs)
-    (fn:vns) = ns +- (defFn:defVns)
+    (fn:vns) = ns +- defaultNames
 
 showMutantN :: ShowMutable a => [String] -> a -> a -> String
 showMutantN names f f' = showMutantSTuple names
@@ -150,7 +153,7 @@ fvnames :: String -> [String]
 fvnames = fvns' . words
   where fvns' :: [String] -> [String]
         fvns' [a,o,b] | isInfix o = o:[a,b]
-        fvns' []      = [defFn]
+        fvns' []      = defaultNames
         fvns' fvs     = fvs
 
 fname :: String -> String
