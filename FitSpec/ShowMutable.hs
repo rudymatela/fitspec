@@ -109,8 +109,9 @@ showMutantSBind new ns (Tuple ms) = concatMap (uncurry show1)
   where show1 _ (Unmutated s) = ""
         show1 _ (Function []) = ""
         show1 n (Function bs) = showBindings new (fvnames n) bs
-        show1 n m             = let fn' | new = prime (fname n)
-                                        | otherwise = (fname n)
+        show1 n m             = let fn = head $ fvnames n
+                                    fn' | new = prime fn
+                                        | otherwise = fn
                                 in (apply fn' [] ++ " = ")
                           `beside` showMutantS m
 showMutantSBind new ns m = showMutantSBind new ns (Tuple [m])
@@ -173,9 +174,6 @@ fvnames = fvns' . words
         fvns' [a,o,b] | isInfix o = o:[a,b]
         fvns' []      = defaultNames
         fvns' fvs     = fvs
-
-fname :: String -> String
-fname = head . fvnames
 
 -- TODO: Check if 'f' is intended to be used as an infix operator and operate accordingly
 -- even if 'f' is (10 +).  Transform into (10 + 2).
