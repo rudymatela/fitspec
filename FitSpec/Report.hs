@@ -224,8 +224,9 @@ showEIs showVeryWeak showMore =
 
 
 showEI :: Result a -> [[String]]
-showEI r = map (\p' -> [showPropertySet p, " = ", showPropertySet p', "   ", show s ++ "% killed", sMeaning]) ps
-        ++ [ [showPropertySet p, "==>", showPropertySet i, "   ", show s ++ "% killed", sMeaning] | (not.null) i ]
+showEI r = map (++ ["   ", show s ++ "% killed", sMeaning])
+         $ [ [showPropertySet p, " = ", showPropertySet p'] | p' <- ps ]
+        ++ [ [showPropertySet p, "==>", showPropertySet i ] | (not.null) i ]
   where (p:ps) = sets r
         i      = implied r
         s      = score r
