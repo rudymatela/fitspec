@@ -8,14 +8,15 @@ module FitSpec.Main
   ( mainWith
   , defaultMain
   , typeArgument
-  , module FitSpec.Engine -- deprecated export, remove later
+  , module FitSpec.Report -- deprecated export, remove later
   )
 where
 
-import FitSpec.Engine
+import FitSpec.Report
 import System.Console.CmdArgs hiding (args)
 import Control.Monad (liftM)
 import FitSpec.Mutable
+import FitSpec.ShowMutable
 
 data Override = Override
   { mutants__             :: Maybe Int

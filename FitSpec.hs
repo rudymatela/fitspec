@@ -42,6 +42,7 @@
 -- FitSpec was tested on GHC 7.10, 7.8, 7.6 and 7.4.
 module FitSpec
   ( module FitSpec.Engine
+  , module FitSpec.Report
   , module FitSpec.Main
 
   , module FitSpec.Mutable
@@ -55,6 +56,7 @@ where
 -- TODO: Explictly export *only* needed functions
 
 import FitSpec.Engine
+import FitSpec.Report
 import FitSpec.Main
 
 import FitSpec.Mutable
