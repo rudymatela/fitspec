@@ -178,8 +178,6 @@ pssurv is pmap = sortOn (count id . snd)
                . zip (subsets is)
                . transpose
                . map (compositions . pmap)
-  where collapse [] = error "this should not happen"
-        collapse rs@((_,hs):_) = (map fst rs, hs)
 
 -- | 'nSurv' @props fs@ returns the number of values that match
 --   compositions of properties on the property map.
