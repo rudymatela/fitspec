@@ -189,7 +189,8 @@ reportWith' args f properties = do
                    , show  (nSurvivors r) ++ " (" ++ show (score r) ++ "%)"
                    , showM $ smallestSurvivor r
                    ]
-    showI = showPropertySets args . map show
+    showI = showPropertySets args
+          . map showPropertySet
     showM Nothing  = ""
     showM (Just m) = showMutant args f m
     showNTests 1 =          "1 test case"
@@ -202,6 +203,9 @@ reportWith' args f properties = do
     showNTM nt nm = showNTests nt ++ " for each of "
                  ++ show nm ++ " mutant variations"
 
+
+showPropertySet :: Show i => [i] -> String
+showPropertySet = (\s -> "{" ++ s ++ "}") . intercalate "," . map show
 
 
 showEIs :: Bool -> Bool -> [Result a] -> [[String]]
@@ -220,8 +224,8 @@ showEIs showVeryWeak showMore =
 
 
 showEI :: Result a -> [[String]]
-showEI r = map (\p' -> [show p, " = ", show p', "   ", show s ++ "% killed", sMeaning]) ps
-        ++ [ [show p, "==>", show i, "   ", show s ++ "% killed", sMeaning] | (not.null) i ]
+showEI r = map (\p' -> [showPropertySet p, " = ", showPropertySet p', "   ", show s ++ "% killed", sMeaning]) ps
+        ++ [ [showPropertySet p, "==>", showPropertySet i, "   ", show s ++ "% killed", sMeaning] | (not.null) i ]
   where (p:ps) = sets r
         i      = implied r
         s      = score r
