@@ -161,7 +161,7 @@ reportWith' args f properties = do
            . sortGroupAndCollapse fst snd
                (\n ps -> showQuantity n "test case" ++ " for " ++ showEach "property" ps)
            $ zip nts [1..]
-  putStrLn $ "for each of " ++ show nm ++ " mutant variations.\n"
+  putStrLn $ "for each of " ++ showQuantity nm "mutant variation" ++ ".\n"
 
   let showR | detailed args = showDetailedResults
             | otherwise     = showResults
@@ -172,11 +172,6 @@ reportWith' args f properties = do
              $ map (\n -> let results = getResultsExtra (extraMutants args) n f (pmap (nTestsF args n))
                           in foldr seq results results) -- evaluate head -> evaluate trunk
                    (iterate (\x -> x + x `div` 2) (nMutants args))
-    showProperties [p] = "property "   ++ show p
-    showProperties ps  = "each of properties "
-                      ++ intercalate ", " (map show $ init ps)
-                      ++ " and "
-                      ++ show (last ps)
 
 
 showResults :: Maybe Int -> (a -> String)
