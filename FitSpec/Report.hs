@@ -151,27 +151,23 @@ reportWith' :: Mutable a
             -> (a -> [Property])
             -> IO ()
 reportWith' args f properties = do
+  let pmap n f = propertiesToMap (properties f) n
+      resultss = takeWhileIncreasingOn (totalMutants . head)
+               . map (\n -> let rs = getResultsExtra (extraMutants args) n f
+                                                     (pmap (nTestsF args n))
+                            in foldr seq rs rs) -- eval head -> eval trunk
+               $ (iterate (\x -> x + x `div` 2) (nMutants args))
   results <- lastTimeout (minimumTime args) resultss
+
   let nm = totalMutants $ head results
       nt = nTestsF args nm
       nts = propertiesNTests nt (properties f)
-
   putStrLn $ "Apparent " ++ qualifyCM results ++ " specification based on"
-  putStr   . unlines
-           . sortGroupAndCollapse fst snd
-               (\n ps -> showQuantity n "test case" ++ " for " ++ showEach "property" ps)
-           $ zip nts [1..]
-  putStrLn $ "for each of " ++ showQuantity nm "mutant variation" ++ ".\n"
+  putStrLn $ showNumberOfTestsAndMutants nts nm False
 
   let showR | detailed args = showDetailedResults
             | otherwise     = showResults
   putStrLn $ showR (limitResults args) (showMutant args f) results
-  where
-    pmap n f = propertiesToMap (properties f) n
-    resultss = takeWhileIncreasingOn (totalMutants . head)
-             $ map (\n -> let results = getResultsExtra (extraMutants args) n f (pmap (nTestsF args n))
-                          in foldr seq results results) -- evaluate head -> evaluate trunk
-                   (iterate (\x -> x + x `div` 2) (nMutants args))
 
 
 showResults :: Maybe Int -> (a -> String)
@@ -187,7 +183,7 @@ showResults mlimit showMutant rs@(r:_) = completeness
     minimality = "apparent minimal property-sub-sets:  "
               ++ (unwords . map showPropertySet $ sets r) ++ "\n"
               ++ case showConjectures False rs of
-                   "" -> "No conjectures."
+                   "" -> "No conjectures.\n"
                    cs -> "conjectures:  " `beside` cs
 
 
@@ -209,8 +205,20 @@ showDetailedResults mlimit showMutant rs = completeness
                    , maybe "" showMutant $ smallestSurvivor r
                    ]
     minimality = case showConjectures True rs of
-                   "" -> "No conjectures."
+                   "" -> "No conjectures.\n"
                    cs -> "Conjectures:\n" ++ cs
+
+
+showNumberOfTestsAndMutants :: [Int] -> Int -> Bool -> String
+showNumberOfTestsAndMutants nts nm ssum = numTests ++ numMutants
+  where
+    numMutants = "for each of " ++ showQuantity nm "mutant variation" ++ ".\n"
+    numTests | ssum = showQuantity (sum nts) "test case" ++ "\n"
+             | otherwise = unlines
+                         . sortGroupAndCollapse fst snd testsForProps
+                         $ zip nts [1..]
+    testsForProps n ps = showQuantity n "test case"
+                      ++ " for " ++ showEach "property" ps
 
 showPropertySet :: Show i => [i] -> String
 showPropertySet = (\s -> "{" ++ s ++ "}") . intercalate "," . map show
