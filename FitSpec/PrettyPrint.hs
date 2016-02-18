@@ -13,7 +13,7 @@ module FitSpec.PrettyPrint
   )
 where
 
-import Data.List (intercalate,transpose)
+import Data.List (intercalate,transpose,isSuffixOf)
 
 showQuantity :: Int -> String -> String
 showQuantity 1 what = "1 " ++ what
@@ -26,9 +26,19 @@ showEach what xs  = "each of " ++ pluralize what ++ " "
                  ++ " and "
                  ++ show (last xs)
 
--- TODO: implement this, id for things already in plural
+-- | Pluralizes a word.
+-- Is not comprehensive (and may never be),
+-- add missing cases as they are found.
+--
+-- > pluralize "test case" == "test cases"
+-- > pluralize "property"  == "properties"
 pluralize :: String -> String
-pluralize = id
+pluralize s | s `ew` "se" = s ++ "s"
+            | s `ew` "n"  = s ++ "s"
+            | s `ew` "y"  = init s ++ "ies"
+            | otherwise   = s
+  where ew = flip isSuffixOf
+
 
 -- | Appends two Strings side by side, line by line
 --
