@@ -165,15 +165,15 @@ reportWith' args f properties = do
   putStrLn $ "Apparent " ++ qualifyCM results ++ " specification based on"
   putStrLn $ showNumberOfTestsAndMutants nts nm False
 
-  let showR | detailed args = showDetailedResults
+  let showR | detailed args = showDetailedResults (limitResults args)
             | otherwise     = showResults
-  putStrLn $ showR (limitResults args) (showMutant args f) results
+  putStrLn $ showR (showMutant args f) results
 
 
-showResults :: Maybe Int -> (a -> String)
+showResults :: (a -> String)
             -> [Result a] -> String
-showResults mlimit showMutant rs@(r:_) = completeness
-                              ++ "\n" ++ minimality
+showResults showMutant rs@(r:_) = completeness
+                       ++ "\n" ++ minimality
   where
     completeness = show (nSurvivors r) ++ " survivors ("
                 ++ show (score r) ++ "% killed)"
