@@ -23,6 +23,7 @@ data Override = Override
   , ntests__              :: Maybe Int
   , seconds__             :: Maybe Int
   , limitResults__        :: Maybe Int
+  , verbose__             :: Bool
   , type__                :: String
   } deriving (Data,Typeable,Show,Eq)
 
@@ -31,6 +32,7 @@ overrideArgs = Override
   , ntests__       = Nothing &= help "number of tests"
   , seconds__      = Nothing &= help "timeout in seconds"
   , limitResults__ = Nothing &= help "result lines"
+  , verbose__      = False   &= help "show detailed results"
   , type__         = ""      &= help "type to use in polymorphic instances"
   }
 
@@ -44,6 +46,8 @@ override a o@Override {seconds__ = Just s} = override a {minimumTime = s}
                     o {seconds__ = Nothing}
 override a o@Override {limitResults__ = Just n} = override a {limitResults = Just n}
                     o {limitResults__ = Nothing}
+override a o@Override {verbose__ = True} = override a {detailed = True}
+                    o {verbose__ = False}
 override a _ = a
 
 typeArgument :: IO String

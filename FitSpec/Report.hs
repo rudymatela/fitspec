@@ -30,12 +30,12 @@ data Args a = Args
   , minimumTime :: Int    -- ^ minimum time to run, use 0 for just nMutants
   , nTestsF :: Int -> Int -- ^ number of tests in function of number of mutants
   , callNames :: [String] -- ^ function call templates: @["foo x y","goo x y"]@
-  , limitResults :: Maybe Int -- ^ Just a limit for results, 'Nothing' for all
+  , detailed :: Bool      -- ^ show detailed results ('False' for summarized)
 
   -- advanced options:
+  , limitResults :: Maybe Int -- ^ Just a limit for results, 'Nothing' for all
   , extraMutants :: [a]   -- ^ extra mutants to try to kill alongside mutations
   , showPropertySets :: [String] -> String -- ^ function to show property sets.
-  , showMoreEI :: Bool    -- ^ show more equivalences and implications
   , showVeryWeakEI :: Bool -- ^ show hidden equivalences and implications
   , showMutantN :: [String] -> a -> a -> String -- ^ special mutant show
   }
@@ -90,14 +90,13 @@ args = Args { nMutants = 500
             , nTestsF = (*2)
             , callNames = []
             , limitResults = Just 3
+            , detailed = False
 
             , extraMutants = []
             , showPropertySets = unwords -- join by spaces
             , showVeryWeakEI = False
-            , showMoreEI = False
             , showMutantN = showMutantAsTuple
             }
--- TODO: change showMutantN name to avoid clash with showMutantN
 
 -- Non timed-out default arguments.
 -- Make conjectures based on a fixed number of mutants and tests, e.g.:
@@ -160,71 +159,87 @@ reportWith' args f properties = do
   putStrLn $ "Apparent " ++ qualifyCM results ++ " specification based on"
   putStr   . unlines
            . sortGroupAndCollapse fst snd
-               (\n ps -> showNTests n ++ " for " ++ showProperties ps)
+               (\n ps -> showQuantity n "test case" ++ " for " ++ showEach "property" ps)
            $ zip nts [1..]
   putStrLn $ "for each of " ++ show nm ++ " mutant variations.\n"
 
-  putStrLn . table "   "
-           . intersperse [ "\n" ]
-           . ([ "Property\n sets"
-              , "#Survivors\n (%Killed)"
-              , "Smallest or simplest\n surviving mutant"
-              ]:)
-           . map showResult
-           . maybe id take (limitResults args)
-           $ results
-
-  let eis = showEIs (showVeryWeakEI args) (showMoreEI args) results
-  putStrLn $ if null eis
-    then "No conjectures."
-    else "Conjectures based on " ++ showNTM (sum nts) nm ++ ":"
-  putStrLn (table " " eis)
+  let showR | detailed args = showDetailedResults
+            | otherwise     = showResults
+  putStrLn $ showR (limitResults args) (showMutant args f) results
   where
     pmap n f = propertiesToMap (properties f) n
     resultss = takeWhileIncreasingOn (totalMutants . head)
              $ map (\n -> let results = getResultsExtra (extraMutants args) n f (pmap (nTestsF args n))
                           in foldr seq results results) -- evaluate head -> evaluate trunk
                    (iterate (\x -> x + x `div` 2) (nMutants args))
-    showResult r = [ showI $ sets r -- ++ "==>" show (implied r)
-                   , show  (nSurvivors r) ++ " (" ++ show (score r) ++ "%)"
-                   , showM $ smallestSurvivor r
-                   ]
-    showI = showPropertySets args
-          . map showPropertySet
-    showM Nothing  = ""
-    showM (Just m) = showMutant args f m
-    showNTests 1 =          "1 test case"
-    showNTests n = show n ++ " test cases"
     showProperties [p] = "property "   ++ show p
     showProperties ps  = "each of properties "
                       ++ intercalate ", " (map show $ init ps)
                       ++ " and "
                       ++ show (last ps)
-    showNTM nt nm = showNTests nt ++ " for each of "
-                 ++ show nm ++ " mutant variations"
 
+
+showResults :: Maybe Int -> (a -> String)
+            -> [Result a] -> String
+showResults mlimit showMutant rs@(r:_) = completeness
+                              ++ "\n" ++ minimality
+  where
+    completeness = show (nSurvivors r) ++ " survivors ("
+                ++ show (score r) ++ "% killed)"
+                ++ case smallestSurvivor r of
+                     Nothing -> ".\n"
+                     Just m  -> ", smallest:\n" ++ "  " `beside` showMutant m
+    minimality = "apparent minimal property-sub-sets:  "
+              ++ (unwords . map showPropertySet $ sets r) ++ "\n"
+              ++ case showConjectures False rs of
+                   "" -> "No conjectures."
+                   cs -> "conjectures:  " `beside` cs
+
+
+showDetailedResults :: Maybe Int -> (a -> String)
+                    -> [Result a] -> String
+showDetailedResults mlimit showMutant rs = completeness
+                                ++ "\n" ++ minimality
+  where
+    completeness = table "   " . intersperse ["\n"]
+                 . ([ "Property\n sets"
+                    , "#Survivors\n (%Killed)"
+                    , "Smallest or simplest\n surviving mutant"
+                    ]:)
+                 . map showResult
+                 . maybe id take mlimit
+                 $ rs
+    showResult r = [ unwords . map showPropertySet $ sets r
+                   , show  (nSurvivors r) ++ " (" ++ show (score r) ++ "%)"
+                   , maybe "" showMutant $ smallestSurvivor r
+                   ]
+    minimality = case showConjectures True rs of
+                   "" -> "No conjectures."
+                   cs -> "Conjectures:\n" ++ cs
 
 showPropertySet :: Show i => [i] -> String
 showPropertySet = (\s -> "{" ++ s ++ "}") . intercalate "," . map show
 
 
-showEIs :: Bool -> Bool -> [Result a] -> [[String]]
-showEIs showVeryWeak showMore =
-    concatMap showEI
+-- | Show conjectures derived from results
+showConjectures :: Bool -> [Result a] -> String
+showConjectures showVeryWeak =
+    table " "
+  . concatMap showConjectures1
   . sortOn (abs . (50-) . score)
   . (if showVeryWeak
        then id
        else filter (\r -> nKilled r    /= 0
                        && nSurvivors r /= 0))
-  . (if showMore
-       then id
-       else reduceImplications
-          . filterNonCanon
-          . reverse)
+  . reduceImplications
+  . filterNonCanon
+  . reverse
 
 
-showEI :: Result a -> [[String]]
-showEI r = map (++ ["   ", show s ++ "% killed", sMeaning])
+-- | Show conjectures derived from a single result.
+showConjectures1 :: Result a -> [[String]]
+showConjectures1 r =
+           map (++ ["   ", show s ++ "% killed", sMeaning])
          $ [ [showPropertySet p, " = ", showPropertySet p'] | p' <- ps ]
         ++ [ [showPropertySet p, "==>", showPropertySet i ] | (not.null) i ]
   where (p:ps) = sets r

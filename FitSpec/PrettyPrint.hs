@@ -8,10 +8,27 @@ module FitSpec.PrettyPrint
   , showTuple
   , table
   , columns
+  , showQuantity
+  , showEach
   )
 where
 
 import Data.List (intercalate,transpose)
+
+showQuantity :: Int -> String -> String
+showQuantity 1 what = "1 " ++ what
+showQuantity n what = show n ++ " " ++ pluralize what
+
+showEach :: Show a => String -> [a] -> String
+showEach what [x] = what ++ " " ++ show x
+showEach what xs  = "each of " ++ pluralize what ++ " "
+                 ++ intercalate ", " (map show $ init xs)
+                 ++ " and "
+                 ++ show (last xs)
+
+-- TODO: implement this, id for things already in plural
+pluralize :: String -> String
+pluralize = id
 
 -- | Appends two Strings side by side, line by line
 --
