@@ -52,7 +52,7 @@ nTests as = nTestsF as (nMutants as)
 --   keep incresing the number of mutants until 5 seconds elapse
 --
 -- * @nTestsF = (*2)@,
---   use 2 tests more than mutants
+--   2 times more tests than mutants
 --   As a rule of thumb, the number of tests should be proportional to the
 --   number of mutants.
 --   There is *no* general rule of thumb for the exact proportion:
