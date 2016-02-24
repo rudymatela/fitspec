@@ -8,13 +8,6 @@ module FitSpec.Report
   )
 where
 
-{-
-import Data.List ((\\), intercalate, intersperse, union, transpose)
-import Data.Ord
-import Control.Monad (unless)
-import FitSpec.ShowMutable (ShowMutable, showMutantAsTuple)
-import FitSpec.PrettyPrint
--}
 import Data.List (intercalate, intersperse)
 
 import FitSpec.Engine
