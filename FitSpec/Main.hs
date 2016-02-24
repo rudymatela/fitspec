@@ -46,7 +46,7 @@ override a o@Override {seconds__ = Just s} = override a {timeout = s}
                     o {seconds__ = Nothing}
 override a o@Override {limitResults__ = Just n} = override a {limitResults = Just n}
                     o {limitResults__ = Nothing}
-override a o@Override {verbose__ = True} = override a {detailed = True}
+override a o@Override {verbose__ = True} = override a {verbose = True}
                     o {verbose__ = False}
 override a _ = a
 

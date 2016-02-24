@@ -23,9 +23,9 @@ data Args a = Args
   , nTests   :: Int -- ^ (starting) number of test values (for each prop.)
   , timeout  :: Int -- ^ timeout in seconds, 0 for just 'nTests' * 'nMutants'
   , names    :: [String] -- ^ names of functions: @["foo x y","goo x y"]@
-  , detailed :: Bool      -- ^ show detailed results ('False' for summarized)
 
   -- advanced options:
+  , verbose    :: Bool           -- ^ whether to show detailed results
   , limitResults :: Maybe Int -- ^ Just a limit for results, 'Nothing' for all
   , extraMutants :: [a]   -- ^ extra mutants to try to kill alongside mutations
   , showPropertySets :: [String] -> String -- ^ function to show property sets.
@@ -83,7 +83,7 @@ args = Args { nMutants = 500
             , nTests   = 1000
             , names    = []
             , limitResults = Just 3
-            , detailed = False
+            , verbose = False
 
             , extraMutants = []
             , showPropertySets = unwords -- join by spaces
@@ -157,8 +157,8 @@ reportWith' args f properties = do
   putStrLn $ "Apparent " ++ qualifyCM results ++ " specification based on"
   putStrLn $ showNumberOfTestsAndMutants nts nm False
 
-  let showR | detailed args = showDetailedResults (limitResults args)
-            | otherwise     = showResults
+  let showR | verbose args = showDetailedResults (limitResults args)
+            | otherwise    = showResults
   putStrLn $ showR (showMutant args f) results
 
 
