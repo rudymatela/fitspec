@@ -44,7 +44,10 @@ propertiesNAO not (&&) (||) =
   ]
 
 main = do
-  as <- getArgsWith args { names = ["not p","p && q","p || q"] }
+  as <- getArgsWith args { names = ["not p","p && q","p || q"]
+                         , nMutants = 100
+                         , nTests   = 100
+                         , timeout  = 0 }
   let run f ps = reportWith as f ps
   case extra as of
     "nao" -> run (not,(&&),(||)) (uncurry3 propertiesNAO)
