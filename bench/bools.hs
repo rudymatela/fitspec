@@ -43,24 +43,13 @@ propertiesNAO not (&&) (||) =
   , property $ \p     ->    p && not p == False
   ]
 
-main = do putStrLn "### Strict mutant enumerations ###"
-
-          putStrLn "Not:";
-          reportWith args { names = ["not p"] }
-                     not propertiesN
-
-          putStrLn "Not, and:"
-          reportWith args { names = ["not p","p && q"] }
-                     (not,(&&)) (uncurry propertiesNA)
-
-          {-
-          putStrLn "Not, and, or:"
-          reportWith args { limitResults = Just 2
-                          , showPropertySets = unlines
-                          , nTestsF = (*100)
-                          , callNames = ["not p","p && q","p && q"] }
-                     (not,(&&),(||)) (uncurry3 propertiesNAO)
-          -- -}
+main = do
+  as <- getArgsWith args { names = ["not p","p && q","p || q"] }
+  let run f ps = reportWith as f ps
+  case extra as of
+    "nao" -> run (not,(&&),(||)) (uncurry3 propertiesNAO)
+    "na"  -> run (not,(&&))      (uncurry  propertiesNA)
+    _     -> run  not                      propertiesN
 
 uncurry3 :: (a -> b -> c -> d) -> (a, b, c) -> d
 uncurry3 f (x,y,z) = f x y z
