@@ -2,7 +2,6 @@
 module FitSpec.ShowMutable
   ( ShowMutable (..)
   , mutantSEq
-  , showMutant
   , showMutantAsTuple
   , showMutantNested
   , showMutantDefinition

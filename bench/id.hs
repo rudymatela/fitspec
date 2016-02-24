@@ -12,8 +12,7 @@ properties id =
   , property $ \x -> (id . id) x == x
   ]
 
-sargs :: (Show a, Listable a, ShowMutable a)
-      => Args (Ty a)
+sargs :: Args
 sargs = args
   { names = ["id x"]
   , nMutants = 1000

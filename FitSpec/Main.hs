@@ -37,7 +37,7 @@ overrideArgs = Override
   }
 
 -- TODO: limitResults and disableExtraMutants
-override :: Args a -> Override -> Args a
+override :: Args -> Override -> Args
 override a o@Override {mutants__ = Just n} = override a {nMutants = n}
                     o {mutants__ = Nothing}
 override a o@Override {ntests__  = Just n} = override a {nTests = n}
@@ -54,7 +54,7 @@ typeArgument :: IO String
 typeArgument = liftM type__ (cmdArgs overrideArgs)
 
 mainWith :: (Mutable a, ShowMutable a)
-         => Args a
+         => Args
          -> a -> (a -> [Property]) -> IO ()
 mainWith args f props = do
   or <- cmdArgs overrideArgs

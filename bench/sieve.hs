@@ -55,16 +55,16 @@ properties primes =
 
 prime x = x > 1 && all (\p -> p `mod` x /= 0) (takeWhile (\p -> p*p <= x) primes)
 
-sargs :: Args [Int]
+sargs :: Args
 sargs = args
   { limitResults = Just 10
-  , showMutantN = \_ _ -> showInfinite
   , nMutants = 20000
   , nTests   =   100
   , timeout  =     0
   }
-  where showInfinite xs | not . null $ drop 10 xs = (init . show $ take 10 xs) ++ "..."
-                        | otherwise               = show xs
+--, showMutantN = \_ _ -> showInfinite
+--where showInfinite xs | not . null $ drop 10 xs = (init . show $ take 10 xs) ++ "..."
+--                      | otherwise               = show xs
 
 main :: IO ()
 main = mainWith sargs primes properties

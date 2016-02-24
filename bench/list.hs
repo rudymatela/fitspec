@@ -33,19 +33,19 @@ properties (-:) head tail (++) =
 fns :: Ty a
 fns = ((:),head,tail,(++))
 
-sargs :: (ShowMutable a, Eq a, Show a, Listable a)
-      => Args (Ty a)
+sargs :: Args
 sargs = args
   { names = ["(:) x xs","head xs","tail xs","(++) xs ys"]
   , limitResults = Just 30
-  , extraMutants = takeWhile (const False)
-                 [ ((:),head,tail,(++-))
-                 , ((:),head,tail,(++--))
-                 ]
   , nMutants = 1000
   , nTests   = 1000
   , timeout  = 0
   }
+
+--, extraMutants = takeWhile (const False)
+--               [ ((:),head,tail,(++-))
+--               , ((:),head,tail,(++--))
+--               ]
 
 main :: IO ()
 main = do 

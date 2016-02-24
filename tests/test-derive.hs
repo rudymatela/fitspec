@@ -56,7 +56,7 @@ tests n =
 
 showNewMutants1 :: (ShowMutable a, Mutable a)
                 => a -> Int -> [[String]]
-showNewMutants1 f n = lsmap (showMutant f)
+showNewMutants1 f n = lsmap (showMutantAsTuple [] f)
                     $ take n
                     $ lsMutants f
 

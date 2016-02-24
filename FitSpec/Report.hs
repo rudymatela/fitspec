@@ -16,9 +16,12 @@ import FitSpec.ShowMutable hiding (showMutant)
 import FitSpec.Utils
 import FitSpec.PrettyPrint
 
+data ShowMutantType = AsTuple    | AsNestedTuple
+                    | Definition | Bindings
+
 -- | Extra arguments / configuration for 'reportWith'.
 --   See 'args' for default values.
-data Args a = Args
+data Args = Args
   { nMutants :: Int -- ^ (starting) number of function mutations
   , nTests   :: Int -- ^ (starting) number of test values (for each prop.)
   , timeout  :: Int -- ^ timeout in seconds, 0 for just 'nTests' * 'nMutants'
@@ -27,12 +30,11 @@ data Args a = Args
   -- advanced options:
   , verbose    :: Bool           -- ^ whether to show detailed results
   , limitResults :: Maybe Int -- ^ Just a limit for results, 'Nothing' for all
-  , extraMutants :: [a]   -- ^ extra mutants to try to kill alongside mutations
-  , showMutantN :: [String] -> a -> a -> String -- ^ special mutant show
+  , showMutant :: ShowMutantType -- ^ how to show mutants
   }
 
 -- | Number of tests as a function of the number of mutants
-nTestsF :: Args a -> Int -> Int
+nTestsF :: Args -> Int -> Int
 nTestsF as nm = nm * nTests as `div` nMutants as
 
 -- | Default arguments for 'reportWith':
@@ -40,22 +42,11 @@ nTestsF as nm = nm * nTests as `div` nMutants as
 -- * @nMutants = 500@,
 --   start with 500 mutants
 --
+-- * @nTests = 1000@
+--   start with 1000 mutants
+--
 -- @ @timeout = 5@,
 --   keep incresing the number of mutants until 5 seconds elapse
---
--- * @nTestsF = (*2)@,
---   2 times more tests than mutants
---   As a rule of thumb, the number of tests should be proportional to the
---   number of mutants.
---   There is *no* general rule of thumb for the exact proportion:
---   in some applications, less is better,
---   in some applications, more is better.
---   Increase this if you spot a false positive.
---   Other good values for this might be:
---
---   > (*100)        -- more tests, less false positives
---   > (`div` 100)   -- less tests, less false negatives
---   > (const 1000)  -- specific number of tests
 --
 -- * @names = []@,
 --   use internal default function call template:
@@ -65,10 +56,7 @@ nTestsF as nm = nm * nTests as `div` nMutants as
 -- * @limitResults = Just 3@,
 --   limit to just 3 results
 --
--- * @extraMutants = []@,
---   no extra mutants
---
-args :: ShowMutable a => Args a
+args :: Args
 args = Args { nMutants = 500
             , timeout  = 5  -- seconds
             , nTests   = 1000
@@ -76,8 +64,7 @@ args = Args { nMutants = 500
             , limitResults = Just 3
             , verbose = False
 
-            , extraMutants = []
-            , showMutantN = showMutantAsTuple
+            , showMutant = AsTuple
             }
 
 -- Non timed-out default arguments.
@@ -90,52 +77,57 @@ args = Args { nMutants = 500
 -- > fixargs nm nt == args { nMutants = nm, nTests = nt, timeout = 0 }
 --
 -- > (fixargs nm nt) { nMutants = 500, nTests = 1000, timeout = 5 } == args
-fixargs :: ShowMutable a => Int -> Int -> Args a
+fixargs :: Int -> Int -> Args
 fixargs nm nt = args
   { nMutants = nm
   , nTests   = nt
   , timeout  = 0
   }
 
-showMutant :: Args a -> a -> a -> String
-showMutant as = showMutantN as (names as)
+showMutantF :: ShowMutable a => Args -> a -> a -> String
+showMutantF as = showMutantByType (showMutant as) (names as)
+  where
+    showMutantByType AsTuple       = showMutantAsTuple
+    showMutantByType AsNestedTuple = showMutantNested
+    showMutantByType Definition    = showMutantDefinition
+    showMutantByType Bindings      = showMutantBindings
 
 -- | Report minimality and completeness results.
 --   Uses standard configuration (see 'args').
 --   Needs a function to be mutated and a property map.
-report :: (ShowMutable a, Mutable a)
+report :: (Mutable a, ShowMutable a)
        => a -> (a -> [Property]) -> IO ()
 report = reportWith args
 
 
 -- | Same as 'report' but can be configured via 'Args'/'args'.
-reportWith :: Mutable a
-           => Args a
-           -> a
-           -> (a -> [Property])
-           -> IO ()
-reportWith args f properties = do
+reportWith :: (Mutable a, ShowMutable a)
+           => Args -> a -> (a -> [Property]) -> IO ()
+reportWith = reportWithExtra []
+
+
+-- | Same as 'reportWith', but accepts a list of extra mutants to try
+reportWithExtra :: (Mutable a, ShowMutable a)
+                => [a] -> Args -> a -> (a -> [Property]) -> IO ()
+reportWithExtra extraMutants args f properties = do
   let nm = nMutants args
       nt = nTestsF args nm
   case propertiesCE nt (properties f) of
-    Nothing -> reportWith' args f properties
+    Nothing -> reportWithExtra' extraMutants args f properties
     Just ce -> do
       putStrLn $ "ERROR: The original function-set does not follow property-set for "
               ++ show nt ++ " tests"
       putStrLn $ "Counter-example to property " ++ ce
       putStrLn $ "Aborting."
 
--- | Same as 'reportWith', does not abort if the original function does not
+-- | Same as 'reportWithExtra', does not abort if the original function does not
 --   follow the property set.
-reportWith' :: Mutable a
-            => Args a
-            -> a
-            -> (a -> [Property])
-            -> IO ()
-reportWith' args f properties = do
+reportWithExtra' :: (Mutable a, ShowMutable a)
+                 => [a] -> Args -> a -> (a -> [Property]) -> IO ()
+reportWithExtra' extraMutants args f properties = do
   let pmap n f = propertiesToMap (properties f) n
       resultss = takeWhileIncreasingOn (totalMutants . head)
-               . map (\n -> let rs = getResultsExtra (extraMutants args) n f
+               . map (\n -> let rs = getResultsExtra extraMutants n f
                                                      (pmap (nTestsF args n))
                             in foldr seq rs rs) -- eval head -> eval trunk
                $ (iterate (\x -> x + x `div` 2) (nMutants args))
@@ -149,7 +141,7 @@ reportWith' args f properties = do
 
   let showR | verbose args = showDetailedResults (limitResults args)
             | otherwise    = showResults
-  putStrLn $ showR (showMutant args f) results
+  putStrLn $ showR (showMutantF args f) results
 
 
 showResults :: (a -> String)

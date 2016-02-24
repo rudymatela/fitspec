@@ -31,30 +31,29 @@ fns :: Integral a => Ty a
 fns = ((+),(*))
 
 
-sargs :: (ShowMutable a, Listable a, Integral a, Show a, Read a)
-      => Args (Ty a)
+sargs :: Args
 sargs =
   args { limitResults = Nothing
        , names = [ "x + y", "x * y" ]
-       , extraMutants =
-           let ems = [ \x y -> x+y+1
-                     , \x y -> x*y+x*y
-                     , \x y -> x+y+x+y
-                     , (+++)
-                     , min
-                     , max
-                     -- another good example would be
-                     -- || and && defined over integers
-                     ]
-           in drop 1 [ (s,p)
-                     | False -- was useExtra
-                     , s <- (+):(*):ems
-                     , p <- (*):(+):ems
-                     ]
        , nMutants = 1000
        , nTests   = 1000
        , timeout  =    0
        }
+--     , extraMutants =
+--         let ems = [ \x y -> x+y+1
+--                   , \x y -> x*y+x*y
+--                   , \x y -> x+y+x+y
+--                   , (+++)
+--                   , min
+--                   , max
+--                   -- another good example would be
+--                   -- || and && defined over integers
+--                   ]
+--         in drop 1 [ (s,p)
+--                   | False -- was useExtra
+--                   , s <- (+):(*):ems
+--                   , p <- (*):(+):ems
+--                   ]
 
 main :: IO ()
 main = do

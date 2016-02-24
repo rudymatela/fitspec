@@ -30,20 +30,19 @@ properties sort =
   ]
 
 
-sargs :: (Show a, Listable a, Bounded a, Ord a)
-      => Args ([a] -> [a])
+sargs :: Args
 sargs = args
   { names = ["sort xs"]
   , timeout  =    0
   , nMutants = 1000
   , nTests   = 1000
   , limitResults = Nothing
-  , extraMutants = take 0
-                 . concat
-                 . lsmap (. sort)
-                 $ cons2 (\y ys -> (++ (y:ys))) -- prepend non-empty list
-              \++/ cons2 (\y ys -> ((y:ys) ++)) -- append non-empty list
   }
+--, extraMutants = take 0
+--               . concat
+--               . lsmap (. sort)
+--               $ cons2 (\y ys -> (++ (y:ys))) -- prepend non-empty list
+--            \++/ cons2 (\y ys -> ((y:ys) ++)) -- append non-empty list
 
 type Ty a = [a] -> [a]
 
