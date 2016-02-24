@@ -36,7 +36,6 @@ fns = ((:),head,tail,(++))
 sargs :: Args
 sargs = args
   { names = ["(:) x xs","head xs","tail xs","(++) xs ys"]
-  , limitResults = Just 30
   , nMutants = 1000
   , nTests   = 1000
   , timeout  = 0
@@ -49,9 +48,9 @@ sargs = args
 
 main :: IO ()
 main = do 
-  let run f = mainWith sargs f (uncurry4 properties)
-  ty <- typeArgument
-  case ty of
+  as <- getArgsWith sargs
+  let run f = reportWith as f (uncurry4 properties)
+  case (extra as) of
     "bool"  -> run (fns :: Ty Bool)
     "bools" -> run (fns :: Ty [Bool])
     "int"   -> run (fns :: Ty Int)

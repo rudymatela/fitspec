@@ -21,7 +21,6 @@ main =
                   , nMutants = 2000
                   , nTests   = 2000
                   , timeout  = 30
-                  , limitResults = Just 3
                   }
              (sort::[UInt2]->[UInt2])
              properties

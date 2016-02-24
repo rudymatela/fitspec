@@ -52,10 +52,9 @@ properties insert' deleteMin' merge' =
   ]
 
 sargs = args
-  { limitResults = Just 20
+  { timeout  = 0
   , nMutants = 500
   , nTests   = 500
-  , timeout  = 0
   , names    = ["insert x h","deleteMin h","merge h h'"]
 --, extraMutants = take 0 [(uncurry maxInsert,maxDeleteMin,uncurry maxMerge)] }
   }
@@ -65,9 +64,9 @@ fns = (insert, deleteMin, merge)
 
 main :: IO ()
 main = do 
-  let run f = mainWith sargs f (uncurry3 properties)
-  ty <- typeArgument
-  case ty of
+  as <- getArgsWith sargs
+  let run f = reportWith as f (uncurry3 properties)
+  case (extra as) of
     "bool"  -> run (fns :: Ty Bool)
     "bools" -> run (fns :: Ty [Bool])
     "int"   -> run (fns :: Ty Int)

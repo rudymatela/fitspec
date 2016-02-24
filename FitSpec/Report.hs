@@ -5,6 +5,7 @@ module FitSpec.Report
   , args
   , fixargs
   , Property
+  , ShowMutantAs(..)
   )
 where
 
@@ -16,8 +17,8 @@ import FitSpec.ShowMutable hiding (showMutant)
 import FitSpec.Utils
 import FitSpec.PrettyPrint
 
-data ShowMutantType = AsTuple    | AsNestedTuple
-                    | Definition | Bindings
+data ShowMutantAs = Tuple      | NestedTuple
+                  | Definition | Bindings
 
 -- | Extra arguments / configuration for 'reportWith'.
 --   See 'args' for default values.
@@ -28,9 +29,10 @@ data Args = Args
   , names    :: [String] -- ^ names of functions: @["foo x y","goo x y"]@
 
   -- advanced options:
-  , verbose    :: Bool           -- ^ whether to show detailed results
-  , limitResults :: Maybe Int -- ^ Just a limit for results, 'Nothing' for all
-  , showMutant :: ShowMutantType -- ^ how to show mutants
+  , verbose      :: Bool         -- ^ whether to show detailed results
+  , showMutantAs :: ShowMutantAs -- ^ how to show mutants
+  , rows         :: Maybe Int    -- ^ number of surviving mutants to show
+  , extra        :: String       -- ^ ignored argument (user defined meaning)
   }
 
 -- | Number of tests as a function of the number of mutants
@@ -39,32 +41,25 @@ nTestsF as nm = nm * nTests as `div` nMutants as
 
 -- | Default arguments for 'reportWith':
 --
--- * @nMutants = 500@,
---   start with 500 mutants
+-- * @nMutants = 500@, start with  500 mutants
 --
--- * @nTests = 1000@
---   start with 1000 mutants
+-- * @nTests = 1000@,  start with 1000 test values
 --
--- @ @timeout = 5@,
---   keep incresing the number of mutants until 5 seconds elapse
+-- * @timeout = 5@, keep incresing the number of mutants
+--                  until 5 seconds elapse
 --
--- * @names = []@,
---   use internal default function call template:
+-- * @names = []@, default function call template:
 --
 --   > ["f x y z w x' y' z' ...","g ...","h ...","f' ...",...]
---
--- * @limitResults = Just 3@,
---   limit to just 3 results
---
 args :: Args
-args = Args { nMutants = 500
-            , timeout  = 5  -- seconds
-            , nTests   = 1000
-            , names    = []
-            , limitResults = Just 3
-            , verbose = False
-
-            , showMutant = AsTuple
+args = Args { nMutants     =  500
+            , nTests       = 1000
+            , timeout      = 5  -- seconds
+            , names        = []
+            , verbose      = False
+            , showMutantAs = Tuple
+            , rows         = Nothing
+            , extra        = ""
             }
 
 -- Non timed-out default arguments.
@@ -84,13 +79,13 @@ fixargs nm nt = args
   , timeout  = 0
   }
 
-showMutantF :: ShowMutable a => Args -> a -> a -> String
-showMutantF as = showMutantByType (showMutant as) (names as)
+showMutant :: ShowMutable a => Args -> a -> a -> String
+showMutant as = showMutantByType (showMutantAs as) (names as)
   where
-    showMutantByType AsTuple       = showMutantAsTuple
-    showMutantByType AsNestedTuple = showMutantNested
-    showMutantByType Definition    = showMutantDefinition
-    showMutantByType Bindings      = showMutantBindings
+    showMutantByType Tuple       = showMutantAsTuple
+    showMutantByType NestedTuple = showMutantNested
+    showMutantByType Definition  = showMutantDefinition
+    showMutantByType Bindings    = showMutantBindings
 
 -- | Report minimality and completeness results.
 --   Uses standard configuration (see 'args').
@@ -139,9 +134,9 @@ reportWithExtra' extraMutants args f properties = do
   putStrLn $ "Apparent " ++ qualifyCM results ++ " specification based on"
   putStrLn $ showNumberOfTestsAndMutants nts nm False
 
-  let showR | verbose args = showDetailedResults (limitResults args)
+  let showR | verbose args = showDetailedResults (rows args)
             | otherwise    = showResults
-  putStrLn $ showR (showMutantF args f) results
+  putStrLn $ showR (showMutant args f) results
 
 
 showResults :: (a -> String)

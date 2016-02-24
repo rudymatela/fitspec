@@ -57,8 +57,7 @@ prime x = x > 1 && all (\p -> p `mod` x /= 0) (takeWhile (\p -> p*p <= x) primes
 
 sargs :: Args
 sargs = args
-  { limitResults = Just 10
-  , nMutants = 20000
+  { nMutants = 20000
   , nTests   =   100
   , timeout  =     0
   }

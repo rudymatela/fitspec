@@ -46,9 +46,9 @@ propertiesQS (<>) ($$) nest =
   ]
 
 main = do
-  let run ps = defaultMain ((<>),($$),nest) (uncurry3 ps)
-  ty <- typeArgument
-  case ty of
+  as <- getArgs
+  let run ps = reportWith as ((<>),($$),nest) (uncurry3 ps)
+  case (extra as) of
     "qs"    -> run propertiesQS
     _       -> run properties
 

@@ -22,9 +22,9 @@ sargs = args
 
 main :: IO ()
 main = do
-  let run f = mainWith sargs f properties
-  ty <- typeArgument
-  case ty of
+  as <- getArgsWith sargs
+  let run f = reportWith as f properties
+  case (extra as) of
     "bool"  -> run (id :: Ty Bool)
     "bools" -> run (id :: Ty [Bool])
     "int"   -> run (id :: Ty Int)

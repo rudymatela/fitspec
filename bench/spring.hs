@@ -33,11 +33,10 @@ fns = ((+),(*))
 
 sargs :: Args
 sargs =
-  args { limitResults = Nothing
-       , names = [ "x + y", "x * y" ]
+  args { timeout  =    0
        , nMutants = 1000
        , nTests   = 1000
-       , timeout  =    0
+       , names = [ "x + y", "x * y" ]
        }
 --     , extraMutants =
 --         let ems = [ \x y -> x+y+1
@@ -57,9 +56,9 @@ sargs =
 
 main :: IO ()
 main = do
-  let run f = mainWith sargs f (uncurry properties)
-  ty <- typeArgument
-  case ty of
+  as <- getArgsWith sargs
+  let run f = reportWith as f (uncurry properties)
+  case (extra as) of
     "int"   -> run (fns :: Ty Int)
     "int2"  -> run (fns :: Ty UInt2)
     "int3"  -> run (fns :: Ty UInt3)

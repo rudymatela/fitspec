@@ -3,11 +3,12 @@
 -- command line arguments.
 --
 -- > main = mainWith args { ... } functions properties
-{-# Language DeriveDataTypeable #-}
+{-# Language DeriveDataTypeable, StandaloneDeriving #-}
 module FitSpec.Main
   ( mainWith
   , defaultMain
-  , typeArgument
+  , getArgs
+  , getArgsWith
   , module FitSpec.Report -- deprecated export, remove later
   )
 where
@@ -18,47 +19,45 @@ import Control.Monad (liftM)
 import FitSpec.Mutable
 import FitSpec.ShowMutable
 
-data Override = Override
-  { mutants__             :: Maybe Int
-  , ntests__              :: Maybe Int
-  , seconds__             :: Maybe Int
-  , limitResults__        :: Maybe Int
-  , verbose__             :: Bool
-  , type__                :: String
-  } deriving (Data,Typeable,Show,Eq)
+deriving instance Data ShowMutantAs
+deriving instance Data Args
+deriving instance Typeable Args
 
-overrideArgs = Override
-  { mutants__      = Nothing &= help "number of mutant variations"
-  , ntests__       = Nothing &= help "number of tests"
-  , seconds__      = Nothing &= help "timeout in seconds"
-  , limitResults__ = Nothing &= help "result lines"
-  , verbose__      = False   &= help "show detailed results"
-  , type__         = ""      &= help "type to use in polymorphic instances"
-  }
+annotate :: Args -> Args
+annotate as = Args
+  { nMutants     = nMutants     as  &= name "m"
+      &= help "(starting) number of function mutations"
+  , nTests       = nTests       as  &= name "n"
+      &= help "(starting) number of test values (each prop.)"
+  , timeout      = timeout      as  &= name "t" &= name "s"
+      &= help "timeout in seconds, 0 for just T*M"
+  , names        = names        as
+      &= ignore
+  , rows         = rows         as
+      &= help "how many rows of results to show"
+  , verbose      = verbose      as
+      &= help "activate verbose output"
+  , showMutantAs = showMutantAs as  &= name "a"
+      &= help "how to show mutants (tuple / nestedtuple / definition / bindings)"
+      &= typ  "type"
+  , extra        = extra        as
+      &= help "user-defined meaning: test-type / property-set ?"
+  } &= summary "FitSpec"
+    &= program "program"
+    &= help "Refine property-sets for functional testing"
 
--- TODO: limitResults and disableExtraMutants
-override :: Args -> Override -> Args
-override a o@Override {mutants__ = Just n} = override a {nMutants = n}
-                    o {mutants__ = Nothing}
-override a o@Override {ntests__  = Just n} = override a {nTests = n}
-                    o {ntests__  = Nothing}
-override a o@Override {seconds__ = Just s} = override a {timeout = s}
-                    o {seconds__ = Nothing}
-override a o@Override {limitResults__ = Just n} = override a {limitResults = Just n}
-                    o {limitResults__ = Nothing}
-override a o@Override {verbose__ = True} = override a {verbose = True}
-                    o {verbose__ = False}
-override a _ = a
+getArgsWith :: Args -> IO Args
+getArgsWith = cmdArgs . annotate
 
-typeArgument :: IO String
-typeArgument = liftM type__ (cmdArgs overrideArgs)
+getArgs :: IO Args
+getArgs = getArgsWith args
 
 mainWith :: (Mutable a, ShowMutable a)
          => Args
          -> a -> (a -> [Property]) -> IO ()
-mainWith args f props = do
-  or <- cmdArgs overrideArgs
-  reportWith (override args or) f props
+mainWith as f ps = do
+  as' <- getArgsWith as
+  reportWith as' f ps
 
 defaultMain :: (Mutable a, ShowMutable a)
             => a -> (a -> [Property]) -> IO ()

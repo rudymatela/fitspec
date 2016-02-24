@@ -36,7 +36,6 @@ sargs = args
   , timeout  =    0
   , nMutants = 1000
   , nTests   = 1000
-  , limitResults = Nothing
   }
 --, extraMutants = take 0
 --               . concat
@@ -48,9 +47,9 @@ type Ty a = [a] -> [a]
 
 main :: IO ()
 main = do
-  let run f = mainWith sargs f properties
-  ty <- typeArgument
-  case ty of
+  as <- getArgsWith sargs
+  let run f = reportWith as f properties
+  case (extra as) of
     "bool"  -> run (sort :: Ty Bool)
     "bools" -> run (sort :: Ty [Bool])
     "int"   -> run (sort :: Ty Int)
