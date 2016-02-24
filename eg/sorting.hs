@@ -17,10 +17,10 @@ properties sort =
   where count x = length . filter (==x)
 
 main =
-  reportWith args { callNames = ["sort xs"]
-                  , minimumTime = 30 -- or 0, and:
-               -- , nMutants = 4000
-                  , nTestsF = (*1)
+  reportWith args { names = ["sort xs"]
+                  , nMutants = 2000
+                  , nTests   = 2000
+                  , timeout  = 30
                   , limitResults = Just 3
                   }
              (sort::[UInt2]->[UInt2])

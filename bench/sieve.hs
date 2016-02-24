@@ -60,8 +60,8 @@ sargs = args
   { limitResults = Just 10
   , showMutantN = \_ _ -> showInfinite
   , nMutants = 20000
-  , nTestsF = const 100
-  , minimumTime = 0
+  , nTests   =   100
+  , timeout  =     0
   }
   where showInfinite xs | not . null $ drop 10 xs = (init . show $ take 10 xs) ++ "..."
                         | otherwise               = show xs

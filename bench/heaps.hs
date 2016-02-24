@@ -54,10 +54,10 @@ properties insert' deleteMin' merge' =
 sargs = args
   { limitResults = Just 20
   , nMutants = 500
-  , nTestsF  = id
-  , minimumTime = 0
+  , nTests   = 500
+  , timeout  = 0
   , showPropertySets = unlines
-  , callNames = ["insert x h","deleteMin h","merge h h'"]
+  , names    = ["insert x h","deleteMin h","merge h h'"]
 --, extraMutants = take 0 [(uncurry maxInsert,maxDeleteMin,uncurry maxMerge)] }
   }
 

@@ -46,14 +46,11 @@ propertiesNAO not (&&) (||) =
 main = do putStrLn "### Strict mutant enumerations ###"
 
           putStrLn "Not:";
-          reportWith args { callNames = ["not p"]
-                          , nTestsF = (*100) }
+          reportWith args { names = ["not p"] }
                      not propertiesN
 
           putStrLn "Not, and:"
-          reportWith args { limitResults = Just 9
-                          , nTestsF = (*100)
-                          , callNames = ["not p","p && q"] }
+          reportWith args { names = ["not p","p && q"] }
                      (not,(&&)) (uncurry propertiesNA)
 
           {-

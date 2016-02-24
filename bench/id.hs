@@ -15,10 +15,10 @@ properties id =
 sargs :: (Show a, Listable a, ShowMutable a)
       => Args (Ty a)
 sargs = args
-  { callNames = ["id x"]
-  , limitResults = Just 10
+  { names = ["id x"]
   , nMutants = 1000
-  , minimumTime = 0
+  , nTests   = 2000
+  , timeout  = 0
   }
 
 main :: IO ()

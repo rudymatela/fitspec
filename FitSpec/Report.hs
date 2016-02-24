@@ -19,29 +19,29 @@ import FitSpec.PrettyPrint
 -- | Extra arguments / configuration for 'reportWith'.
 --   See 'args' for default values.
 data Args a = Args
-  { nMutants    :: Int    -- ^ (starting) number of black-box mutations
-  , minimumTime :: Int    -- ^ minimum time to run, use 0 for just nMutants
-  , nTestsF :: Int -> Int -- ^ number of tests in function of number of mutants
-  , callNames :: [String] -- ^ function call templates: @["foo x y","goo x y"]@
+  { nMutants :: Int -- ^ (starting) number of function mutations
+  , nTests   :: Int -- ^ (starting) number of test values (for each prop.)
+  , timeout  :: Int -- ^ timeout in seconds, 0 for just 'nTests' * 'nMutants'
+  , names    :: [String] -- ^ names of functions: @["foo x y","goo x y"]@
   , detailed :: Bool      -- ^ show detailed results ('False' for summarized)
 
   -- advanced options:
   , limitResults :: Maybe Int -- ^ Just a limit for results, 'Nothing' for all
   , extraMutants :: [a]   -- ^ extra mutants to try to kill alongside mutations
   , showPropertySets :: [String] -> String -- ^ function to show property sets.
-  , showVeryWeakEI :: Bool -- ^ show hidden equivalences and implications
   , showMutantN :: [String] -> a -> a -> String -- ^ special mutant show
   }
 
-nTests :: Args a -> Int
-nTests as = nTestsF as (nMutants as)
+-- | Number of tests as a function of the number of mutants
+nTestsF :: Args a -> Int -> Int
+nTestsF as nm = nm * nTests as `div` nMutants as
 
 -- | Default arguments for 'reportWith':
 --
 -- * @nMutants = 500@,
 --   start with 500 mutants
 --
--- @ @minimumTime = 5@,
+-- @ @timeout = 5@,
 --   keep incresing the number of mutants until 5 seconds elapse
 --
 -- * @nTestsF = (*2)@,
@@ -58,7 +58,7 @@ nTests as = nTestsF as (nMutants as)
 --   > (`div` 100)   -- less tests, less false negatives
 --   > (const 1000)  -- specific number of tests
 --
--- * @callNames = []@,
+-- * @names = []@,
 --   use internal default function call template:
 --
 --   > ["f x y z w x' y' z' ...","g ...","h ...","f' ...",...]
@@ -79,15 +79,14 @@ nTests as = nTestsF as (nMutants as)
 --   > take 30 . unwords  -- limit to 30 characters
 args :: ShowMutable a => Args a
 args = Args { nMutants = 500
-            , minimumTime = 5  -- seconds
-            , nTestsF = (*2)
-            , callNames = []
+            , timeout  = 5  -- seconds
+            , nTests   = 1000
+            , names    = []
             , limitResults = Just 3
             , detailed = False
 
             , extraMutants = []
             , showPropertySets = unwords -- join by spaces
-            , showVeryWeakEI = False
             , showMutantN = showMutantAsTuple
             }
 
@@ -98,18 +97,18 @@ args = Args { nMutants = 500
 --
 -- This is just a shorthand, see:
 --
--- > fixargs nm nt == args { nMutants = nm, nTestsF = const nt, minimumTime = 0 }
+-- > fixargs nm nt == args { nMutants = nm, nTests = nt, timeout = 0 }
 --
--- > (fixargs nm nt) { nMutants = 500, minimumTime = 5, nTestsF = (*2) } == args
+-- > (fixargs nm nt) { nMutants = 500, nTests = 1000, timeout = 5 } == args
 fixargs :: ShowMutable a => Int -> Int -> Args a
 fixargs nm nt = args
-  { nMutants    = nm
-  , nTestsF     = const nt
-  , minimumTime = 0
+  { nMutants = nm
+  , nTests   = nt
+  , timeout  = 0
   }
 
 showMutant :: Args a -> a -> a -> String
-showMutant as = showMutantN as (callNames as)
+showMutant as = showMutantN as (names as)
 
 -- | Report minimality and completeness results.
 --   Uses standard configuration (see 'args').
@@ -150,7 +149,7 @@ reportWith' args f properties = do
                                                      (pmap (nTestsF args n))
                             in foldr seq rs rs) -- eval head -> eval trunk
                $ (iterate (\x -> x + x `div` 2) (nMutants args))
-  results <- lastTimeout (minimumTime args) resultss
+  results <- lastTimeout (timeout args) resultss
 
   let nm = totalMutants $ head results
       nt = nTestsF args nm

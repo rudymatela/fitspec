@@ -33,10 +33,10 @@ properties sort =
 sargs :: (Show a, Listable a, Bounded a, Ord a)
       => Args ([a] -> [a])
 sargs = args
-  { callNames = ["sort xs"]
-  , minimumTime = 0
+  { names = ["sort xs"]
+  , timeout  =    0
   , nMutants = 1000
-  , nTestsF = id
+  , nTests   = 1000
   , limitResults = Nothing
   , extraMutants = take 0
                  . concat

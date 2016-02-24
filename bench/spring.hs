@@ -36,7 +36,7 @@ sargs :: (ShowMutable a, Listable a, Integral a, Show a, Read a)
 sargs =
   args { limitResults = Nothing
        , showPropertySets = unlines
-       , callNames = [ "x + y", "x * y" ]
+       , names = [ "x + y", "x * y" ]
        , extraMutants =
            let ems = [ \x y -> x+y+1
                      , \x y -> x*y+x*y
@@ -53,8 +53,8 @@ sargs =
                      , p <- (*):(+):ems
                      ]
        , nMutants = 1000
-       , nTestsF = id
-       , minimumTime = 0
+       , nTests   = 1000
+       , timeout  =    0
        }
 
 main :: IO ()

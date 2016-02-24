@@ -66,14 +66,11 @@ properties insert remove find =
         orderedList [_]      = True
         orderedList (x:y:xs) = x < y && orderedList (y:xs)
 
-sargs = args
-  { nTestsF = (`div` 5)
-  , minimumTime = 0
-  }
-
 main :: IO ()
 main =
-  reportWith sargs {nMutants = 5000}
+  reportWith args { nMutants = 5000
+                  , nTests   = 1000
+                  , timeout  = 0 }
              (insert :: Int -> Tree Int -> Tree Int, remove, find)
              (uncurry3 properties)
 

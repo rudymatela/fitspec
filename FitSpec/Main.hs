@@ -40,9 +40,9 @@ overrideArgs = Override
 override :: Args a -> Override -> Args a
 override a o@Override {mutants__ = Just n} = override a {nMutants = n}
                     o {mutants__ = Nothing}
-override a o@Override {ntests__  = Just n} = override a {nTestsF  = const n}
+override a o@Override {ntests__  = Just n} = override a {nTests = n}
                     o {ntests__  = Nothing}
-override a o@Override {seconds__ = Just s} = override a {minimumTime = s}
+override a o@Override {seconds__ = Just s} = override a {timeout = s}
                     o {seconds__ = Nothing}
 override a o@Override {limitResults__ = Just n} = override a {limitResults = Just n}
                     o {limitResults__ = Nothing}

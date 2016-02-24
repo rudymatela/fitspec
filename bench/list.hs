@@ -36,15 +36,15 @@ fns = ((:),head,tail,(++))
 sargs :: (ShowMutable a, Eq a, Show a, Listable a)
       => Args (Ty a)
 sargs = args
-  { callNames = ["(:) x xs","head xs","tail xs","(++) xs ys"]
+  { names = ["(:) x xs","head xs","tail xs","(++) xs ys"]
   , limitResults = Just 30
   , extraMutants = takeWhile (const False)
                  [ ((:),head,tail,(++-))
                  , ((:),head,tail,(++--))
                  ]
   , nMutants = 1000
-  , nTestsF  = id
-  , minimumTime = 0
+  , nTests   = 1000
+  , timeout  = 0
   }
 
 main :: IO ()
