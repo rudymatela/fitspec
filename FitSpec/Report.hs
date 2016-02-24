@@ -28,7 +28,6 @@ data Args a = Args
   , verbose    :: Bool           -- ^ whether to show detailed results
   , limitResults :: Maybe Int -- ^ Just a limit for results, 'Nothing' for all
   , extraMutants :: [a]   -- ^ extra mutants to try to kill alongside mutations
-  , showPropertySets :: [String] -> String -- ^ function to show property sets.
   , showMutantN :: [String] -> a -> a -> String -- ^ special mutant show
   }
 
@@ -69,14 +68,6 @@ nTestsF as nm = nm * nTests as `div` nMutants as
 -- * @extraMutants = []@,
 --   no extra mutants
 --
--- * @showPropertySets = unwords@,
---   just join property-sets by spaces.
---   Other good values for this might be:
---
---   > unlines            -- one per line
---   > unwords . take 5   -- separated by spaces, limit to 5
---   > unlines . take 5   -- one per line, limit to 5
---   > take 30 . unwords  -- limit to 30 characters
 args :: ShowMutable a => Args a
 args = Args { nMutants = 500
             , timeout  = 5  -- seconds
@@ -86,7 +77,6 @@ args = Args { nMutants = 500
             , verbose = False
 
             , extraMutants = []
-            , showPropertySets = unwords -- join by spaces
             , showMutantN = showMutantAsTuple
             }
 

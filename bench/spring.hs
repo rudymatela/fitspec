@@ -35,7 +35,6 @@ sargs :: (ShowMutable a, Listable a, Integral a, Show a, Read a)
       => Args (Ty a)
 sargs =
   args { limitResults = Nothing
-       , showPropertySets = unlines
        , names = [ "x + y", "x * y" ]
        , extraMutants =
            let ems = [ \x y -> x+y+1

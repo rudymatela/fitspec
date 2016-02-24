@@ -56,7 +56,6 @@ sargs = args
   , nMutants = 500
   , nTests   = 500
   , timeout  = 0
-  , showPropertySets = unlines
   , names    = ["insert x h","deleteMin h","merge h h'"]
 --, extraMutants = take 0 [(uncurry maxInsert,maxDeleteMin,uncurry maxMerge)] }
   }
