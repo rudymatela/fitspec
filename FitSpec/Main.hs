@@ -40,7 +40,7 @@ annotate as = Args
   , showMutantAs = showMutantAs as  &= name "a"
       &= help "how to show mutants (tuple / nestedtuple / definition / bindings)"
       &= typ  "type"
-  , extra        = extra        as
+  , extra        = extra        as  &= opt ""
       &= help "user-defined meaning: test-type / property-set ?"
   } &= summary "FitSpec"
     &= program "program"
