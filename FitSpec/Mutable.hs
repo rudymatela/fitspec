@@ -47,8 +47,8 @@ lsMutantsEq x = [x] : lsdelete x listing
 -- The tail usage is there to avoid generating out of bound values.
 -- (x-1) is usually safe though.
 mutantsIntegral :: Integral a => a -> [a]
-mutantsIntegral i | i > 0     = [i..] \/ tail [i,(i-1)..]
-                  | otherwise = [i,(i-1)..] \/ tail [i..]
+mutantsIntegral i | i > 0     = [i..] +| tail [i,(i-1)..]
+                  | otherwise = [i,(i-1)..] +| tail [i..]
 
 instance Mutable ()   where lsMutants = lsMutantsEq
 -- instance Mutable Int  where mutants = mutantsIntegral
