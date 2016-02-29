@@ -11,10 +11,10 @@ instance Eq Doc where
 #endif
 
 instance Listable Doc where
-  listing = cons1 text  -- TODO: Improve this
+  tiers = cons1 text  -- TODO: Improve this
 
 instance Mutable Doc where
-  lsMutants = lsMutantsEq
+  tMutants = tMutantsEq
 
 instance ShowMutable Doc where
   mutantS = mutantSEq

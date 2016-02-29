@@ -71,14 +71,14 @@ reallyDeriveMutable cs t = do
                   | v <- vs, c <- ''Eq:''Listable:''Show:cs ]
 #if __GLASGOW_HASKELL__ >= 708
   cxt |=>| [d| instance Mutable $(return nt)
-                 where lsMutants = lsMutantsEq
+                 where tMutants = tMutantsEq
                instance ShowMutable $(return nt)
                  where mutantS = mutantSEq |]
 #else
   return [ InstanceD
              cxt
              (AppT (ConT ''Mutable) nt)
-             [ValD (VarP 'lsMutants) (NormalB (VarE 'lsMutantsEq)) []]
+             [ValD (VarP 'tMutants) (NormalB (VarE 'tMutantsEq)) []]
          , InstanceD
              cxt
              (AppT (ConT ''ShowMutable) nt)

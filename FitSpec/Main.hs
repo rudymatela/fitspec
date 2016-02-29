@@ -21,6 +21,7 @@ import FitSpec.ShowMutable
 
 deriving instance Data ShowMutantAs
 deriving instance Data Args
+deriving instance Typeable ShowMutantAs
 deriving instance Typeable Args
 
 annotate :: Args -> Args

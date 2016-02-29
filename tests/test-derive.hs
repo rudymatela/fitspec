@@ -29,7 +29,7 @@ deriveMutable ''Either
 data Set a = Set [a] deriving (Show,Eq,Ord)
 
 instance (Ord a, Listable a) => Listable (Set a) where
-  listing = consFromSet Set
+  tiers = consFromSet Set
 
 deriveMutableE [''Ord] ''Set
 
@@ -56,9 +56,9 @@ tests n =
 
 showNewMutants1 :: (ShowMutable a, Mutable a)
                 => a -> Int -> [[String]]
-showNewMutants1 f n = lsmap (showMutantAsTuple [] f)
+showNewMutants1 f n = tmap (showMutantAsTuple [] f)
                     $ take n
-                    $ lsMutants f
+                    $ tMutants f
 
 allUnique :: Ord a => [a] -> Bool
 allUnique [] = True

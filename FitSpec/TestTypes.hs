@@ -13,15 +13,15 @@ import FitSpec.ShowMutable
 import Test.Types
 
 -- {- Standard implementation:
-instance Mutable Nat   where lsMutants = lsMutantsEq
-instance Mutable Int1  where lsMutants = lsMutantsEq
-instance Mutable Int2  where lsMutants = lsMutantsEq
-instance Mutable Int3  where lsMutants = lsMutantsEq
-instance Mutable Int4  where lsMutants = lsMutantsEq
-instance Mutable UInt1 where lsMutants = lsMutantsEq
-instance Mutable UInt2 where lsMutants = lsMutantsEq
-instance Mutable UInt3 where lsMutants = lsMutantsEq
-instance Mutable UInt4 where lsMutants = lsMutantsEq
+instance Mutable Nat   where tMutants = tMutantsEq
+instance Mutable Int1  where tMutants = tMutantsEq
+instance Mutable Int2  where tMutants = tMutantsEq
+instance Mutable Int3  where tMutants = tMutantsEq
+instance Mutable Int4  where tMutants = tMutantsEq
+instance Mutable UInt1 where tMutants = tMutantsEq
+instance Mutable UInt2 where tMutants = tMutantsEq
+instance Mutable UInt3 where tMutants = tMutantsEq
+instance Mutable UInt4 where tMutants = tMutantsEq
 -- -}
 {- Alternative implementation:
 instance Mutable Nat   where mutants = mutantsIntegral

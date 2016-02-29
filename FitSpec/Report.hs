@@ -13,7 +13,7 @@ import Data.List (intercalate, intersperse)
 
 import FitSpec.Engine
 import FitSpec.Mutable
-import FitSpec.ShowMutable hiding (showMutant)
+import FitSpec.ShowMutable
 import FitSpec.Utils
 import FitSpec.PrettyPrint
 

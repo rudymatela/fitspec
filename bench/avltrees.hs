@@ -10,10 +10,10 @@ import Prelude
 
 
 instance (Ord a, Listable a) => Listable (Tree a) where
-  listing = cons1 fromList
+  tiers = cons1 fromList
 
 instance (Ord a, Listable a) => Mutable (Tree a) where
-  lsMutants = lsMutantsEq
+  tMutants = tMutantsEq
 
 instance (Ord a, Show a, Listable a) => ShowMutable (Tree a) where
   mutantS = mutantSEq

@@ -1,7 +1,7 @@
 {-# Language DeriveDataTypeable, NoMonomorphismRestriction #-}
 import System.Console.CmdArgs hiding (args)
 import FitSpec
-import Test.Check (lsSetsOf)
+import Test.Check (tSetsOf)
 import Prelude hiding (null)
 import qualified Data.List as L
 import Data.Maybe (listToMaybe)
@@ -9,8 +9,7 @@ import Heap
 import Control.Monad (unless)
 
 instance (Ord a, Listable a) => Listable (Heap a) where
-  listing = lsmap fromList
-          $ lsSetsOf listing -- :: [a]
+  tiers = consFromSet fromList
 
 -- a good property to assure that the above does not leave out elements is:
 --
@@ -18,7 +17,7 @@ instance (Ord a, Listable a) => Listable (Heap a) where
 --                                          `asTypeOf` (undefined :: Heap a)
 
 instance (Ord a, Listable a) => Mutable (Heap a) where
-  lsMutants = lsMutantsEq
+  tMutants = tMutantsEq
 
 instance (Ord a, Show a, Listable a) => ShowMutable (Heap a) where
   mutantS = mutantSEq
