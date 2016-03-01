@@ -7,27 +7,7 @@ import FitSpec
 import FitSpec.ShowMutable
 import FitSpec.PrettyPrint
 import Test.Check.Error (errorToNothing)
-
-(-:) :: a -> a -> a
-(-:) = const
-
-(->:) :: (a -> b) -> a -> (a -> b)
-(->:) = const
-
-(->>:) :: (a -> b -> c) -> b -> (a -> b -> c)
-(->>:) = const
-
-int :: Int
-int = undefined
-
-bool :: Bool
-bool = undefined
-
-char :: Char
-char = undefined
-
-string :: String
-string = undefined
+import Test.TypeBinding
 
 main :: IO ()
 main =
@@ -46,60 +26,60 @@ main =
 tests n =
   [ True
 
-  , holds n $ prop_0 ->: int
-  , holds n $ prop_0 ->: bool
-  , holds n $ prop_0 ->: char
-  , holds n $ prop_0 ->: string
-  , fails n $ prop_0 ->: (int,int)
+  , holds n $ prop_0 -:> int
+  , holds n $ prop_0 -:> bool
+  , holds n $ prop_0 -:> char
+  , holds n $ prop_0 -:> string
+  , fails n $ prop_0 -:> (int,int)
 
-  , holds n $ prop_00 ->: (int,int)
-  , holds n $ prop_00 ->: (bool,int)
-  , holds n $ prop_00 ->: (int,bool)
-  , holds n $ prop_00 ->: (string,char)
-  , holds n $ prop_00 ->: (char,string)
+  , holds n $ prop_00 -:> (int,int)
+  , holds n $ prop_00 -:> (bool,int)
+  , holds n $ prop_00 -:> (int,bool)
+  , holds n $ prop_00 -:> (string,char)
+  , holds n $ prop_00 -:> (char,string)
 
-  , h1 $ id ->: int
-  , h1 $ id ->: bool
-  , h1 $ id ->: (int,int)
-  , h1 $ id ->: (bool,int)
-  , h1 $ id ->: (int,bool)
-  , h1 $ id ->: (bool,bool)
-  , h1 $ id ->: (int,int,int)
-  , h1 $ id ->: (int,(int,int))
-  , h1 $ id ->: ((int,int),int)
-  , h1 $ const True     ->: int  -- fails (500 tests)!
-  , h1 $ const (0::Int) ->: bool
-  , h1 $ swap ->: (int,bool)
-  , h1 $ swap ->: (bool,int)
-  , h1 $ swap ->: (int,(int,int))
-  , h1 $ swap ->: ((int,int),int)
+  , h1 $ id -:> int
+  , h1 $ id -:> bool
+  , h1 $ id -:> (int,int)
+  , h1 $ id -:> (bool,int)
+  , h1 $ id -:> (int,bool)
+  , h1 $ id -:> (bool,bool)
+  , h1 $ id -:> (int,int,int)
+  , h1 $ id -:> (int,(int,int))
+  , h1 $ id -:> ((int,int),int)
+  , h1 $ const True     -:> int  -- fails (500 tests)!
+  , h1 $ const (0::Int) -:> bool
+  , h1 $ swap -:> (int,bool)
+  , h1 $ swap -:> (bool,int)
+  , h1 $ swap -:> (int,(int,int))
+  , h1 $ swap -:> ((int,int),int)
 
-  , h2 $ const ->: int  ->>: int
-  , h2 $ const ->: int  ->>: bool
-  , h2 $ const ->: bool ->>: int  -- fails (1000 tests)!
-  , h2 $ (+) ->: int
-  , hI $ (+) ->: int
-  , h2 $ (*) ->: int
+  , h2 $ const -: int  >- int  >- und
+  , h2 $ const -: int  >- bool >- und
+  , h2 $ const -: bool >- int  >- und -- fails (1000 tests)!
+  , h2 $ (+) -:> int
+  , hI $ (+) -:> int
+  , h2 $ (*) -:> int
   , h2 $ (&&)
   , h2 $ (||)
-  , h2 $ (:) ->: int  -- fails (2000 tests)!
-  , h2 $ (++) ->: [int]  -- fails (3000 tests)!
+  , h2 $ (:) -:> int  -- fails (2000 tests)!
+  , h2 $ (++) -:> [int]  -- fails (3000 tests)!
 
-  , h11 (id ->: int)  (id ->: bool)
-  , h11 (id ->: bool) (id ->: int)
-  , h11 (swap ->: ((int,int),int)) (swap ->: (int,(int,int)))
+  , h11 (id -:> int)  (id ->: bool)
+  , h11 (id -:> bool) (id ->: int)
+  , h11 (swap -:> ((int,int),int)) (swap ->: (int,(int,int)))
 
-  , h111 (id ->: int)  (id ->: bool) (id ->: char)
-  , h111 (id ->: bool) (id ->: char) (id ->: int)
-  , h111 (swap ->: ((int,int),(int,int)))
-         (swap ->: ((int,int),int))
-         (swap ->: (int,(int,int)))
+  , h111 (id -:> int)  (id ->: bool) (id ->: char)
+  , h111 (id -:> bool) (id ->: char) (id ->: int)
+  , h111 (swap -:> ((int,int),(int,int)))
+         (swap -:> ((int,int),int))
+         (swap -:> (int,(int,int)))
 
-  , h11' (id ->: int)  (id ->: bool) (id ->: char)
-  , h11' (id ->: bool) (id ->: char) (id ->: int)
-  , h11' (swap ->: ((int,int),(int,int)))
-         (swap ->: ((int,int),int))
-         (swap ->: (int,(int,int)))
+  , h11' (id -:> int)  (id ->: bool) (id ->: char)
+  , h11' (id -:> bool) (id ->: char) (id ->: int)
+  , h11' (swap -:> ((int,int),(int,int)))
+         (swap -:> ((int,int),int))
+         (swap -:> (int,(int,int)))
   ]
   where h1 = holds n . prop_1
         h2 = holds n . prop_2
