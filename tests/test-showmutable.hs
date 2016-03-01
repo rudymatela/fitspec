@@ -1,5 +1,6 @@
 {-# LANGUAGE NoMonomorphismRestriction #-}
 import System.Exit (exitFailure)
+import System.Environment (getArgs)
 import Data.List (elemIndices, sort)
 import Data.Tuple (swap)
 
@@ -10,8 +11,15 @@ import Test.Check.Error (errorToNothing)
 import Test.TypeBinding
 
 main :: IO ()
-main =
-  case elemIndices False (tests 10) of
+main = do
+  as <- System.Environment.getArgs
+  let n = case as of []    -> 10
+                     (s:_) -> read s
+  -- n ==  10  --   1s on zero
+  -- n ==  32  --   4s on zero
+  -- n == 100  --  15s on zero
+  -- n == 200  --  30s on zero
+  case elemIndices False (tests n) of
     [] -> putStrLn "Tests passed!"
     is -> do putStrLn ("Failed tests:" ++ show is)
              exitFailure
