@@ -2,7 +2,7 @@
 
 # Configuration variables
 FITSPECPATH = ..
-LLCHECKPATH = ../../../llcheck
+LLCHECKPATH = ../../../leancheck
 GHCFLAGS = -i$(LLCHECKPATH):$(FITSPECPATH)
 
 # Misc variables

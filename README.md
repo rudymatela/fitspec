@@ -27,10 +27,10 @@ If needed, install [cmdargs] and [pretty]:
 	$ cabal install cmdargs pretty
 
 
-Clone then install llcheck:
+Clone then install LeanCheck:
 
-	$ git clone git@github.com:rudymatela/llcheck
-	$ cd llcheck
+	$ git clone git@github.com:rudymatela/leancheck
+	$ cd leancheck
 	$ cabal install
 
 
@@ -41,7 +41,7 @@ Clone FitSpec, then run an example benchmark, e.g.:
 	$ cabal bench sorting
 
 
-The drawback of this solution is that everytime there is an update in llcheck,
+The drawback of this solution is that everytime there is an update in LeanCheck,
 you have to reinstall it after pulling.
 
 
@@ -49,17 +49,17 @@ you have to reinstall it after pulling.
 
 *Cabal > 1.18 is needed*
 
-Clone llcheck and fitspec and enter fitspec folder:
+Clone leancheck and fitspec and enter fitspec folder:
 
-	$ git clone git@github.com:rudymatela/llcheck
+	$ git clone git@github.com:rudymatela/leancheck
 	$ git clone git@github.com:rudymatela/fitspec
 	$ cd fitspec
 
 
-Initialize a sandbox, add llcheck as a source, then install dependencies:
+Initialize a sandbox, add leancheck as a source, then install dependencies:
 
 	$ cabal sandbox init
-	$ cabal sandbox add-source ../../llcheck
+	$ cabal sandbox add-source ../../leancheck
 	$ cabal install --only-dependencies
 
 
@@ -68,7 +68,7 @@ Run the sorting example:
 	$ cabal bench sorting
 
 
-An advantage of this solution is that llcheck is recompiled automatically if
+An advantage of this solution is that LeanCheck is recompiled automatically if
 there is an update.
 
 To create a new benchmark, you should create a file in the bench folder and
@@ -85,24 +85,24 @@ If needed, install [cmdargs] and [pretty]:
 	$ cabal install cmdargs pretty
 
 
-Clone both llcheck and fitspec:
+Clone both leancheck and fitspec:
 
-	$ git clone git@github.com:rudymatela/llcheck
+	$ git clone git@github.com:rudymatela/leancheck
 	$ git clone git@github.com:rudymatela/fitspec
 
 
 If you want to compile a file that uses FitSpec on GHC, you do:
 
-	$ ghc -ipath/to/llcheck:path/to/fitspec file.hs
+	$ ghc -ipath/to/leancheck:path/to/fitspec file.hs
 
 
-**Example:** suppose llcheck and fitspec have been cloned in the same
+**Example:** suppose leancheck and fitspec have been cloned in the same
 directory, do this to run the sorting example benchmark:
 
 	$ ls
-	fitspec llcheck
+	fitspec leancheck
 	$ cd fitspec/bench
-	$ ghc -i..:../../llcheck sorting.hs
+	$ ghc -i..:../../leancheck sorting.hs
 	$ ./sorting
 	...
 	...
@@ -152,7 +152,7 @@ which allows specifying function and argument names (among other options):
 By having the three sections above in a file called sorting.hs,
 we then compile and run:
 
-	$ ghc -ipath/to/llcheck:path/to/fitspec sorting.hs
+	$ ghc -ipath/to/leancheck:path/to/fitspec sorting.hs
 	[9 of 9] Compiling Main             ( sorting.hs, sorting.o )
 	Linking sorting ...
 
@@ -313,7 +313,7 @@ The modules FitSpec.Grey refer to the "grey-box" version, that does mutant
 classification.  Normal FitSpec is simpler, you should probably start with it.
 
 
-[llcheck]: https://github.com/rudymatela/llcheck
+[leancheck]: https://github.com/rudymatela/leancheck
 [cmdargs]: https://hackage.haskell.org/package/cmdargs
 [pretty]: https://hackage.haskell.org/package/pretty
 [cabal file]: fitspec.cabal
