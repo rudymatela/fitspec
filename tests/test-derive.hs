@@ -58,7 +58,7 @@ showNewMutants1 :: (ShowMutable a, Mutable a)
                 => a -> Int -> [[String]]
 showNewMutants1 f n = tmap (showMutantAsTuple [] f)
                     $ take n
-                    $ tMutants f
+                    $ mutiers f
 
 allUnique :: Ord a => [a] -> Bool
 allUnique [] = True

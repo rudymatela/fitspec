@@ -1,7 +1,7 @@
 -- | Enumeration of function mutations
 module FitSpec.Mutable
   ( Mutable (..)
-  , tMutantsEq
+  , mutiersEq
 --, mutantsIntegral
   )
 where
@@ -30,28 +30,28 @@ import Test.Check.Error (errorToNothing)
 --   the number of mutated points (relations) and
 --   the sizes of mutated arguments and results.
 class Mutable a where
-  tMutants :: a -> [[a]]
+  mutiers :: a -> [[a]]
   mutants :: a -> [a]
-  tMutants = map (:[]) . mutants
-  mutants = concat . tMutants
-  {-# MINIMAL mutants | tMutants #-}
+  mutiers = map (:[]) . mutants
+  mutants = concat . mutiers
+  {-# MINIMAL mutants | mutiers #-}
 
 
 -- *** *** Instances for (non-functional) data types *** ***
 
--- | Implementation of 'tMutants' for non-functional data types.
+-- | Implementation of 'mutiers' for non-functional data types.
 -- To declare:
 --
--- > instance MyData where tMutants = tMutantsEq
--- > instance (Eq a, Eq b) => MyDt a b where tMutants = tMutantsEq
+-- > instance MyData where mutiers = mutiersEq
+-- > instance (Eq a, Eq b) => MyDt a b where mutiers = mutiersEq
 --
 -- Examples:
 --
--- > tMutantsEq True = [[True], [False]]
--- > tMutantsEq 2    = [[2], [0], [1], [], [3], [4], ...
--- > tMutantsEq [1]  = [ [[1]], [[]], [[0]], [[0,0]], ...
-tMutantsEq :: (Listable a, Eq a) => a -> [[a]]
-tMutantsEq x = [x] : tdelete x tiers  -- possible optimization: (tdeleteOnce x)
+-- > mutiersEq True = [[True], [False]]
+-- > mutiersEq 2    = [[2], [0], [1], [], [3], [4], ...
+-- > mutiersEq [1]  = [ [[1]], [[]], [[0]], [[0,0]], ...
+mutiersEq :: (Listable a, Eq a) => a -> [[a]]
+mutiersEq x = [x] : tdelete x tiers  -- possible optimization: (tdeleteOnce x)
 
 tdelete :: Eq a => a -> [[a]] -> [[a]]
 tdelete x = tnormalize . map (delete x)
@@ -60,12 +60,12 @@ tdelete x = tnormalize . map (delete x)
         tnormalize (xs:xss) = xs:tnormalize xss
 
 -- Instances for (non-functional) data types
-instance Mutable ()   where tMutants = tMutantsEq
-instance Mutable Int  where tMutants = tMutantsEq
-instance Mutable Char where tMutants = tMutantsEq
-instance Mutable Bool where tMutants = tMutantsEq
-instance (Eq a, Listable a) => Mutable [a]       where tMutants = tMutantsEq
-instance (Eq a, Listable a) => Mutable (Maybe a) where tMutants = tMutantsEq
+instance Mutable ()   where mutiers = mutiersEq
+instance Mutable Int  where mutiers = mutiersEq
+instance Mutable Char where mutiers = mutiersEq
+instance Mutable Bool where mutiers = mutiersEq
+instance (Eq a, Listable a) => Mutable [a]       where mutiers = mutiersEq
+instance (Eq a, Listable a) => Mutable (Maybe a) where mutiers = mutiersEq
 
 {- Alternative implementations for Mutable Ints and Lists.
 -- These do not improve results significantly.
@@ -83,12 +83,12 @@ mutantsIntegral i | i > 0     = [i..] +| tail [i,(i-1)..]
 instance Mutable Int  where mutants = mutantsIntegral
 
 instance (Listable a, Mutable a) => Mutable [a]
-  where tMutants []     = [ [] ]
-                        : [ ]
-                        : tail tiers
-        tMutants (x:xs) = [ (x:xs) ]
-                        : [ [] ]
-                        : tail (lsProductWith (:) (tMutants x) (tMutants xs))
+  where mutiers []     = [ [] ]
+                       : [ ]
+                       : tail tiers
+        mutiers (x:xs) = [ (x:xs) ]
+                       : [ [] ]
+                       : tail (lsProductWith (:) (mutiers x) (mutiers xs))
 -- -}
 
 
@@ -120,7 +120,7 @@ mutate f ms = foldr (flip mut) f ms -- or: foldl mut f ms
 mutationsFor :: Mutable b => (a->b) -> a -> [[(a,b)]]
 mutationsFor f x = case errorToNothing (f x) of
                      Nothing -> []
-                     Just fx -> ((,) x) `tmap` tail (tMutants fx)
+                     Just fx -> ((,) x) `tmap` tail (mutiers fx)
 
 -- | Returns tiers of mutants on a selection of arguments of a function.
 -- Will only return the null mutant from an empty selection of arguments.
@@ -130,7 +130,7 @@ tiersMutantsOn f xs = mutate f `tmap` tProducts (map (mutationsFor f) xs)
 -- Given that the underlying enumeration for argument/result values is without
 -- repetitions, this instance does not repeat mutants.
 --
--- > tMutants not =
+-- > mutiers not =
 -- >   [ [ not ]
 -- >   , [ \p -> case p of
 -- >               False -> False
@@ -142,84 +142,84 @@ tiersMutantsOn f xs = mutate f `tmap` tProducts (map (mutationsFor f) xs)
 -- >               False -> False
 -- >               True -> True ] ]
 instance (Eq a, Listable a, Mutable b) => Mutable (a -> b) where
-  tMutants f = tiersMutantsOn f `tConcatMap` tSetsOf tiers
+  mutiers f = tiersMutantsOn f `tConcatMap` tSetsOf tiers
 
 
 -- *** *** Instances for tuples *** ***
 
 instance (Mutable a, Mutable b) => Mutable (a,b) where
-  tMutants (f,g) = tMutants f `tProduct` tMutants g
+  mutiers (f,g) = mutiers f `tProduct` mutiers g
 
 instance (Mutable a, Mutable b, Mutable c) => Mutable (a,b,c) where
-  tMutants (f,g,h) = tProductWith (\f' (g',h') -> (f',g',h'))
-                                  (tMutants f) (tMutants (g,h))
+  mutiers (f,g,h) = tProductWith (\f' (g',h') -> (f',g',h'))
+                                 (mutiers f) (mutiers (g,h))
 
 instance (Mutable a, Mutable b, Mutable c, Mutable d)
       => Mutable (a,b,c,d) where
-  tMutants (f,g,h,i) = tProductWith (\f' (g',h',i') -> (f',g',h',i'))
-                                    (tMutants f) (tMutants (g,h,i))
+  mutiers (f,g,h,i) = tProductWith (\f' (g',h',i') -> (f',g',h',i'))
+                                   (mutiers f) (mutiers (g,h,i))
 
 instance (Mutable a, Mutable b, Mutable c, Mutable d, Mutable e)
       => Mutable (a,b,c,d,e) where
-  tMutants (f,g,h,i,j) = tProductWith (\f' (g',h',i',j') -> (f',g',h',i',j'))
-                                      (tMutants f) (tMutants (g,h,i,j))
+  mutiers (f,g,h,i,j) = tProductWith (\f' (g',h',i',j') -> (f',g',h',i',j'))
+                                     (mutiers f) (mutiers (g,h,i,j))
 
 instance (Mutable a, Mutable b, Mutable c, Mutable d, Mutable e, Mutable f)
       => Mutable (a,b,c,d,e,f) where
-  tMutants (f,g,h,i,j,k) = tProductWith (\f' (g',h',i',j',k') ->
+  mutiers (f,g,h,i,j,k) = tProductWith (\f' (g',h',i',j',k') ->
                                            (f',g',h',i',j',k'))
-                                        (tMutants f) (tMutants (g,h,i,j,k))
+                                       (mutiers f) (mutiers (g,h,i,j,k))
 
 instance (Mutable a, Mutable b, Mutable c, Mutable d,
           Mutable e, Mutable f, Mutable g)
       => Mutable (a,b,c,d,e,f,g) where
-  tMutants (f,g,h,i,j,k,l) = tProductWith (\f' (g',h',i',j',k',l') ->
+  mutiers (f,g,h,i,j,k,l) = tProductWith (\f' (g',h',i',j',k',l') ->
                                              (f',g',h',i',j',k',l'))
-                                          (tMutants f)
-                                          (tMutants (g,h,i,j,k,l))
+                                         (mutiers f)
+                                         (mutiers (g,h,i,j,k,l))
 
 instance (Mutable a, Mutable b, Mutable c, Mutable d,
           Mutable e, Mutable f, Mutable g, Mutable h)
       => Mutable (a,b,c,d,e,f,g,h) where
-  tMutants (f,g,h,i,j,k,l,m) = tProductWith (\f' (g',h',i',j',k',l',m') ->
+  mutiers (f,g,h,i,j,k,l,m) = tProductWith (\f' (g',h',i',j',k',l',m') ->
                                                (f',g',h',i',j',k',l',m'))
-                                            (tMutants f)
-                                            (tMutants (g,h,i,j,k,l,m))
+                                           (mutiers f)
+                                           (mutiers (g,h,i,j,k,l,m))
 
 instance (Mutable a, Mutable b, Mutable c, Mutable d, Mutable e,
           Mutable f, Mutable g, Mutable h, Mutable i)
       => Mutable (a,b,c,d,e,f,g,h,i) where
-  tMutants (f,g,h,i,j,k,l,m,n) =
+  mutiers (f,g,h,i,j,k,l,m,n) =
     tProductWith (\f' (g',h',i',j',k',l',m',n') ->
                    (f',g',h',i',j',k',l',m',n'))
-                 (tMutants f)
-                 (tMutants (g,h,i,j,k,l,m,n))
+                 (mutiers f)
+                 (mutiers (g,h,i,j,k,l,m,n))
 
 instance (Mutable a, Mutable b, Mutable c, Mutable d, Mutable e,
           Mutable f, Mutable g, Mutable h, Mutable i, Mutable j)
       => Mutable (a,b,c,d,e,f,g,h,i,j) where
-  tMutants (f,g,h,i,j,k,l,m,n,o) =
+  mutiers (f,g,h,i,j,k,l,m,n,o) =
     tProductWith (\f' (g',h',i',j',k',l',m',n',o') ->
                    (f',g',h',i',j',k',l',m',n',o'))
-                 (tMutants f)
-                 (tMutants (g,h,i,j,k,l,m,n,o))
+                 (mutiers f)
+                 (mutiers (g,h,i,j,k,l,m,n,o))
 
 instance (Mutable a, Mutable b, Mutable c, Mutable d,
           Mutable e, Mutable f, Mutable g, Mutable h,
           Mutable i, Mutable j, Mutable k)
       => Mutable (a,b,c,d,e,f,g,h,i,j,k) where
-  tMutants (f,g,h,i,j,k,l,m,n,o,p) =
+  mutiers (f,g,h,i,j,k,l,m,n,o,p) =
     tProductWith (\f' (g',h',i',j',k',l',m',n',o',p') ->
                    (f',g',h',i',j',k',l',m',n',o',p'))
-                 (tMutants f)
-                 (tMutants (g,h,i,j,k,l,m,n,o,p))
+                 (mutiers f)
+                 (mutiers (g,h,i,j,k,l,m,n,o,p))
 
 instance (Mutable a, Mutable b, Mutable c, Mutable d,
           Mutable e, Mutable f, Mutable g, Mutable h,
           Mutable i, Mutable j, Mutable k, Mutable l)
       => Mutable (a,b,c,d,e,f,g,h,i,j,k,l) where
-  tMutants (f,g,h,i,j,k,l,m,n,o,p,q) =
+  mutiers (f,g,h,i,j,k,l,m,n,o,p,q) =
     tProductWith (\f' (g',h',i',j',k',l',m',n',o',p',q') ->
                    (f',g',h',i',j',k',l',m',n',o',p',q'))
-                 (tMutants f)
-                 (tMutants (g,h,i,j,k,l,m,n,o,p,q))
+                 (mutiers f)
+                 (mutiers (g,h,i,j,k,l,m,n,o,p,q))

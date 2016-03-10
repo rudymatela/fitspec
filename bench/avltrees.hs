@@ -13,7 +13,7 @@ instance (Ord a, Listable a) => Listable (Tree a) where
   tiers = cons1 fromList
 
 instance (Ord a, Listable a) => Mutable (Tree a) where
-  tMutants = tMutantsEq
+  mutiers = mutiers 
 
 instance (Ord a, Show a, Listable a) => ShowMutable (Tree a) where
   mutantS = mutantSEq

@@ -17,7 +17,7 @@ instance (Ord a, Listable a) => Listable (Heap a) where
 --                                          `asTypeOf` (undefined :: Heap a)
 
 instance (Ord a, Listable a) => Mutable (Heap a) where
-  tMutants = tMutantsEq
+  mutiers = mutiersEq 
 
 instance (Ord a, Show a, Listable a) => ShowMutable (Heap a) where
   mutantS = mutantSEq

@@ -1,7 +1,7 @@
 -- | FitSpec Test Types:
--- Nat,
--- Int2, Int3, Int4,
--- UInt2, UInt3, UInt4.
+-- 'Nat',
+-- 'Int2', 'Int3', 'Int4',
+-- 'UInt2', 'UInt3', 'UInt4'.
 --
 -- This module basically re-exports LeanCheck's Test.Types module
 -- and defines Mutable and ShowMutable instances for the types
@@ -13,15 +13,15 @@ import FitSpec.ShowMutable
 import Test.Types
 
 -- {- Standard implementation:
-instance Mutable Nat   where tMutants = tMutantsEq
-instance Mutable Int1  where tMutants = tMutantsEq
-instance Mutable Int2  where tMutants = tMutantsEq
-instance Mutable Int3  where tMutants = tMutantsEq
-instance Mutable Int4  where tMutants = tMutantsEq
-instance Mutable UInt1 where tMutants = tMutantsEq
-instance Mutable UInt2 where tMutants = tMutantsEq
-instance Mutable UInt3 where tMutants = tMutantsEq
-instance Mutable UInt4 where tMutants = tMutantsEq
+instance Mutable Nat   where mutiers = mutiersEq
+instance Mutable Int1  where mutiers = mutiersEq
+instance Mutable Int2  where mutiers = mutiersEq
+instance Mutable Int3  where mutiers = mutiersEq
+instance Mutable Int4  where mutiers = mutiersEq
+instance Mutable UInt1 where mutiers = mutiersEq
+instance Mutable UInt2 where mutiers = mutiersEq
+instance Mutable UInt3 where mutiers = mutiersEq
+instance Mutable UInt4 where mutiers = mutiersEq
 -- -}
 {- Alternative implementation:
 instance Mutable Nat   where mutants = mutantsIntegral

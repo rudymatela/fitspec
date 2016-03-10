@@ -14,7 +14,7 @@ instance Listable Doc where
   tiers = cons1 text  -- TODO: Improve this
 
 instance Mutable Doc where
-  tMutants = tMutantsEq
+  mutiers = mutiersEq
 
 instance ShowMutable Doc where
   mutantS = mutantSEq

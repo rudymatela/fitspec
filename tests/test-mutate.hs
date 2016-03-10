@@ -17,40 +17,40 @@ main =
 
 -- NOTE:
 -- the lsMutantsEqOld property only *actually* hold for functions returning
--- lists when using tMutantsEq as the implementation of tMutants for [a]
+-- lists when using mutiersEq as the implementation of mutiers for [a]
 
 tests = map errorToFalse
   [ True
 
-  , tMutantsEqOld (sort :: [Int]  -> [Int])  5
-  , tMutantsEqOld (sort :: [Bool] -> [Bool]) 3 -- was 5
-  , tMutantsEqOld (sort :: [Char] -> [Char]) 5
-  , tMutantsEqOld (sort :: [()] -> [()])    10
+  , mutiersEqOld (sort :: [Int]  -> [Int])  5
+  , mutiersEqOld (sort :: [Bool] -> [Bool]) 3 -- was 5
+  , mutiersEqOld (sort :: [Char] -> [Char]) 5
+  , mutiersEqOld (sort :: [()] -> [()])    10
 
-  , tMutantsEqOld (head :: [Int] -> Int) 6
-  , tMutantsEqOld (head :: [Bool] -> Bool) 6
-  , tMutantsEqOld (tail :: [Int] -> [Int]) 6
-  , tMutantsEqOld (tail :: [Bool] -> [Bool]) 4 -- was 6
+  , mutiersEqOld (head :: [Int] -> Int) 6
+  , mutiersEqOld (head :: [Bool] -> Bool) 6
+  , mutiersEqOld (tail :: [Int] -> [Int]) 6
+  , mutiersEqOld (tail :: [Bool] -> [Bool]) 4 -- was 6
 
-  , tMutantsEqOld (uncurry (++) :: ([Int],[Int]) -> [Int]) 4
-  , tMutantsEqOld (uncurry (++) :: ([Bool],[Bool]) -> [Bool]) 4
-  , tMutantsEqOld (uncurry (++) :: ([Char],[Char]) -> [Char]) 4
+  , mutiersEqOld (uncurry (++) :: ([Int],[Int]) -> [Int]) 4
+  , mutiersEqOld (uncurry (++) :: ([Bool],[Bool]) -> [Bool]) 4
+  , mutiersEqOld (uncurry (++) :: ([Char],[Char]) -> [Char]) 4
 
-  , tMutantsEqOld not 10 
-  , tMutantsEqOld (uncurry (&&)) 10
-  , tMutantsEqOld (uncurry (||)) 10
+  , mutiersEqOld not 10 
+  , mutiersEqOld (uncurry (&&)) 10
+  , mutiersEqOld (uncurry (||)) 10
 
-  , tMutantsEqOld (uncurry (+) :: (Int,Int) -> Int) 6
-  , tMutantsEqOld (uncurry (+) :: (Nat,Nat) -> Nat) 6
-  , tMutantsEqOld (uncurry (*) :: (Int,Int) -> Int) 6
-  , tMutantsEqOld (uncurry (*) :: (Nat,Nat) -> Nat) 6
+  , mutiersEqOld (uncurry (+) :: (Int,Int) -> Int) 6
+  , mutiersEqOld (uncurry (+) :: (Nat,Nat) -> Nat) 6
+  , mutiersEqOld (uncurry (*) :: (Int,Int) -> Int) 6
+  , mutiersEqOld (uncurry (*) :: (Nat,Nat) -> Nat) 6
 
   -- These actually do not hold for later values in the enumeration
   -- The actual way in which values are enumerated makes the enumerations
   -- inherently different.
-  , tMutants2EqOld ((++) :: [Int] -> [Int] -> [Int]) 4
-  , tMutants2EqOld ((++) :: [Bool] -> [Bool] -> [Bool]) 3
-  , tMutants2EqOld ((++) :: [Char] -> [Char] -> [Char]) 4
+  , mutiers2EqOld ((++) :: [Int] -> [Int] -> [Int]) 4
+  , mutiers2EqOld ((++) :: [Bool] -> [Bool] -> [Bool]) 3
+  , mutiers2EqOld ((++) :: [Char] -> [Char] -> [Char]) 4
 
   , allUnique $ concat $ showOldMutants1 (sort :: [Int] -> [Int]) 7
   , allUnique $ concat $ showNewMutants1 (sort :: [Int] -> [Int]) 7
@@ -111,27 +111,27 @@ checkBindingsOfLength n len f = (all . all) (bindingsOfLength len)
                               . concat
                               . take n
                               . tmap (mutantS f)
-                              $ tMutants f
+                              $ mutiers f
 -}
 
 
 bindingsOfLength :: Int -> [([String],String)] -> Bool
 bindingsOfLength n = all ((== n) . length . fst)
 
-tMutantsEqOld :: ( Show a, Show b
+mutiersEqOld :: ( Show a, Show b
                   , Eq a, Eq b
                   , Listable a, Listable b
                   , Mutable b, ShowMutable b )
                => (a -> b) -> Int -> Bool
-tMutantsEqOld f n = showOldMutants1 f n == showNewMutants1 f n
+mutiersEqOld f n = showOldMutants1 f n == showNewMutants1 f n
 
 
-tMutants2EqOld :: ( Eq a, Eq b, Eq c
+mutiers2EqOld :: ( Eq a, Eq b, Eq c
                    , Show a, Show b, Show c
                    , Listable a, Listable b, Listable c
                    , Mutable c, ShowMutable b, ShowMutable c )
                 => (a -> b -> c) -> Int -> Bool
-tMutants2EqOld f n = showOldMutants2 f n == showNewMutants2 f n
+mutiers2EqOld f n = showOldMutants2 f n == showNewMutants2 f n
 
 
 showOldMutants1 :: ( Eq a, Eq b
@@ -141,13 +141,13 @@ showOldMutants1 :: ( Eq a, Eq b
                 => (a -> b) -> Int -> [[String]]
 showOldMutants1 f n = tmap (showMutantAsTuple [] f)
                     $ take n
-                    $ tMutantsOld f
+                    $ mutiersOld f
 
 showNewMutants1 :: (ShowMutable a, Mutable a)
                 => a -> Int -> [[String]]
 showNewMutants1 f n = tmap (showMutantAsTuple [] f)
                     $ take n
-                    $ tMutants f
+                    $ mutiers f
 
 showOldMutants2 :: ( Eq a, Eq b, Eq c
                    , Show a, Show b, Show c
@@ -162,15 +162,15 @@ showNewMutants2 :: ( Eq a, Eq b, Eq c
                    , ShowMutable c )
                 => (a -> b -> c) -> Int -> [[String]]
 showNewMutants2 f n = tmap (showMutantAsTuple [] uf . uncurry)
-                   $ take n
-                   $ tMutants f
+                    $ take n
+                    $ mutiers f
   where uf = uncurry f
 
-tMutantsOld :: (Eq a, Eq b, Listable a, Listable b)
+mutiersOld :: (Eq a, Eq b, Listable a, Listable b)
              => (a -> b) -> [[a -> b]]
-tMutantsOld f = tmap (defaultFunPairsToFunction f)
-              $ tfilter (canonicalMutation f)
-              $ tFunctionPairs tiers tiers
+mutiersOld f = tmap (defaultFunPairsToFunction f)
+             $ tfilter (canonicalMutation f)
+             $ tFunctionPairs tiers tiers
 
 canonicalMutation :: Eq b => (a -> b) -> [(a, b)] -> Bool
 -- This simple version on the line below
