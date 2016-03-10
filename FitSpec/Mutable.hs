@@ -29,6 +29,13 @@ import Test.Check.Error (errorToNothing)
 -- The size of a mutant is given by the sum of:
 --   the number of mutated points (relations) and
 --   the sizes of mutated arguments and results.
+--
+-- To get only strict (non-null) mutants,
+-- just take the 'tail' of either 'mutants' or 'mutiers':
+--
+-- > tail mutants
+--
+-- > tail mutiers
 class Mutable a where
   mutiers :: a -> [[a]]
   mutants :: a -> [a]
@@ -60,11 +67,22 @@ tdelete x = tnormalize . map (delete x)
         tnormalize (xs:xss) = xs:tnormalize xss
 
 -- Instances for (non-functional) data types
+
+-- | > mutants () = [()]
 instance Mutable ()   where mutiers = mutiersEq
+
+-- | > mutants 3 = [3,0,1,2,4,5,6,7,8,9,...
 instance Mutable Int  where mutiers = mutiersEq
+
 instance Mutable Char where mutiers = mutiersEq
-instance Mutable Bool where mutiers = mutiersEq
+
+-- | > mutants True = [True,False]
+instance Mutable Bool where mutiers = mutiersEq -- > mutants True=[True,False]
+
+-- | > mutants [0] = [ [0], [], [0,0], [1], ...
 instance (Eq a, Listable a) => Mutable [a]       where mutiers = mutiersEq
+
+-- | > mutants (Just 0) = [Just 0, Nothing, ...
 instance (Eq a, Listable a) => Mutable (Maybe a) where mutiers = mutiersEq
 
 {- Alternative implementations for Mutable Ints and Lists.
@@ -127,8 +145,8 @@ mutationsFor f x = case errorToNothing (f x) of
 tiersMutantsOn :: (Eq a, Mutable b) => (a->b) -> [a] -> [[a->b]]
 tiersMutantsOn f xs = mutate f `tmap` tProducts (map (mutationsFor f) xs)
 
--- Given that the underlying enumeration for argument/result values is without
--- repetitions, this instance does not repeat mutants.
+-- | Given that the underlying enumeration for argument/result values is
+-- without repetitions, this instance does not repeat mutants.
 --
 -- > mutiers not =
 -- >   [ [ not ]
