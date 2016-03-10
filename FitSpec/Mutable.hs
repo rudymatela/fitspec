@@ -36,22 +36,58 @@ class Mutable a where
   mutants = concat . tMutants
   {-# MINIMAL mutants | tMutants #-}
 
--- Beware: if the underlying enumeration for argument/return values generates
--- repeated elements there will be repeated and potentially null mutants.
-instance (Eq a, Listable a, Mutable b) => Mutable (a -> b) where
-  tMutants f = tiersMutantsOn f `tConcatMap` tSetsOf tiers
 
--- | Returns tiers of mutants on a selection of arguments.
-tiersMutantsOn :: (Eq a, Mutable b) => (a->b) -> [a] -> [[a->b]]
-tiersMutantsOn f xs = mutate f `tmap` tProducts (map (mutationsFor f) xs)
+-- *** *** Instances for (non-functional) data types *** ***
 
--- | Return tiers of possible mutations for a single value.
--- If the function is undefined at that point,
--- no mutations are provided.
-mutationsFor :: Mutable b => (a->b) -> a -> [[(a,b)]]
-mutationsFor f x = case errorToNothing (f x) of
-                     Nothing -> []
-                     Just fx -> ((,) x) `tmap` tail (tMutants fx)
+-- | Implementation of 'tMutants' for non-functional data types.
+-- To declare:
+--
+-- > instance MyData where tMutants = tMutantsEq
+-- > instance (Eq a, Eq b) => MyDt a b where tMutants = tMutantsEq
+--
+-- Examples:
+--
+-- > tMutantsEq True = [[True], [False]]
+-- > tMutantsEq 2    = [[2], [0], [1], [], [3], [4], ...
+-- > tMutantsEq [1]  = [ [[1]], [[]], [[0]], [[0,0]], ...
+tMutantsEq :: (Listable a, Eq a) => a -> [[a]]
+tMutantsEq x = [x] : tdelete x tiers  -- possible optimization: (tdeleteOnce x)
+
+tdelete :: Eq a => a -> [[a]] -> [[a]]
+tdelete x = tnormalize . map (delete x)
+  where tnormalize []       = []
+        tnormalize [[]]     = []
+        tnormalize (xs:xss) = xs:tnormalize xss
+
+-- Instances for (non-functional) data types
+instance Mutable ()   where tMutants = tMutantsEq
+instance Mutable Int  where tMutants = tMutantsEq
+instance Mutable Char where tMutants = tMutantsEq
+instance Mutable Bool where tMutants = tMutantsEq
+instance (Eq a, Listable a) => Mutable [a]       where tMutants = tMutantsEq
+instance (Eq a, Listable a) => Mutable (Maybe a) where tMutants = tMutantsEq
+
+-- Mutants of an Integral value.  Always start towards zero.  Alternating
+-- between sucessor and predecessor.
+-- The tail usage is there to avoid generating out of bound values.
+-- (x-1) is usually safe though.
+mutantsIntegral :: Integral a => a -> [a]
+mutantsIntegral i | i > 0     = [i..] +| tail [i,(i-1)..]
+                  | otherwise = [i,(i-1)..] +| tail [i..]
+-- instance Mutable Int  where mutants = mutantsIntegral
+
+{- Alternative implementation for Mutable lists:
+instance (Listable a, Mutable a) => Mutable [a]
+  where tMutants []     = [ [] ]
+                         : [ ]
+                         : tail listing
+        tMutants (x:xs) = [ (x:xs) ]
+                         : [ [] ]
+                         : tail (lsProductWith (:) (tMutants x) (tMutants xs))
+-- -}
+
+
+-- *** *** Instances for functional types *** ***
 
 -- | Mutate a function at a single point.
 -- The following two declarations are equivalent:
@@ -71,41 +107,40 @@ mut f (x',fx') = \x -> if x == x'
 mutate :: Eq a => (a -> b) -> [(a,b)] -> (a -> b)
 mutate f ms = foldr (flip mut) f ms -- or: foldl mut f ms
 
-tdelete :: Eq a => a -> [[a]] -> [[a]]
-tdelete x = tnormalize . map (delete x)
-  where tnormalize []       = []
-        tnormalize [[]]     = []
-        tnormalize (xs:xss) = xs:tnormalize xss
+-- | Return tiers of possible mutations for a single point of a function.
+-- If the function is undefined at that point, no mutations are provided.
+-- This function does not return the null mutant.
+--
+-- > (+1) `mutationsFor` 1 = [ [(1,0)], [(1,1)], [], [(1,3)], [(1,4)], ...
+mutationsFor :: Mutable b => (a->b) -> a -> [[(a,b)]]
+mutationsFor f x = case errorToNothing (f x) of
+                     Nothing -> []
+                     Just fx -> ((,) x) `tmap` tail (tMutants fx)
 
--- TODO: Possible Optimization: (deleteOnce x)
-tMutantsEq :: (Listable a, Eq a) => a -> [[a]]
-tMutantsEq x = [x] : tdelete x tiers
+-- | Returns tiers of mutants on a selection of arguments of a function.
+-- Will only return the null mutant from an empty selection of arguments.
+tiersMutantsOn :: (Eq a, Mutable b) => (a->b) -> [a] -> [[a->b]]
+tiersMutantsOn f xs = mutate f `tmap` tProducts (map (mutationsFor f) xs)
 
--- Mutants of an Integral value.  Always start towards zero.  Alternating
--- between sucessor and predecessor.
--- The tail usage is there to avoid generating out of bound values.
--- (x-1) is usually safe though.
-mutantsIntegral :: Integral a => a -> [a]
-mutantsIntegral i | i > 0     = [i..] +| tail [i,(i-1)..]
-                  | otherwise = [i,(i-1)..] +| tail [i..]
+-- Given that the underlying enumeration for argument/result values is without
+-- repetitions, this instance does not repeat mutants.
+--
+-- > tMutants not =
+-- >   [ [ not ]
+-- >   , [ \p -> case p of
+-- >               False -> False
+-- >               _ -> not p
+-- >     , \p -> case p of
+-- >               True -> True
+-- >               _ -> not p ]
+-- >   , [ \p -> case p of
+-- >               False -> False
+-- >               True -> True ] ]
+instance (Eq a, Listable a, Mutable b) => Mutable (a -> b) where
+  tMutants f = tiersMutantsOn f `tConcatMap` tSetsOf tiers
 
-instance Mutable ()   where tMutants = tMutantsEq
--- instance Mutable Int  where mutants = mutantsIntegral
-instance Mutable Int  where tMutants = tMutantsEq
-instance Mutable Char where tMutants = tMutantsEq
-instance Mutable Bool where tMutants = tMutantsEq
-instance (Eq a, Listable a) => Mutable [a]       where tMutants = tMutantsEq
-instance (Eq a, Listable a) => Mutable (Maybe a) where tMutants = tMutantsEq
 
-{- Alternative implementation for Mutable lists:
-instance (Listable a, Mutable a) => Mutable [a]
-  where tMutants []     = [ [] ]
-                         : [ ]
-                         : tail listing
-        tMutants (x:xs) = [ (x:xs) ]
-                         : [ [] ]
-                         : tail (lsProductWith (:) (tMutants x) (tMutants xs))
--- -}
+-- *** *** Instances for tuples *** ***
 
 instance (Mutable a, Mutable b) => Mutable (a,b) where
   tMutants (f,g) = tMutants f `tProduct` tMutants g
