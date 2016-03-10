@@ -11,26 +11,65 @@ import Data.List (intercalate, delete)
 import Data.Maybe
 import Test.Check.Error (errorToNothing)
 
--- The first mutant returned by szMutants and mutants is the actual function
--- without mutation.
+-- | This typeclass is similar to 'Listable'.
+--
+-- A type is 'Mutable' when there exists a function that
+-- is able to list mutations of a value.
+-- Ideally: list all values with no repetitions.
+--
+-- Instances are usually defined by a 'mutiers' function that
+-- given a value, returns tiers of mutants of that value:
+--   the first  tier contains the null mutant, of size 0,
+--   the second tier contains mutants of size 1,
+--   the third  tier contains mutants of size 2,
+--   and so on.
+--
+-- The null mutant is the actual function without mutations.
+--
+-- The size of a mutant is given by the sum of:
+--   the number of mutated points (relations) and
+--   the sizes of mutated arguments and results.
 class Mutable a where
   tMutants :: a -> [[a]]
   mutants :: a -> [a]
   tMutants = map (:[]) . mutants
   mutants = concat . tMutants
+  {-# MINIMAL mutants | tMutants #-}
 
 -- Beware: if the underlying enumeration for argument/return values generates
 -- repeated elements there will be repeated and potentially null mutants.
 instance (Eq a, Listable a, Mutable b) => Mutable (a -> b) where
-  tMutants f = tmap (defaultFunPairsToFunction f)
-             $ tConcatMap (`tAssociations'` mutantsFor)
-             $ tStrictlyAscendingListsOf tiers
-    where mutantsFor x = case errorToNothing (f x) of
-                           Nothing -> [[]]
-                           Just fx -> tail (tMutants fx)
+  tMutants f = tiersMutantsOn f `tConcatMap` tSetsOf tiers
 
-tAssociations' :: [a] -> (a -> [[b]]) -> [[[(a,b)]]]
-tAssociations' xs f = tmap (zip xs) (tProducts (map f xs))
+-- | Returns tiers of mutants on a selection of arguments.
+tiersMutantsOn :: (Eq a, Mutable b) => (a->b) -> [a] -> [[a->b]]
+tiersMutantsOn f xs = mutate f `tmap` tProducts (map (mutationsFor f) xs)
+
+-- | Return tiers of possible mutations for a single value.
+-- If the function is undefined at that point,
+-- no mutations are provided.
+mutationsFor :: Mutable b => (a->b) -> a -> [[(a,b)]]
+mutationsFor f x = case errorToNothing (f x) of
+                     Nothing -> []
+                     Just fx -> ((,) x) `tmap` tail (tMutants fx)
+
+-- | Mutate a function at a single point.
+-- The following two declarations are equivalent:
+--
+-- > id' = id `mut` (0,1)
+--
+-- > id' 0 = 1
+-- > id' x = x
+mut :: Eq a => (a -> b) -> (a,b) -> (a -> b)
+mut f (x',fx') = \x -> if x == x'
+                         then fx'
+                         else f x
+
+-- | Mutate a function at several points.
+--
+-- > f `mutate` [(x,a),(y,b),(z,c)] = f `mut` (x,a) `mut` (y,b) `mut` (z,c)
+mutate :: Eq a => (a -> b) -> [(a,b)] -> (a -> b)
+mutate f ms = foldr (flip mut) f ms -- or: foldl mut f ms
 
 tdelete :: Eq a => a -> [[a]] -> [[a]]
 tdelete x = tnormalize . map (delete x)
