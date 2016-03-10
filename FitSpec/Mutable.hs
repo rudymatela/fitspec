@@ -2,7 +2,7 @@
 module FitSpec.Mutable
   ( Mutable (..)
   , tMutantsEq
-  , mutantsIntegral
+--, mutantsIntegral
   )
 where
 
@@ -67,23 +67,28 @@ instance Mutable Bool where tMutants = tMutantsEq
 instance (Eq a, Listable a) => Mutable [a]       where tMutants = tMutantsEq
 instance (Eq a, Listable a) => Mutable (Maybe a) where tMutants = tMutantsEq
 
--- Mutants of an Integral value.  Always start towards zero.  Alternating
--- between sucessor and predecessor.
--- The tail usage is there to avoid generating out of bound values.
--- (x-1) is usually safe though.
+{- Alternative implementations for Mutable Ints and Lists.
+-- These do not improve results significantly.
+-- That is why I have kept the simpler mutations above.
+
+-- |- Generate mutants of an Integral value.
+-- Alternates between successors and predecessors of the original number.
+-- The enumeration starts "towards" zero.
 mutantsIntegral :: Integral a => a -> [a]
 mutantsIntegral i | i > 0     = [i..] +| tail [i,(i-1)..]
                   | otherwise = [i,(i-1)..] +| tail [i..]
--- instance Mutable Int  where mutants = mutantsIntegral
+-- NOTE: tail is there to avoid generating out of bound values
+--       as (i-1) is usually safe while (i-2) is not.
 
-{- Alternative implementation for Mutable lists:
+instance Mutable Int  where mutants = mutantsIntegral
+
 instance (Listable a, Mutable a) => Mutable [a]
   where tMutants []     = [ [] ]
-                         : [ ]
-                         : tail listing
+                        : [ ]
+                        : tail tiers
         tMutants (x:xs) = [ (x:xs) ]
-                         : [ [] ]
-                         : tail (lsProductWith (:) (tMutants x) (tMutants xs))
+                        : [ [] ]
+                        : tail (lsProductWith (:) (tMutants x) (tMutants xs))
 -- -}
 
 
