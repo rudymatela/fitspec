@@ -92,7 +92,7 @@ reduceImplications (r:rs) = r : map (r `reduce`) (reduceImplications rs)
 data Result a = Result
               { sets             :: [[Int]]
               , implied          :: [Int]
-              , survivors        :: [Maybe a]
+              , survivors        :: [a]
               , smallestSurvivor :: Maybe a
               , nSurvivors       :: Int
               , nKilled          :: Int
@@ -119,7 +119,7 @@ processRawResult :: [[Int]] -> [Maybe a] -> Result a
 processRawResult iss mms = Result
   { sets      = relevantPropertySets iss
   , implied   = relevantImplications iss
-  , survivors = mms
+  , survivors = ms
   , smallestSurvivor = listToMaybe ms
   , nSurvivors   = ns
   , nKilled      = nk
