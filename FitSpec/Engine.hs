@@ -112,11 +112,14 @@ getResultsExtra :: (Mutable a)
                 => [a]
                 -> Int -> a -> (a -> [Bool])
                 -> Results a
-getResultsExtra ems nms f = map (uncurry processRawResult)
-                          . getRawResults ems nms f
+getResultsExtra ems nms f pmap = map (uncurry processRawResult)
+                               $ getRawResults is pmap ms
+  where is = [1..(length (pmap f))]
+        ms = take nms (tail $ mutants f) ++ ems
 
-processRawResult :: [[Int]] -> [Maybe a] -> Result a
-processRawResult iss mms = Result
+
+processRawResult :: [[Int]] -> [(a,Bool)] -> Result a
+processRawResult iss mhs = Result
   { sets      = relevantPropertySets iss
   , implied   = relevantImplications iss
   , survivors = ms
@@ -126,8 +129,8 @@ processRawResult iss mms = Result
   , totalMutants = nm
   , score        = nk*100 `div` nm
   }
-  where ms = catMaybes mms
-        nm = length mms
+  where ms = [m | (m,h) <- mhs, h]
+        nm = length mhs
         ns = length ms
         nk = nm - ns
 
@@ -145,19 +148,29 @@ relevantImplications :: Eq i => [[i]] -> [i]
 relevantImplications iss = foldr union [] iss
                         \\ foldr union [] (relevantPropertySets iss)
 
-getRawResults :: (Mutable a)
-              => [a] -> Int -> a -> (a -> [Bool])
-              -> [([[Int]],[Maybe a])]
-getRawResults ems nms f pmap = map (mapSnd (zipWith boolToMaybe ms))
-                             $ pssurv is pmap ms
-  where is = [1..(length (pmap f))]
-        ms = take nms (tail $ mutants f)
-          ++ ems
-        mapSnd f (x,y) = (x,f y)
+-- | Returns a description of property sets, grouping the ones that had the
+--   same surviving mutants.  The resulting list is ordered starting with the
+--   least surviving mutants to the most surviving mutants.
+--
+-- Arguments:
+--
+-- * @is@: list of property ids (@length is == length (pmap x)@)
+--
+-- * @pmap@: a property map
+--
+-- * @ms@: list of mutants to apply to the property map
+--
+-- Return a list of tuples containing:
+--
+--   * a list of property sets
+--   * a list of mutants paired with booleans indicating whether each survived
+getRawResults :: [i] -> (a -> [Bool]) -> [a] -> [([[i]],[(a,Bool)])]
+getRawResults is ps ms = (id *** (zip ms)) `map` getRawResults' is ps ms
 
 -- | Returns a description of property sets, grouping the ones that had the
 --   same surviving mutants.  The resulting list is ordered starting with the
 --   least surviving mutants to the most surviving mutants.
+--
 -- Arguments:
 --
 -- * @is@: list of property ids (@length is == length (pmap x)@)
@@ -170,14 +183,12 @@ getRawResults ems nms f pmap = map (mapSnd (zipWith boolToMaybe ms))
 --
 --   * a list of property sets
 --   * a boolean list indicating wether a given mutant survived
---
--- > length (pssurv is pmap ms) == length (pmap f)
-pssurv :: [i] -> (a -> [Bool]) -> [a] -> [([[i]],[Bool])]
-pssurv is pmap = sortOn (count id . snd)
-               . sortAndGroupFstBySnd
-               . zip (subsets is)
-               . transpose
-               . map (compositions . pmap)
+getRawResults' :: [i] -> (a -> [Bool]) -> [a] -> [([[i]],[Bool])]
+getRawResults' is pmap = sortOn (count id . snd)
+                       . sortAndGroupFstBySnd
+                       . zip (subsets is)
+                       . transpose
+                       . map (compositions . pmap)
 
 -- | 'nSurv' @props fs@ returns the number of values that match
 --   compositions of properties on the property map.

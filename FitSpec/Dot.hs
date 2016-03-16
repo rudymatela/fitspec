@@ -5,10 +5,6 @@ import FitSpec
 import FitSpec.Utils
 import Data.List
 
-relevantSI :: Eq i => [[i]] -> ([[i]],[i])
-relevantSI iss = ( relevantPropertySets iss
-                 , relevantImplications iss )
-
 -- | Given a list of pairs of property groups and their implications,
 --   return implications between groups (transitive cases are ommitted).
 groupImplications :: Eq i => [([[i]], [i])] -> [([[i]],[[i]])]
@@ -54,8 +50,8 @@ getDotfile :: (Mutable a)
 getDotfile ems n f = genDotfileFromGI
                    . attachObviousness
                    . groupImplications
-                   . map (relevantSI . fst)
-                   . getRawResults ems n f
+                   . map (\r -> (sets r, implied r))
+                   . getResultsExtra ems n f
 
 -- | Equivalent to report, but writes a dotfile to a file
 writeDotfile :: (Mutable a)
