@@ -22,11 +22,6 @@ module FitSpec.Engine
 
   , reduceImplications
   , filterNonCanon
-
-  -- TODO: Remove export of relevantPS, relevantI and getRaw (fix FitSpec.Dot)
-  , relevantPropertySets
-  , relevantImplications
-  , getRawResults
   )
 where
 
