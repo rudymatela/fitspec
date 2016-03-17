@@ -192,40 +192,26 @@ showPropertySet = (\s -> "{" ++ s ++ "}") . intercalate "," . map show
 
 -- | Show conjectures derived from results
 showConjectures :: Bool -> [Result a] -> String
-showConjectures showVeryWeak =
-    table " "
-  . concatMap showConjectures1
-  . sortOn (abs . (50-) . score)
-  . (if showVeryWeak
-       then id
-       else filter (\r -> nKilled r    /= 0
-                       && nSurvivors r /= 0))
-  . reduceImplications
-  . filterNonCanon
-  . reverse
+showConjectures showVeryWeak = table " "
+                             . map showConjecture
+                             . filter (\r -> showVeryWeak
+                                          || cnKilled r    /= 0
+                                          && cnSurvivors r /= 0)
+                             . conjectures
 
-
--- | Show conjectures derived from a single result.
-showConjectures1 :: Result a -> [[String]]
-showConjectures1 r =
-           map (++ ["   ", show s ++ "% killed", sMeaning])
-         $ [ [showPropertySet p, " = ", showPropertySet p'] | p' <- ps ]
-        ++ [ [showPropertySet p, "==>", showPropertySet i ] | (not.null) i ]
-  where (p:ps) = sets r
-        i      = implied r
-        s      = score r
-        sMeaning | s < 1  || 99 < s = "(very weak)"
+showConjecture :: Conjecture -> [String]
+showConjecture Conjecture {isEq=eq, cleft=l, cright=r, cscore=s} =
+  [ showPropertySet l
+  , if eq then " = " else "==>"
+  , showPropertySet r
+  , "   "
+  , show s ++ "% killed"
+  , sMeaning
+  ]
+  where sMeaning | s < 1  || 99 < s = "(very weak)"
                  | s < 11 || 89 < s = "(weak)"
                  | s < 33 || 67 < s = "(mild)"
                  | otherwise        = "(strong)" -- the closer to 50 the better
--- TODO: improve implication score
--- implication score can be improved by
--- by separating each implication on its own:
---   [4] ==> [2,3]
--- become
---   [4] ==> [2]
---   [4] ==> [3]
--- Then evaluating percentage of occurences of True ==> True and other cases
 
 qualifyCM :: Results a -> String
 qualifyCM rs | c && m    = "complete and minimal"
@@ -234,4 +220,3 @@ qualifyCM rs | c && m    = "complete and minimal"
              | otherwise = "incomplete and non-minimal"
   where c = complete rs
         m = minimal rs
-

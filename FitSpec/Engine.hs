@@ -22,6 +22,8 @@ module FitSpec.Engine
 
   , reduceImplications
   , filterNonCanon
+  , Conjecture (..)
+  , conjectures
   )
 where
 
@@ -217,3 +219,47 @@ nSurv :: (a -> [Bool]) -> [a] -> [Int]
 nSurv props = map (count id)
             . transpose
             . map (compositions . props)
+
+
+data Conjecture = Conjecture
+  { isEq        :: Bool
+  , isIm        :: Bool
+  , cleft       :: [Int]
+  , cright      :: [Int]
+  , cscore      :: Int
+  , cnKilled    :: Int
+  , cnSurvivors :: Int
+  } deriving Show
+
+conjectures :: [Result a] -> [Conjecture]
+conjectures = concatMap conjectures1
+            . sortOn (abs . (50-) . score) -- closer to 50 the better!
+            . reduceImplications
+            . filterNonCanon
+            . reverse
+
+conjectures1 :: Result a -> [Conjecture]
+conjectures1 r = [ p `eq` p' | p' <- ps ]
+              ++ [ p `im` i  | (not.null) i ]
+  where
+    (p:ps) = sets r
+    i      = implied r
+    eq     = conj True
+    im     = conj False
+    conj isE p p' = Conjecture
+      { isEq        = isE
+      , isIm        = not isE
+      , cleft       = p
+      , cright      = p'
+      , cscore      = score r
+      , cnKilled    = nKilled r
+      , cnSurvivors = nSurvivors r
+      }
+-- TODO: improve implication score
+-- implication score can be improved by
+-- by separating each implication on its own:
+--   [4] ==> [2,3]
+-- become
+--   [4] ==> [2]
+--   [4] ==> [3]
+-- Then evaluating percentage of occurences of True ==> True and other cases
