@@ -45,25 +45,25 @@ genDotfileFromGI = (\s -> "digraph G {\n" ++ s ++ "}\n")
 -- | Equivalent to 'getResults' but returns a dotfile
 getDotfile :: (Mutable a)
            => [a]
-           -> Int -> a -> (a -> [Bool])
+           -> Int -> Int -> a -> (a -> [Property])
            -> String
-getDotfile ems n f = genDotfileFromGI
-                   . attachObviousness
-                   . groupImplications
-                   . map (\r -> (sets r, implied r))
-                   . getResultsExtra ems n f
+getDotfile ems m n f ps = genDotfileFromGI
+                        . attachObviousness
+                        . groupImplications
+                        . map (\r -> (sets r, implied r))
+                        $ getResultsExtra ems f ps m n
 
 -- | Equivalent to report, but writes a dotfile to a file
 writeDotfile :: (Mutable a)
              => String
              -> [a]
-             -> Int -> a -> (a -> [Bool])
+             -> Int -> Int -> a -> (a -> [Property])
              -> IO ()
-writeDotfile fn ems n f = writeFile fn . getDotfile ems n f
+writeDotfile fn ems m n f = writeFile fn . getDotfile ems m n f
 
 -- | Equivalent to report, but writes a dotfile to stdout
 putDotfile :: (Mutable a)
            => [a]
-           -> Int -> a -> (a -> [Bool])
+           -> Int -> Int -> a -> (a -> [Property])
            -> IO ()
-putDotfile ems n f = putStr . getDotfile ems n f
+putDotfile ems m n f = putStr . getDotfile ems m n f

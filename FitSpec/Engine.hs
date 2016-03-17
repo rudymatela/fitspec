@@ -8,6 +8,7 @@ module FitSpec.Engine
 
   , getResults
   , getResultsExtra
+  , getResultsExtraTimeout
   , Result (..)
   , Results
 
@@ -104,19 +105,33 @@ type Results a = [Result a]
 
 -- | Return minimality and completeness results.  See 'report'.
 getResults :: (Mutable a)
-           => Int -> a -> (a -> [Bool])
+           => a -> (a -> [Property]) -> Int -> Int
            -> Results a
 getResults = getResultsExtra []
 
 getResultsExtra :: (Mutable a)
                 => [a]
-                -> Int -> a -> (a -> [Bool])
+                -> a -> (a -> [Property]) -> Int -> Int
                 -> Results a
-getResultsExtra ems nms f pmap = map (uncurry processRawResult)
-                               $ getRawResults is pmap ms
-  where is = [1..(length (pmap f))]
+getResultsExtra ems f ps nms nts = map (uncurry processRawResult)
+                                 $ getRawResults is pmap ms
+  where is = [1..(length $ ps f)]
+        pmap f = propertiesToMap (ps f) nts
         ms = take nms (tail $ mutants f) ++ ems
 
+getResultsExtraTimeout :: (Mutable a)
+                       => Int
+                       -> [a]
+                       -> a -> (a -> [Property]) -> Int -> Int
+                       -> IO (Results a)
+getResultsExtraTimeout 0 ems f ps m n = return $ getResultsExtra ems f ps m n
+getResultsExtraTimeout t ems f ps nm0 nt0 = lastTimeout t resultss
+  where
+    resultss = map fst
+             $ takeWhileIncreasingOn ((totalMutants . head) *** id)
+             [ (getResultsExtra ems f ps nm nt, propertiesNTests nt $ ps f)
+             | (nm,nt) <- iterate (incHalf *** incHalf) (nm0,nt0) ]
+    incHalf x = x + x `div` 2
 
 processRawResult :: [[Int]] -> [(a,Bool)] -> Result a
 processRawResult iss mhs = Result

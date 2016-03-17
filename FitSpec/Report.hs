@@ -120,13 +120,10 @@ reportWithExtra extraMutants args f properties = do
 reportWithExtra' :: (Mutable a, ShowMutable a)
                  => [a] -> Args -> a -> (a -> [Property]) -> IO ()
 reportWithExtra' extraMutants args f properties = do
-  let pmap n f = propertiesToMap (properties f) n
-      resultss = takeWhileIncreasingOn (totalMutants . head)
-               . map (\n -> let rs = getResultsExtra extraMutants n f
-                                                     (pmap (nTestsF args n))
-                            in foldr seq rs rs) -- eval head -> eval trunk
-               $ (iterate (\x -> x + x `div` 2) (nMutants args))
-  results <- lastTimeout (timeout args) resultss
+  results <- getResultsExtraTimeout (timeout args)
+                                    extraMutants
+                                    f properties
+                                    (nMutants args) (nTests args)
 
   let nm = totalMutants $ head results
       nt = nTestsF args nm
