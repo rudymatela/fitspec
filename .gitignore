@@ -5,6 +5,7 @@
 
 # vim stuff
 **.swp
+**.swo
 
 # ctags stuff
 **/TAGS
