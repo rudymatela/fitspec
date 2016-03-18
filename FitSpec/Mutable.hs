@@ -143,7 +143,7 @@ mutationsFor f x = case errorToNothing (f x) of
 -- | Returns tiers of mutants on a selection of arguments of a function.
 -- Will only return the null mutant from an empty selection of arguments.
 tiersMutantsOn :: (Eq a, Mutable b) => (a->b) -> [a] -> [[a->b]]
-tiersMutantsOn f xs = mutate f `tmap` tProducts (map (mutationsFor f) xs)
+tiersMutantsOn f xs = mutate f `tmap` products (map (mutationsFor f) xs)
 
 -- | Given that the underlying enumeration for argument/result values is
 -- without repetitions, this instance does not repeat mutants.
@@ -160,84 +160,84 @@ tiersMutantsOn f xs = mutate f `tmap` tProducts (map (mutationsFor f) xs)
 -- >               False -> False
 -- >               True -> True ] ]
 instance (Eq a, Listable a, Mutable b) => Mutable (a -> b) where
-  mutiers f = tiersMutantsOn f `tConcatMap` tSetsOf tiers
+  mutiers f = tiersMutantsOn f `concatMapT` setsOf tiers
 
 
 -- *** *** Instances for tuples *** ***
 
 instance (Mutable a, Mutable b) => Mutable (a,b) where
-  mutiers (f,g) = mutiers f `tProduct` mutiers g
+  mutiers (f,g) = mutiers f >< mutiers g
 
 instance (Mutable a, Mutable b, Mutable c) => Mutable (a,b,c) where
-  mutiers (f,g,h) = tProductWith (\f' (g',h') -> (f',g',h'))
-                                 (mutiers f) (mutiers (g,h))
+  mutiers (f,g,h) = productWith (\f' (g',h') -> (f',g',h'))
+                                (mutiers f) (mutiers (g,h))
 
 instance (Mutable a, Mutable b, Mutable c, Mutable d)
       => Mutable (a,b,c,d) where
-  mutiers (f,g,h,i) = tProductWith (\f' (g',h',i') -> (f',g',h',i'))
-                                   (mutiers f) (mutiers (g,h,i))
+  mutiers (f,g,h,i) = productWith (\f' (g',h',i') -> (f',g',h',i'))
+                                  (mutiers f) (mutiers (g,h,i))
 
 instance (Mutable a, Mutable b, Mutable c, Mutable d, Mutable e)
       => Mutable (a,b,c,d,e) where
-  mutiers (f,g,h,i,j) = tProductWith (\f' (g',h',i',j') -> (f',g',h',i',j'))
-                                     (mutiers f) (mutiers (g,h,i,j))
+  mutiers (f,g,h,i,j) = productWith (\f' (g',h',i',j') -> (f',g',h',i',j'))
+                                    (mutiers f) (mutiers (g,h,i,j))
 
 instance (Mutable a, Mutable b, Mutable c, Mutable d, Mutable e, Mutable f)
       => Mutable (a,b,c,d,e,f) where
-  mutiers (f,g,h,i,j,k) = tProductWith (\f' (g',h',i',j',k') ->
+  mutiers (f,g,h,i,j,k) = productWith (\f' (g',h',i',j',k') ->
                                            (f',g',h',i',j',k'))
-                                       (mutiers f) (mutiers (g,h,i,j,k))
+                                      (mutiers f) (mutiers (g,h,i,j,k))
 
 instance (Mutable a, Mutable b, Mutable c, Mutable d,
           Mutable e, Mutable f, Mutable g)
       => Mutable (a,b,c,d,e,f,g) where
-  mutiers (f,g,h,i,j,k,l) = tProductWith (\f' (g',h',i',j',k',l') ->
+  mutiers (f,g,h,i,j,k,l) = productWith (\f' (g',h',i',j',k',l') ->
                                              (f',g',h',i',j',k',l'))
-                                         (mutiers f)
-                                         (mutiers (g,h,i,j,k,l))
+                                        (mutiers f)
+                                        (mutiers (g,h,i,j,k,l))
 
 instance (Mutable a, Mutable b, Mutable c, Mutable d,
           Mutable e, Mutable f, Mutable g, Mutable h)
       => Mutable (a,b,c,d,e,f,g,h) where
-  mutiers (f,g,h,i,j,k,l,m) = tProductWith (\f' (g',h',i',j',k',l',m') ->
+  mutiers (f,g,h,i,j,k,l,m) = productWith (\f' (g',h',i',j',k',l',m') ->
                                                (f',g',h',i',j',k',l',m'))
-                                           (mutiers f)
-                                           (mutiers (g,h,i,j,k,l,m))
+                                          (mutiers f)
+                                          (mutiers (g,h,i,j,k,l,m))
 
 instance (Mutable a, Mutable b, Mutable c, Mutable d, Mutable e,
           Mutable f, Mutable g, Mutable h, Mutable i)
       => Mutable (a,b,c,d,e,f,g,h,i) where
   mutiers (f,g,h,i,j,k,l,m,n) =
-    tProductWith (\f' (g',h',i',j',k',l',m',n') ->
+    productWith (\f' (g',h',i',j',k',l',m',n') ->
                    (f',g',h',i',j',k',l',m',n'))
-                 (mutiers f)
-                 (mutiers (g,h,i,j,k,l,m,n))
+                (mutiers f)
+                (mutiers (g,h,i,j,k,l,m,n))
 
 instance (Mutable a, Mutable b, Mutable c, Mutable d, Mutable e,
           Mutable f, Mutable g, Mutable h, Mutable i, Mutable j)
       => Mutable (a,b,c,d,e,f,g,h,i,j) where
   mutiers (f,g,h,i,j,k,l,m,n,o) =
-    tProductWith (\f' (g',h',i',j',k',l',m',n',o') ->
+    productWith (\f' (g',h',i',j',k',l',m',n',o') ->
                    (f',g',h',i',j',k',l',m',n',o'))
-                 (mutiers f)
-                 (mutiers (g,h,i,j,k,l,m,n,o))
+                (mutiers f)
+                (mutiers (g,h,i,j,k,l,m,n,o))
 
 instance (Mutable a, Mutable b, Mutable c, Mutable d,
           Mutable e, Mutable f, Mutable g, Mutable h,
           Mutable i, Mutable j, Mutable k)
       => Mutable (a,b,c,d,e,f,g,h,i,j,k) where
   mutiers (f,g,h,i,j,k,l,m,n,o,p) =
-    tProductWith (\f' (g',h',i',j',k',l',m',n',o',p') ->
+    productWith (\f' (g',h',i',j',k',l',m',n',o',p') ->
                    (f',g',h',i',j',k',l',m',n',o',p'))
-                 (mutiers f)
-                 (mutiers (g,h,i,j,k,l,m,n,o,p))
+                (mutiers f)
+                (mutiers (g,h,i,j,k,l,m,n,o,p))
 
 instance (Mutable a, Mutable b, Mutable c, Mutable d,
           Mutable e, Mutable f, Mutable g, Mutable h,
           Mutable i, Mutable j, Mutable k, Mutable l)
       => Mutable (a,b,c,d,e,f,g,h,i,j,k,l) where
   mutiers (f,g,h,i,j,k,l,m,n,o,p,q) =
-    tProductWith (\f' (g',h',i',j',k',l',m',n',o',p',q') ->
+    productWith (\f' (g',h',i',j',k',l',m',n',o',p',q') ->
                    (f',g',h',i',j',k',l',m',n',o',p',q'))
-                 (mutiers f)
-                 (mutiers (g,h,i,j,k,l,m,n,o,p,q))
+                (mutiers f)
+                (mutiers (g,h,i,j,k,l,m,n,o,p,q))
