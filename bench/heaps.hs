@@ -1,7 +1,6 @@
 {-# Language DeriveDataTypeable, NoMonomorphismRestriction #-}
 import System.Console.CmdArgs hiding (args)
 import FitSpec
-import Test.Check (tSetsOf)
 import Prelude hiding (null)
 import qualified Data.List as L
 import Data.Maybe (listToMaybe)
