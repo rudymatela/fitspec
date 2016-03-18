@@ -169,8 +169,7 @@ showNewMutants2 f n = tmap (showMutantAsTuple [] uf . uncurry)
 mutiersOld :: (Eq a, Eq b, Listable a, Listable b)
              => (a -> b) -> [[a -> b]]
 mutiersOld f = tmap (defaultFunPairsToFunction f)
-             $ tfilter (canonicalMutation f)
-             $ tFunctionPairs tiers tiers
+             $ functionPairs tiers tiers `suchThat` canonicalMutation f
 
 canonicalMutation :: Eq b => (a -> b) -> [(a, b)] -> Bool
 -- This simple version on the line below
