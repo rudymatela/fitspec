@@ -81,10 +81,9 @@ filterNonCanon (r:rs) = (r:)
 reduceImplications :: [Result a] -> [Result a]
 reduceImplications [] = []
 reduceImplications (r:rs) = r : map (r `reduce`) (reduceImplications rs)
-  where r `reduce` r' = if or (productWith contained (sets r) (sets r'))
+  where r `reduce` r' = if or [s `contained` s' | s <- sets r, s' <- sets r']
                           then r' { implied = implied r' \\ implied r }
                           else r'
-        productWith f xs ys = [f x y | x <- xs, y <- ys]
 
 
 data Result a = Result
