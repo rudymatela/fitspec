@@ -5,14 +5,21 @@
 BINDIR=`dirname $0`
 BENCH=$BINDIR/bench
 
-$BENCH black sorting -tbool -n1000   -m1000 -e
-$BENCH black sorting -tbool -n1000   -m1000
-$BENCH black sorting -tint2 -m1000   -n1000
-$BENCH black sorting -tint2 -m4000   -n1000
-$BENCH black sorting -tint2 -m4000   -n4000
-$BENCH black sorting -tint3 -m4000   -n4000
-$BENCH black sorting -tint  -n10000  -m1000
-$BENCH black sorting -tint  -n10000  -m4000
-$BENCH black sorting -tint  -n1000   -m1000
-$BENCH black sorting -tint3 -m100000 -n4000
-$BENCH black sorting -tint  -n100000 -m4000
+$BENCH sorting -ebool -m400  -n400    -vr4
+$BENCH sorting -ebool -m1000 -n1000   -vr4
+
+$BENCH sorting -ew1 -m1000 -n1000   -vr4
+$BENCH sorting -ew1 -m4000 -n4000   -vr4
+
+$BENCH sorting -ew2 -m1000 -n1000   -vr4
+$BENCH sorting -ew2 -m4000 -n4000   -vr4
+
+$BENCH sorting -ew3 -m4000 -n4000   -vr4
+$BENCH sorting -ew3 -m4000 -n10000  -vr4
+$BENCH sorting -ew3 -m4000 -n40000  -vr4
+$BENCH sorting -ew3 -m4000 -n100000 -vr4
+
+$BENCH sorting -eint  -m4000 -n4000   -vr4
+$BENCH sorting -eint  -m4000 -n10000  -vr4
+$BENCH sorting -eint  -m4000 -n40000  -vr4
+$BENCH sorting -eint  -m4000 -n100000 -vr4

@@ -1,0 +1,30 @@
+./bench/sorting -ebool -m400 -n400 -vr4
+Apparent complete but non-minimal specification based on
+400 test cases for each of properties 1, 2, 3, 4, 5 and 6
+for each of 400 mutant variations.
+
+Property                  #Survivors   Smallest or simplest
+ sets                      (%Killed)    surviving mutant
+
+{6} {1,4} {1,5} {1,2,3}   0 (100%)
+
+{4} {5} {2,3}             2 (99%)      \xs -> case xs of
+                                                [False,True] -> [True,False]
+                                                _ -> sort xs
+
+{1,2}                     11 (97%)     \xs -> case xs of
+                                                [False] -> [True]
+                                                _ -> sort xs
+
+{2}                       15 (96%)     \xs -> case xs of
+                                                [False] -> [True]
+                                                _ -> sort xs
+
+Conjectures:
+{4}  =  {5}       99% killed  (weak)
+{4}  =  {2,3}     99% killed  (weak)
+{6}  =  {1,4}     100% killed (very weak)
+
+real 0.23
+user 0.22
+sys 0.00

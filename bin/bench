@@ -1,35 +1,16 @@
 #!/bin/bash
 #
-# benchmark runner, stores results in the results folder
+# bench: FitSpec benchmark runner, stores results in the results folder
 #
-# TODO: fix this (bin/bench) script (it doesn't work after dir renames)
+# usage:
+#   ./bin/bench <benchname> <args...>
+#
+# example:
+#   make bench/sorting
+#   ./bin/bench sorting -tint2 -m2000 -n1000
+
 
 ROOT="`dirname $0`/.."
-
-# cabal-build <dir> <target>
-cabal-build() {
-	dir=$1
-	target=$2
-	cd $dir &&
-	cabal configure --enable-benchmarks &&
-	cabal build $target &&
-	cd - > /dev/null
-}
-
-# cabal-bench <dir/method> <benchname> [benchmark arguments...]
-cabal-bench() {
-	method=$1
-	benchname=$2
-	shift 2
-	date "+%Y-%m-%d %H:%M:%S"
-
-	cabal-build $method $benchname 1>&2 &&
-
-	echo $HOSTNAME$ ./$method/dist/build/$benchname/$benchname "$@" &&
-	echo &&
-	/usr/bin/time -p ./$method/dist/build/$benchname/$benchname "$@" 2>&1
-}
-
 
 # $ join -a -b -c 10 20
 # -a-b-c1020
@@ -38,34 +19,12 @@ join() {
 }
 
 main() {
-	method=$1
-	benchmark=$2
-	shift 2
-
-	methoddir=$method
-	extraargs=
-	case $method in
-	"grey")
-		methoddir=black
-		extraargs=--classify
-		;;
-	esac
-
-	mkdir -p results/$benchmark
-	cabal-bench $methoddir $benchmark $extraargs "$@" |
-	tee $ROOT/results/$benchmark/$method`join "$@"`-$HOSTNAME
+	bname="$1"
+	shift
+	out="$ROOT/results/$bname`join "$@"`-$HOSTNAME"
+	make bench/$bname
+    echo "./bench/$bname $@" | tee $out
+	/usr/bin/time -p $ROOT/bench/$bname "$@" 2>&1 | tee -a $out
 }
-
-
-help() {
-  echo "Usage: "
-  echo "  $0 <method> <benchmark> [args]"
-  echo "Usual usage: "
-  echo "  $0 <black/patterns> <sorting/heaps> -t<type> -m<mutants> -n<tests> [other args...]"
-  exit  1
-}
-
-
-[ -n "$1" ] || help
 
 main "$@"

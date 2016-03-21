@@ -25,7 +25,6 @@ properties sort =
   , property $ \x xs ->         elem x (sort xs) == elem x xs
   , property $ \x xs ->        count x (sort xs) == count x xs
   , property $ \xs ->   permutation xs (sort xs)
-  , property $ \xs ->             sort (sort xs) == sort xs
   , property $ \x xs ->       insert x (sort xs) == sort (x:xs)
   ]
 
@@ -53,11 +52,14 @@ main = do
     "bool"  -> run (sort :: Ty Bool)
     "bools" -> run (sort :: Ty [Bool])
     "int"   -> run (sort :: Ty Int)
-    "int1"  -> run (sort :: Ty UInt1)
-    "int2"  -> run (sort :: Ty UInt2)
-    "int3"  -> run (sort :: Ty UInt3)
+    "i1"    -> run (sort :: Ty Int1)
+    "i2"    -> run (sort :: Ty Int2)
+    "i3"    -> run (sort :: Ty Int3)
+    "w1"    -> run (sort :: Ty Word1)
+    "w2"    -> run (sort :: Ty Word2)
+    "w3"    -> run (sort :: Ty Word3)
     "unit"  -> run (sort :: Ty ())
-    _       -> run (sort :: Ty UInt2)
+    _       -> run (sort :: Ty Word2)
 
 -- This hack is only necessary when using sortCounter as a manual mutant
 instance Bounded a => Bounded [a] where
