@@ -10,6 +10,7 @@ module FitSpec.Report
 where
 
 import Data.List (intercalate, intersperse)
+import Data.Maybe (fromMaybe)
 
 import FitSpec.Engine
 import FitSpec.Mutable
@@ -131,21 +132,25 @@ reportWithExtra' extraMutants args f properties = do
   putStrLn $ "Apparent " ++ qualifyCM results ++ " specification based on"
   putStrLn $ showNumberOfTestsAndMutants nts nm False
 
-  let showR | verbose args = showDetailedResults (rows args)
+  let showR | verbose args = showDetailedResults
             | otherwise    = showResults
-  putStrLn $ showR (showMutant args f) results
+  putStrLn $ showR (rows args) (showMutant args f) results
 
 
-showResults :: (a -> String)
+showResults :: Maybe Int -> (a -> String)
             -> [Result a] -> String
-showResults showMutant rs@(r:_) = completeness
-                       ++ "\n" ++ minimality
+showResults mlimit showMutant rs@(r:_) = completeness
+                              ++ "\n" ++ minimality
   where
+    showMutants ms = init . unlines $ map showMutant ms
     completeness = show (nSurvivors r) ++ " survivors ("
                 ++ show (score r) ++ "% killed)"
-                ++ case smallestSurvivor r of
-                     Nothing -> ".\n"
-                     Just m  -> ", smallest:\n" ++ "  " `beside` showMutant m
+                ++ case take (fromMaybe 1 mlimit) $ survivors r of
+                     [] -> ".\n"
+                     [m] -> ", smallest:\n"
+                         ++ "  " `beside` showMutant m
+                     ms  -> ", " ++ show (length ms) ++ " smallest:\n"
+                         ++ "  " `beside` showMutants ms
     minimality = "apparent minimal property-sub-sets:  "
               ++ (unwords . map showPropertySet $ sets r) ++ "\n"
               ++ case showConjectures False rs of
