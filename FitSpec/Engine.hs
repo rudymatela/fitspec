@@ -193,7 +193,7 @@ getRawResults is ps ms = (id *** (zip ms)) `map` getRawResults' is ps ms
 -- Return a list of tuples containing:
 --
 --   * a list of property sets
---   * a boolean list indicating wether a given mutant survived
+--   * a boolean list indicating whether a given mutant survived
 getRawResults' :: [i] -> (a -> [Bool]) -> [a] -> [([[i]],[Bool])]
 getRawResults' is pmap = sortOn (count id . snd)
                        . sortAndGroupFstBySnd
