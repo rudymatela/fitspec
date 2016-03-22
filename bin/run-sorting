@@ -9,7 +9,7 @@ $BENCH sorting -ebool -m400  -n400    -vr4
 $BENCH sorting -ebool -m1000 -n1000   -vr4
 
 $BENCH sorting -ew1 -m1000 -n1000   -vr4
-$BENCH sorting -ew1 -m4000 -n4000   -vr4
+$BENCH sorting -ew1 -m2000 -n2000   -vr4
 
 $BENCH sorting -ew2 -m1000 -n1000   -vr4
 $BENCH sorting -ew2 -m4000 -n4000   -vr4
