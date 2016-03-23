@@ -46,7 +46,7 @@ GHCCMD = $(GHC) -i$(GHCIMPORTDIRS) $(GHCFLAGS)
 
 .PHONY: %.ghci
 %.ghci: %.hs
-	$(GHCCMD) --interactive $<
+	$(GHCCMD) -O0 --interactive $<
 
 
 # Cleaning rule (add as a clean dependency)
