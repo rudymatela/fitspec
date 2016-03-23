@@ -14,6 +14,7 @@ bench/avltrees: \
   ../leancheck/Test/Check/Error.hs \
   ../leancheck/Test/Types.hs \
   ../leancheck/Test/Check.hs \
+  ../leancheck/Test/Check/IO.hs \
   ../leancheck/Test/Check/Derive.hs \
   ../leancheck/Test/Check/Utils.hs \
   ../leancheck/Test/Check/Basic.hs \
@@ -34,6 +35,7 @@ bench/avltrees.o: \
   ../leancheck/Test/Check/Error.hs \
   ../leancheck/Test/Types.hs \
   ../leancheck/Test/Check.hs \
+  ../leancheck/Test/Check/IO.hs \
   ../leancheck/Test/Check/Derive.hs \
   ../leancheck/Test/Check/Utils.hs \
   ../leancheck/Test/Check/Basic.hs \
@@ -53,6 +55,7 @@ bench/bools: \
   ../leancheck/Test/Check/Error.hs \
   ../leancheck/Test/Types.hs \
   ../leancheck/Test/Check.hs \
+  ../leancheck/Test/Check/IO.hs \
   ../leancheck/Test/Check/Derive.hs \
   ../leancheck/Test/Check/Utils.hs \
   ../leancheck/Test/Check/Basic.hs \
@@ -72,6 +75,7 @@ bench/bools.o: \
   ../leancheck/Test/Check/Error.hs \
   ../leancheck/Test/Types.hs \
   ../leancheck/Test/Check.hs \
+  ../leancheck/Test/Check/IO.hs \
   ../leancheck/Test/Check/Derive.hs \
   ../leancheck/Test/Check/Utils.hs \
   ../leancheck/Test/Check/Basic.hs \
@@ -84,16 +88,17 @@ bench/heaps: \
   bench/heaps.hs \
   FitSpec.hs \
   bench/Heap.hs \
-  FitSpec/TestTypes.hs \
-  FitSpec/Derive.hs \
   FitSpec/Main.hs \
   FitSpec/Report.hs \
-  FitSpec/ShowMutable.hs \
   FitSpec/Engine.hs \
+  FitSpec/TestTypes.hs \
+  FitSpec/Derive.hs \
   FitSpec/Mutable.hs \
+  FitSpec/ShowMutable.hs \
   ../leancheck/Test/Check/Error.hs \
   ../leancheck/Test/Types.hs \
   ../leancheck/Test/Check.hs \
+  ../leancheck/Test/Check/IO.hs \
   ../leancheck/Test/Check/Derive.hs \
   ../leancheck/Test/Check/Utils.hs \
   ../leancheck/Test/Check/Basic.hs \
@@ -104,16 +109,17 @@ bench/heaps.o: \
   bench/heaps.hs \
   FitSpec.hs \
   bench/Heap.hs \
-  FitSpec/TestTypes.hs \
-  FitSpec/Derive.hs \
   FitSpec/Main.hs \
   FitSpec/Report.hs \
-  FitSpec/ShowMutable.hs \
   FitSpec/Engine.hs \
+  FitSpec/TestTypes.hs \
+  FitSpec/Derive.hs \
   FitSpec/Mutable.hs \
+  FitSpec/ShowMutable.hs \
   ../leancheck/Test/Check/Error.hs \
   ../leancheck/Test/Types.hs \
   ../leancheck/Test/Check.hs \
+  ../leancheck/Test/Check/IO.hs \
   ../leancheck/Test/Check/Derive.hs \
   ../leancheck/Test/Check/Utils.hs \
   ../leancheck/Test/Check/Basic.hs \
@@ -133,6 +139,7 @@ bench/id: \
   ../leancheck/Test/Check/Error.hs \
   ../leancheck/Test/Types.hs \
   ../leancheck/Test/Check.hs \
+  ../leancheck/Test/Check/IO.hs \
   ../leancheck/Test/Check/Derive.hs \
   ../leancheck/Test/Check/Utils.hs \
   ../leancheck/Test/Check/Basic.hs \
@@ -152,6 +159,7 @@ bench/id.o: \
   ../leancheck/Test/Check/Error.hs \
   ../leancheck/Test/Types.hs \
   ../leancheck/Test/Check.hs \
+  ../leancheck/Test/Check/IO.hs \
   ../leancheck/Test/Check/Derive.hs \
   ../leancheck/Test/Check/Utils.hs \
   ../leancheck/Test/Check/Basic.hs \
@@ -171,6 +179,7 @@ bench/list: \
   ../leancheck/Test/Check/Error.hs \
   ../leancheck/Test/Types.hs \
   ../leancheck/Test/Check.hs \
+  ../leancheck/Test/Check/IO.hs \
   ../leancheck/Test/Check/Derive.hs \
   ../leancheck/Test/Check/Utils.hs \
   ../leancheck/Test/Check/Basic.hs \
@@ -190,6 +199,7 @@ bench/list.o: \
   ../leancheck/Test/Check/Error.hs \
   ../leancheck/Test/Types.hs \
   ../leancheck/Test/Check.hs \
+  ../leancheck/Test/Check/IO.hs \
   ../leancheck/Test/Check/Derive.hs \
   ../leancheck/Test/Check/Utils.hs \
   ../leancheck/Test/Check/Basic.hs \
@@ -209,6 +219,7 @@ bench/pretty: \
   ../leancheck/Test/Check/Error.hs \
   ../leancheck/Test/Types.hs \
   ../leancheck/Test/Check.hs \
+  ../leancheck/Test/Check/IO.hs \
   ../leancheck/Test/Check/Derive.hs \
   ../leancheck/Test/Check/Utils.hs \
   ../leancheck/Test/Check/Basic.hs \
@@ -228,6 +239,7 @@ bench/pretty.o: \
   ../leancheck/Test/Check/Error.hs \
   ../leancheck/Test/Types.hs \
   ../leancheck/Test/Check.hs \
+  ../leancheck/Test/Check/IO.hs \
   ../leancheck/Test/Check/Derive.hs \
   ../leancheck/Test/Check/Utils.hs \
   ../leancheck/Test/Check/Basic.hs \
@@ -247,6 +259,7 @@ bench/sieve: \
   ../leancheck/Test/Check/Error.hs \
   ../leancheck/Test/Types.hs \
   ../leancheck/Test/Check.hs \
+  ../leancheck/Test/Check/IO.hs \
   ../leancheck/Test/Check/Derive.hs \
   ../leancheck/Test/Check/Utils.hs \
   ../leancheck/Test/Check/Basic.hs \
@@ -266,6 +279,7 @@ bench/sieve.o: \
   ../leancheck/Test/Check/Error.hs \
   ../leancheck/Test/Types.hs \
   ../leancheck/Test/Check.hs \
+  ../leancheck/Test/Check/IO.hs \
   ../leancheck/Test/Check/Derive.hs \
   ../leancheck/Test/Check/Utils.hs \
   ../leancheck/Test/Check/Basic.hs \
@@ -285,6 +299,7 @@ bench/sorting: \
   ../leancheck/Test/Check/Error.hs \
   ../leancheck/Test/Types.hs \
   ../leancheck/Test/Check.hs \
+  ../leancheck/Test/Check/IO.hs \
   ../leancheck/Test/Check/Derive.hs \
   ../leancheck/Test/Check/Utils.hs \
   ../leancheck/Test/Check/Basic.hs \
@@ -304,6 +319,7 @@ bench/sorting.o: \
   ../leancheck/Test/Check/Error.hs \
   ../leancheck/Test/Types.hs \
   ../leancheck/Test/Check.hs \
+  ../leancheck/Test/Check/IO.hs \
   ../leancheck/Test/Check/Derive.hs \
   ../leancheck/Test/Check/Utils.hs \
   ../leancheck/Test/Check/Basic.hs \
@@ -323,6 +339,7 @@ bench/spring: \
   ../leancheck/Test/Check/Error.hs \
   ../leancheck/Test/Types.hs \
   ../leancheck/Test/Check.hs \
+  ../leancheck/Test/Check/IO.hs \
   ../leancheck/Test/Check/Derive.hs \
   ../leancheck/Test/Check/Utils.hs \
   ../leancheck/Test/Check/Basic.hs \
@@ -342,6 +359,7 @@ bench/spring.o: \
   ../leancheck/Test/Check/Error.hs \
   ../leancheck/Test/Types.hs \
   ../leancheck/Test/Check.hs \
+  ../leancheck/Test/Check/IO.hs \
   ../leancheck/Test/Check/Derive.hs \
   ../leancheck/Test/Check/Utils.hs \
   ../leancheck/Test/Check/Basic.hs \
@@ -361,6 +379,7 @@ eg/sorting: \
   ../leancheck/Test/Check/Error.hs \
   ../leancheck/Test/Types.hs \
   ../leancheck/Test/Check.hs \
+  ../leancheck/Test/Check/IO.hs \
   ../leancheck/Test/Check/Derive.hs \
   ../leancheck/Test/Check/Utils.hs \
   ../leancheck/Test/Check/Basic.hs \
@@ -380,6 +399,7 @@ eg/sorting.o: \
   ../leancheck/Test/Check/Error.hs \
   ../leancheck/Test/Types.hs \
   ../leancheck/Test/Check.hs \
+  ../leancheck/Test/Check/IO.hs \
   ../leancheck/Test/Check/Derive.hs \
   ../leancheck/Test/Check/Utils.hs \
   ../leancheck/Test/Check/Basic.hs \
@@ -392,6 +412,7 @@ FitSpec/Derive.o: \
   FitSpec/ShowMutable.hs \
   ../leancheck/Test/Check/Error.hs \
   ../leancheck/Test/Check.hs \
+  ../leancheck/Test/Check/IO.hs \
   ../leancheck/Test/Check/Derive.hs \
   ../leancheck/Test/Check/Utils.hs \
   ../leancheck/Test/Check/Basic.hs \
@@ -411,6 +432,7 @@ FitSpec/Dot.o: \
   ../leancheck/Test/Check/Error.hs \
   ../leancheck/Test/Types.hs \
   ../leancheck/Test/Check.hs \
+  ../leancheck/Test/Check/IO.hs \
   ../leancheck/Test/Check/Derive.hs \
   ../leancheck/Test/Check/Utils.hs \
   ../leancheck/Test/Check/Basic.hs \
@@ -422,6 +444,7 @@ FitSpec/Engine: \
   ../leancheck/Test/Check/Error.hs \
   ../leancheck/Test/Check.hs \
   FitSpec/Utils.hs \
+  ../leancheck/Test/Check/IO.hs \
   ../leancheck/Test/Check/Derive.hs \
   ../leancheck/Test/Check/Utils.hs \
   ../leancheck/Test/Check/Basic.hs \
@@ -432,6 +455,7 @@ FitSpec/Engine.o: \
   ../leancheck/Test/Check/Error.hs \
   ../leancheck/Test/Check.hs \
   FitSpec/Utils.hs \
+  ../leancheck/Test/Check/IO.hs \
   ../leancheck/Test/Check/Derive.hs \
   ../leancheck/Test/Check/Utils.hs \
   ../leancheck/Test/Check/Basic.hs \
@@ -448,6 +472,7 @@ FitSpec: \
   ../leancheck/Test/Check/Error.hs \
   ../leancheck/Test/Types.hs \
   ../leancheck/Test/Check.hs \
+  ../leancheck/Test/Check/IO.hs \
   ../leancheck/Test/Check/Derive.hs \
   ../leancheck/Test/Check/Utils.hs \
   ../leancheck/Test/Check/Basic.hs \
@@ -463,6 +488,7 @@ FitSpec/Main: \
   FitSpec/PrettyPrint.hs \
   ../leancheck/Test/Check/Error.hs \
   ../leancheck/Test/Check.hs \
+  ../leancheck/Test/Check/IO.hs \
   ../leancheck/Test/Check/Derive.hs \
   ../leancheck/Test/Check/Utils.hs \
   ../leancheck/Test/Check/Basic.hs \
@@ -477,6 +503,7 @@ FitSpec/Main.o: \
   FitSpec/PrettyPrint.hs \
   ../leancheck/Test/Check/Error.hs \
   ../leancheck/Test/Check.hs \
+  ../leancheck/Test/Check/IO.hs \
   ../leancheck/Test/Check/Derive.hs \
   ../leancheck/Test/Check/Utils.hs \
   ../leancheck/Test/Check/Basic.hs \
@@ -495,6 +522,7 @@ FitSpec/Most.o: \
   ../leancheck/Test/Check/Error.hs \
   ../leancheck/Test/Types.hs \
   ../leancheck/Test/Check.hs \
+  ../leancheck/Test/Check/IO.hs \
   ../leancheck/Test/Check/Derive.hs \
   ../leancheck/Test/Check/Utils.hs \
   ../leancheck/Test/Check/Basic.hs \
@@ -505,6 +533,7 @@ FitSpec/Mutable.o: \
   FitSpec/Mutable.hs \
   ../leancheck/Test/Check/Error.hs \
   ../leancheck/Test/Check.hs \
+  ../leancheck/Test/Check/IO.hs \
   ../leancheck/Test/Check/Derive.hs \
   ../leancheck/Test/Check/Utils.hs \
   ../leancheck/Test/Check/Basic.hs \
@@ -521,6 +550,7 @@ FitSpec.o: \
   ../leancheck/Test/Check/Error.hs \
   ../leancheck/Test/Types.hs \
   ../leancheck/Test/Check.hs \
+  ../leancheck/Test/Check/IO.hs \
   ../leancheck/Test/Check/Derive.hs \
   ../leancheck/Test/Check/Utils.hs \
   ../leancheck/Test/Check/Basic.hs \
@@ -538,6 +568,7 @@ FitSpec/Report.o: \
   FitSpec/PrettyPrint.hs \
   ../leancheck/Test/Check/Error.hs \
   ../leancheck/Test/Check.hs \
+  ../leancheck/Test/Check/IO.hs \
   ../leancheck/Test/Check/Derive.hs \
   ../leancheck/Test/Check/Utils.hs \
   ../leancheck/Test/Check/Basic.hs \
@@ -547,6 +578,7 @@ FitSpec/ShowMutable.o: \
   FitSpec/PrettyPrint.hs \
   ../leancheck/Test/Check/Error.hs \
   ../leancheck/Test/Check.hs \
+  ../leancheck/Test/Check/IO.hs \
   ../leancheck/Test/Check/Derive.hs \
   ../leancheck/Test/Check/Utils.hs \
   ../leancheck/Test/Check/Basic.hs \
@@ -558,6 +590,7 @@ FitSpec/TestTypes.o: \
   FitSpec/ShowMutable.hs \
   ../leancheck/Test/Check/Error.hs \
   ../leancheck/Test/Check.hs \
+  ../leancheck/Test/Check/IO.hs \
   ../leancheck/Test/Check/Derive.hs \
   ../leancheck/Test/Check/Utils.hs \
   ../leancheck/Test/Check/Basic.hs \
@@ -578,6 +611,7 @@ tests/test-derive.o: \
   ../leancheck/Test/Check/Error.hs \
   ../leancheck/Test/Types.hs \
   ../leancheck/Test/Check.hs \
+  ../leancheck/Test/Check/IO.hs \
   ../leancheck/Test/Check/Derive.hs \
   ../leancheck/Test/Check/Utils.hs \
   ../leancheck/Test/Check/Basic.hs \
@@ -597,6 +631,7 @@ tests/test-derive: \
   ../leancheck/Test/Check/Error.hs \
   ../leancheck/Test/Types.hs \
   ../leancheck/Test/Check.hs \
+  ../leancheck/Test/Check/IO.hs \
   ../leancheck/Test/Check/Derive.hs \
   ../leancheck/Test/Check/Utils.hs \
   ../leancheck/Test/Check/Basic.hs \
@@ -617,6 +652,7 @@ tests/test-mutate.o: \
   FitSpec/ShowMutable.hs \
   ../leancheck/Test/Check/Error.hs \
   ../leancheck/Test/Check.hs \
+  ../leancheck/Test/Check/IO.hs \
   ../leancheck/Test/Check/Derive.hs \
   ../leancheck/Test/Check/Utils.hs \
   ../leancheck/Test/Check/Basic.hs \
@@ -636,6 +672,7 @@ tests/test-mutate: \
   FitSpec/ShowMutable.hs \
   ../leancheck/Test/Check/Error.hs \
   ../leancheck/Test/Check.hs \
+  ../leancheck/Test/Check/IO.hs \
   ../leancheck/Test/Check/Derive.hs \
   ../leancheck/Test/Check/Utils.hs \
   ../leancheck/Test/Check/Basic.hs \
@@ -656,6 +693,7 @@ tests/test-showmutable.o: \
   ../leancheck/Test/Types.hs \
   ../leancheck/Test/Check/Error.hs \
   ../leancheck/Test/Check.hs \
+  ../leancheck/Test/Check/IO.hs \
   ../leancheck/Test/Check/Derive.hs \
   ../leancheck/Test/Check/Utils.hs \
   ../leancheck/Test/Check/Basic.hs \
@@ -676,6 +714,7 @@ tests/test-showmutable: \
   ../leancheck/Test/Types.hs \
   ../leancheck/Test/Check/Error.hs \
   ../leancheck/Test/Check.hs \
+  ../leancheck/Test/Check/IO.hs \
   ../leancheck/Test/Check/Derive.hs \
   ../leancheck/Test/Check/Utils.hs \
   ../leancheck/Test/Check/Basic.hs \
