@@ -19,6 +19,7 @@ LISTHS=find -name \*.hs \
             -a \! \( -path "./dist/*" \
                   -o -path "./patterns/*" \
                   -o -path "./Setup.hs" \)
+HSS=$(shell $(LISTHS))
 LISTLIBS=find -name \*.hs \
               -a \! \( -path "./dist/*" \
                     -o -path "./patterns/*" \
@@ -89,8 +90,11 @@ clean: clean-hi-o
 	rm -f $(TESTS) $(BENCHS)
 
 # Debug: just list all source files compiled normally
-list:
+list-hs:
 	$(LISTHS)
+
+list-libs:
+	$(LISTLIBS)
 
 hlint:
 	hlint \

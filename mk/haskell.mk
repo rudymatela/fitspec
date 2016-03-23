@@ -26,11 +26,12 @@ DEPMK ?= mk/depend.mk
 
 # By default, excludes dist and Setup.hs, so that a Makefile can coexist nicely
 # in a cabalized project.
-LISTHS ?= find \( -path "./dist" -o -path "./Setup.hs" \) -prune \
-            -o -name "*.*hs" -print
-# Alternate LISTHSs:
-# LISTHS = find src -name \*.hs -o -name \*.lhs  # all sources on src folder
-# LISTHS = echo M1 M2 | tr ' ' '\n'              # specific files
+HSS ?= $(shell find \( -path "./dist" -o -path "./Setup.hs" \) -prune \
+                 -o -name "*.*hs" -print)
+# You can override HSS in your main Makefile
+# It should include all Haskell sources to be compiled by different targets
+# (even those that are not a dependency to all)
+# It will be used to generate dependencies and for cleaning objects
 
 
 
@@ -51,15 +52,15 @@ GHCCMD = $(GHC) -i$(GHCIMPORTDIRS) $(GHCFLAGS)
 # Cleaning rule (add as a clean dependency)
 .PHONY: clean-hi-o
 clean-hi-o:
-	$(LISTHS) | sed -e "s/hs$$/o/"  | xargs rm -f
-	$(LISTHS) | sed -e "s/hs$$/hi/" | xargs rm -f
-	$(LISTHS) | sed -e "s/hs$$/dyn_o/"  | xargs rm -f
-	$(LISTHS) | sed -e "s/hs$$/dyn_hi/" | xargs rm -f
+	find $(HSS) | sed -e 's/hs$$/o/'      | xargs rm -f
+	find $(HSS) | sed -e 's/hs$$/hi/'     | xargs rm -f
+	find $(HSS) | sed -e 's/hs$$/dyn_o/'  | xargs rm -f
+	find $(HSS) | sed -e 's/hs$$/dyn_hi/' | xargs rm -f
 
 
 # Update dependency file
 .PHONY: depend
 depend:
-	$(LISTHS) | ./mk/ghcdeps -i$(GHCIMPORTDIRS) $(GHCFLAGS) > $(DEPMK)
+	find $(HSS) | ./mk/ghcdeps -i$(GHCIMPORTDIRS) $(GHCFLAGS) > $(DEPMK)
 
 include $(DEPMK)
