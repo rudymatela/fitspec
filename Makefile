@@ -14,7 +14,7 @@ LEANCHECKPATH = ../leancheck
 
 # Misc variables
 GHCIMPORTDIRS = $(LEANCHECKPATH):bench
-GHCFLAGS = -dynamic
+GHCFLAGS = -dynamic -O2
 LISTHS=find -name \*.hs \
             -a \! \( -path "./dist/*" \
                   -o -path "./patterns/*" \
