@@ -111,7 +111,7 @@ reportWithExtra extraMutants args f properties = do
   case propertiesCE nt (properties f) of
     Nothing -> reportWithExtra' extraMutants args f properties
     Just ce -> do
-      putStrLn $ "ERROR: The original function-set does not follow property-set for "
+      putStrLn $ "ERROR: The original function-set does not follow property set for "
               ++ show nt ++ " tests"
       putStrLn $ "Counter-example to property " ++ ce
       putStrLn $ "Aborting."
@@ -151,7 +151,7 @@ showResults mlimit showMutant rs@(r:_) = completeness
                          ++ "  " `beside` showMutant m
                      ms  -> ", " ++ show (length ms) ++ " smallest:\n"
                          ++ "  " `beside` showMutants ms
-    minimality = "apparent minimal property-sub-sets:  "
+    minimality = "apparent minimal property subsets:  "
               ++ (unwords . map showPropertySet $ sets r) ++ "\n"
               ++ case showConjectures False rs of
                    "" -> "No conjectures.\n"
