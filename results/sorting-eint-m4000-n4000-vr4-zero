@@ -25,6 +25,6 @@ Conjectures:
 {5}  =  {2,4}     99% killed  (weak)
 {6}  =  {1,5}     100% killed (very weak)
 
-real 21.65
-user 21.60
-sys 0.04
+real 10.57
+user 10.53
+sys 0.03

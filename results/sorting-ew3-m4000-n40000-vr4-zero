@@ -8,9 +8,7 @@ Property            #Survivors   Smallest or simplest
 
 {6} {1,5} {1,2,4}   0 (100%)
 
-{1,4}               1 (99%)      \xs -> case xs of
-                                          [7] -> []
-                                          _ -> sort xs
+{1,4}               1 (99%)      sort
 
 {1,2,3}             3 (99%)      \xs -> case xs of
                                           [0,0,1] -> [0,1,1]
@@ -25,6 +23,6 @@ Conjectures:
 {5}  =  {2,4}     99% killed  (weak)
 {6}  =  {1,5}     100% killed (very weak)
 
-real 334.08
-user 329.01
-sys 1.16
+real 162.92
+user 162.54
+sys 0.36
