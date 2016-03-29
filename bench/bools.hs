@@ -1,6 +1,4 @@
 import FitSpec
-import Test.Check
-
 
 propertiesN :: (Bool -> Bool) -> [Property]
 propertiesN not =
