@@ -24,7 +24,7 @@ main() {
 	out="$ROOT/results/$bname`join "$@"`-$HOSTNAME"
 	make bench/$bname
     echo "./bench/$bname $@" | tee $out
-	/usr/bin/time -p $ROOT/bench/$bname "$@" 2>&1 | tee -a $out
+	/usr/bin/time --verbose $ROOT/bench/$bname "$@" 2>&1 | tee -a $out
 }
 
 main "$@"
