@@ -110,7 +110,7 @@ checkBindingsOfLength :: (Mutable a, ShowMutable a)
 checkBindingsOfLength n len f = (all . all) (bindingsOfLength len)
                               . concat
                               . take n
-                              . tmap (mutantS f)
+                              . mapT (mutantS f)
                               $ mutiers f
 -}
 
@@ -139,13 +139,13 @@ showOldMutants1 :: ( Eq a, Eq b
                    , Listable a, Listable b
                    , ShowMutable b )
                 => (a -> b) -> Int -> [[String]]
-showOldMutants1 f n = tmap (showMutantAsTuple [] f)
+showOldMutants1 f n = mapT (showMutantAsTuple [] f)
                     $ take n
                     $ mutiersOld f
 
 showNewMutants1 :: (ShowMutable a, Mutable a)
                 => a -> Int -> [[String]]
-showNewMutants1 f n = tmap (showMutantAsTuple [] f)
+showNewMutants1 f n = mapT (showMutantAsTuple [] f)
                     $ take n
                     $ mutiers f
 
@@ -161,14 +161,14 @@ showNewMutants2 :: ( Eq a, Eq b, Eq c
                    , Listable a, Listable b, Mutable c
                    , ShowMutable c )
                 => (a -> b -> c) -> Int -> [[String]]
-showNewMutants2 f n = tmap (showMutantAsTuple [] uf . uncurry)
+showNewMutants2 f n = mapT (showMutantAsTuple [] uf . uncurry)
                     $ take n
                     $ mutiers f
   where uf = uncurry f
 
 mutiersOld :: (Eq a, Eq b, Listable a, Listable b)
              => (a -> b) -> [[a -> b]]
-mutiersOld f = tmap (defaultFunPairsToFunction f)
+mutiersOld f = mapT (defaultFunPairsToFunction f)
              $ functionPairs tiers tiers `suchThat` canonicalMutation f
 
 canonicalMutation :: Eq b => (a -> b) -> [(a, b)] -> Bool

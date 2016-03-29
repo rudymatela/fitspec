@@ -56,7 +56,7 @@ tests n =
 
 showNewMutants1 :: (ShowMutable a, Mutable a)
                 => a -> Int -> [[String]]
-showNewMutants1 f n = tmap (showMutantAsTuple [] f)
+showNewMutants1 f n = mapT (showMutantAsTuple [] f)
                     $ take n
                     $ mutiers f
 

@@ -130,12 +130,12 @@ mutate f ms = foldr (flip mut) f ms -- or: foldl mut f ms
 mutationsFor :: Mutable b => (a->b) -> a -> [[(a,b)]]
 mutationsFor f x = case errorToNothing (f x) of
                      Nothing -> []
-                     Just fx -> ((,) x) `tmap` tail (mutiers fx)
+                     Just fx -> ((,) x) `mapT` tail (mutiers fx)
 
 -- | Returns tiers of mutants on a selection of arguments of a function.
 -- Will only return the null mutant from an empty selection of arguments.
 tiersMutantsOn :: (Eq a, Mutable b) => (a->b) -> [a] -> [[a->b]]
-tiersMutantsOn f xs = mutate f `tmap` products (map (mutationsFor f) xs)
+tiersMutantsOn f xs = mutate f `mapT` products (map (mutationsFor f) xs)
 
 -- | Given that the underlying enumeration for argument/result values is
 -- without repetitions, this instance does not repeat mutants.
