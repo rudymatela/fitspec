@@ -85,7 +85,7 @@ maxMerge :: Ord a => Heap a -> Heap a -> Heap a
 maxMerge Nil h = h
 maxMerge h Nil = h
 maxMerge h1@(Branch _ x1 l1 r1) h2@(Branch _ x2 l2 r2)
- | x1 <= x2 = branch x1 (maxMerge l1 h2) r1
+ | x1 >= x2 = branch x1 (maxMerge l1 h2) r1
  | otherwise = maxMerge h2 h1
 
 uncurry3 :: (a->b->c->d) -> (a,b,c) -> d
