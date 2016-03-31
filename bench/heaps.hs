@@ -60,10 +60,16 @@ sargs = args
 fns :: Ord a => Ty a
 fns = (insert, deleteMin, merge)
 
+em :: Ord a => [Ty a]
+em = take 0
+  [ (maxInsert, maxDeleteMin, maxMerge)
+  , (\i h -> Nil, deleteMin, merge)
+  ]
+
 main :: IO ()
 main = do 
   as <- getArgsWith sargs
-  let run f = reportWith as f (uncurry3 properties)
+  let run f = reportWithExtra em as f (uncurry3 properties)
   case (extra as) of
     "bool"  -> run (fns :: Ty Bool)
     "bools" -> run (fns :: Ty [Bool])
