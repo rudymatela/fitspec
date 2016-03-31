@@ -62,7 +62,9 @@ fns = (insert, deleteMin, merge)
 
 em :: Ord a => [Ty a]
 em = take 0
-  [ (\i h -> Nil, deleteMin, merge) ]
+  [ (maxInsert, maxDeleteMin, maxMerge)
+  , (\i h -> Nil, deleteMin, merge)
+  ]
 
 main :: IO ()
 main = do 
@@ -80,6 +82,21 @@ main = do
     "w3"    -> run (fns :: Ty Word3)
     "unit"  -> run (fns :: Ty ())
     ""      -> run (fns :: Ty Word2)
+
+
+maxInsert :: Ord a => a -> Heap a -> Heap a
+maxInsert x h = maxMerge h (branch x Nil Nil)
+
+maxDeleteMin :: Ord a => Heap a -> Heap a
+maxDeleteMin (Branch _ _ l r) = maxMerge l r
+maxDeleteMin Nil              = Nil
+
+maxMerge :: Ord a => Heap a -> Heap a -> Heap a
+maxMerge Nil h = h
+maxMerge h Nil = h
+maxMerge h1@(Branch _ x1 l1 r1) h2@(Branch _ x2 l2 r2)
+ | x1 >= x2 = branch x1 (maxMerge l1 h2) r1
+ | otherwise = maxMerge h2 h1
 
 uncurry3 :: (a->b->c->d) -> (a,b,c) -> d
 uncurry3 f (x,y,z) = f x y z
