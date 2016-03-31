@@ -73,11 +73,15 @@ main = do
   case (extra as) of
     "bool"  -> run (fns :: Ty Bool)
     "bools" -> run (fns :: Ty [Bool])
-    "int"   -> run (fns :: Ty Int)
-    "int2"  -> run (fns :: Ty UInt2)
-    "int3"  -> run (fns :: Ty UInt3)
+    "i"     -> run (fns :: Ty Int)
+    "i1"    -> run (fns :: Ty Int1)
+    "i2"    -> run (fns :: Ty Int2)
+    "i3"    -> run (fns :: Ty Int3)
+    "w1"    -> run (fns :: Ty Word1)
+    "w2"    -> run (fns :: Ty Word2)
+    "w3"    -> run (fns :: Ty Word3)
     "unit"  -> run (fns :: Ty ())
-    _       -> run (fns :: Ty UInt2)
+    ""      -> run (fns :: Ty Word2)
 
 
 maxInsert :: Ord a => a -> Heap a -> Heap a
