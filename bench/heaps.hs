@@ -60,9 +60,10 @@ sargs = args
 fns :: Ord a => Ty a
 fns = (insert, deleteMin, merge)
 
-em :: Ord a => [Ty a]
-em = take 0
+em :: (Bounded a, Ord a) => [Ty a]
+em = take 3
   [ (maxInsert, maxDeleteMin, maxMerge)
+  , (insert, deleteMin, crazyMerge)
   , (\i h -> Nil, deleteMin, merge)
   ]
 
@@ -71,8 +72,8 @@ main = do
   as <- getArgsWith sargs
   let run f = reportWithExtra em as f (uncurry3 properties)
   case (extra as) of
-    "bool"  -> run (fns :: Ty Bool)
-    "bools" -> run (fns :: Ty [Bool])
+--  "bool"  -> run (fns :: Ty Bool)
+--  "bools" -> run (fns :: Ty [Bool])
     "i"     -> run (fns :: Ty Int)
     "i1"    -> run (fns :: Ty Int1)
     "i2"    -> run (fns :: Ty Int2)
@@ -100,3 +101,9 @@ maxMerge h1@(Branch _ x1 l1 r1) h2@(Branch _ x2 l2 r2)
 
 uncurry3 :: (a->b->c->d) -> (a,b,c) -> d
 uncurry3 f (x,y,z) = f x y z
+
+crazyMerge :: (Bounded a, Ord a) => Heap a -> Heap a -> Heap a
+crazyMerge Nil Nil = Nil
+crazyMerge Nil h = h
+crazyMerge h Nil = h
+crazyMerge h h1 = insert maxBound $ merge h h1
