@@ -1,6 +1,7 @@
 module FitSpec.Report
   ( report
   , reportWith
+  , reportWithExtra
   , Args(..)
   , args
   , fixargs
