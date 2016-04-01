@@ -30,6 +30,7 @@ OBJS = $(shell $(LISTLIBS) | sed -e 's/hs$$/o/')
 BENCHS = bench/avltrees \
          bench/bools \
          bench/heaps \
+         bench/mergeheaps \
          bench/id \
          bench/list \
          bench/pretty \
