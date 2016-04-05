@@ -45,13 +45,13 @@ bench/avltrees.o: \
 bench/bools: \
   bench/bools.hs \
   FitSpec.hs \
-  FitSpec/TestTypes.hs \
-  FitSpec/Derive.hs \
   FitSpec/Main.hs \
   FitSpec/Report.hs \
-  FitSpec/ShowMutable.hs \
   FitSpec/Engine.hs \
+  FitSpec/TestTypes.hs \
+  FitSpec/Derive.hs \
   FitSpec/Mutable.hs \
+  FitSpec/ShowMutable.hs \
   ../leancheck/Test/Check/Error.hs \
   ../leancheck/Test/Types.hs \
   ../leancheck/Test/Check.hs \
@@ -65,13 +65,13 @@ bench/bools: \
 bench/bools.o: \
   bench/bools.hs \
   FitSpec.hs \
-  FitSpec/TestTypes.hs \
-  FitSpec/Derive.hs \
   FitSpec/Main.hs \
   FitSpec/Report.hs \
-  FitSpec/ShowMutable.hs \
   FitSpec/Engine.hs \
+  FitSpec/TestTypes.hs \
+  FitSpec/Derive.hs \
   FitSpec/Mutable.hs \
+  FitSpec/ShowMutable.hs \
   ../leancheck/Test/Check/Error.hs \
   ../leancheck/Test/Types.hs \
   ../leancheck/Test/Check.hs \
@@ -206,6 +206,48 @@ bench/list.o: \
   ../leancheck/Test/Check/Core.hs \
   FitSpec/PrettyPrint.hs \
   FitSpec/Utils.hs
+bench/mergeheaps: \
+  bench/mergeheaps.hs \
+  FitSpec.hs \
+  bench/Heap.hs \
+  FitSpec/Main.hs \
+  FitSpec/Report.hs \
+  FitSpec/Engine.hs \
+  FitSpec/TestTypes.hs \
+  FitSpec/Derive.hs \
+  FitSpec/Mutable.hs \
+  FitSpec/ShowMutable.hs \
+  ../leancheck/Test/Check/Error.hs \
+  ../leancheck/Test/Types.hs \
+  ../leancheck/Test/Check.hs \
+  ../leancheck/Test/Check/IO.hs \
+  ../leancheck/Test/Check/Derive.hs \
+  ../leancheck/Test/Check/Utils.hs \
+  ../leancheck/Test/Check/Basic.hs \
+  ../leancheck/Test/Check/Core.hs \
+  FitSpec/PrettyPrint.hs \
+  FitSpec/Utils.hs
+bench/mergeheaps.o: \
+  bench/mergeheaps.hs \
+  FitSpec.hs \
+  bench/Heap.hs \
+  FitSpec/Main.hs \
+  FitSpec/Report.hs \
+  FitSpec/Engine.hs \
+  FitSpec/TestTypes.hs \
+  FitSpec/Derive.hs \
+  FitSpec/Mutable.hs \
+  FitSpec/ShowMutable.hs \
+  ../leancheck/Test/Check/Error.hs \
+  ../leancheck/Test/Types.hs \
+  ../leancheck/Test/Check.hs \
+  ../leancheck/Test/Check/IO.hs \
+  ../leancheck/Test/Check/Derive.hs \
+  ../leancheck/Test/Check/Utils.hs \
+  ../leancheck/Test/Check/Basic.hs \
+  ../leancheck/Test/Check/Core.hs \
+  FitSpec/PrettyPrint.hs \
+  FitSpec/Utils.hs
 bench/pretty: \
   bench/pretty.hs \
   FitSpec.hs \
@@ -236,6 +278,92 @@ bench/pretty.o: \
   FitSpec/ShowMutable.hs \
   FitSpec/Engine.hs \
   FitSpec/Mutable.hs \
+  ../leancheck/Test/Check/Error.hs \
+  ../leancheck/Test/Types.hs \
+  ../leancheck/Test/Check.hs \
+  ../leancheck/Test/Check/IO.hs \
+  ../leancheck/Test/Check/Derive.hs \
+  ../leancheck/Test/Check/Utils.hs \
+  ../leancheck/Test/Check/Basic.hs \
+  ../leancheck/Test/Check/Core.hs \
+  FitSpec/PrettyPrint.hs \
+  FitSpec/Utils.hs
+bench/Set.o: \
+  bench/Set.hs
+bench/sets: \
+  bench/sets.hs \
+  bench/Set.hs \
+  FitSpec.hs \
+  FitSpec/Main.hs \
+  FitSpec/Report.hs \
+  FitSpec/Engine.hs \
+  FitSpec/TestTypes.hs \
+  FitSpec/Derive.hs \
+  FitSpec/Mutable.hs \
+  FitSpec/ShowMutable.hs \
+  ../leancheck/Test/Check/Error.hs \
+  ../leancheck/Test/Types.hs \
+  ../leancheck/Test/Check.hs \
+  ../leancheck/Test/Check/IO.hs \
+  ../leancheck/Test/Check/Derive.hs \
+  ../leancheck/Test/Check/Utils.hs \
+  ../leancheck/Test/Check/Basic.hs \
+  ../leancheck/Test/Check/Core.hs \
+  FitSpec/PrettyPrint.hs \
+  FitSpec/Utils.hs
+bench/sets.o: \
+  bench/sets.hs \
+  bench/Set.hs \
+  FitSpec.hs \
+  FitSpec/Main.hs \
+  FitSpec/Report.hs \
+  FitSpec/Engine.hs \
+  FitSpec/TestTypes.hs \
+  FitSpec/Derive.hs \
+  FitSpec/Mutable.hs \
+  FitSpec/ShowMutable.hs \
+  ../leancheck/Test/Check/Error.hs \
+  ../leancheck/Test/Types.hs \
+  ../leancheck/Test/Check.hs \
+  ../leancheck/Test/Check/IO.hs \
+  ../leancheck/Test/Check/Derive.hs \
+  ../leancheck/Test/Check/Utils.hs \
+  ../leancheck/Test/Check/Basic.hs \
+  ../leancheck/Test/Check/Core.hs \
+  FitSpec/PrettyPrint.hs \
+  FitSpec/Utils.hs
+bench/setsosets: \
+  bench/setsosets.hs \
+  bench/Set.hs \
+  FitSpec.hs \
+  FitSpec/Main.hs \
+  FitSpec/Report.hs \
+  FitSpec/Engine.hs \
+  FitSpec/TestTypes.hs \
+  FitSpec/Derive.hs \
+  FitSpec/Mutable.hs \
+  FitSpec/ShowMutable.hs \
+  ../leancheck/Test/Check/Error.hs \
+  ../leancheck/Test/Types.hs \
+  ../leancheck/Test/Check.hs \
+  ../leancheck/Test/Check/IO.hs \
+  ../leancheck/Test/Check/Derive.hs \
+  ../leancheck/Test/Check/Utils.hs \
+  ../leancheck/Test/Check/Basic.hs \
+  ../leancheck/Test/Check/Core.hs \
+  FitSpec/PrettyPrint.hs \
+  FitSpec/Utils.hs
+bench/setsosets.o: \
+  bench/setsosets.hs \
+  bench/Set.hs \
+  FitSpec.hs \
+  FitSpec/Main.hs \
+  FitSpec/Report.hs \
+  FitSpec/Engine.hs \
+  FitSpec/TestTypes.hs \
+  FitSpec/Derive.hs \
+  FitSpec/Mutable.hs \
+  FitSpec/ShowMutable.hs \
   ../leancheck/Test/Check/Error.hs \
   ../leancheck/Test/Types.hs \
   ../leancheck/Test/Check.hs \

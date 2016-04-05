@@ -34,6 +34,8 @@ BENCHS = bench/avltrees \
          bench/id \
          bench/list \
          bench/pretty \
+         bench/sets \
+         bench/setsosets \
          bench/sieve \
          bench/sorting \
          bench/spring
