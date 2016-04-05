@@ -5,6 +5,7 @@ import Data.Tuple (swap)
 import FitSpec
 import FitSpec.Utils (contained)
 import Test.Check.Error (errorToNothing, errorToFalse)
+import Test.Check.Function.ListsOfPairs (functionPairs, defaultFunPairsToFunction)
 
 
 
