@@ -21,6 +21,7 @@
 bench/avltrees
 bench/bools
 bench/heaps
+bench/mergeheaps
 bench/id
 bench/list
 bench/pretty
