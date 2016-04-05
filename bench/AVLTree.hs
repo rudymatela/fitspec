@@ -88,11 +88,14 @@ instance (Show a) => Show (Tree a) where
 instance (Eq a) => Eq (Tree a) where
   t == u  =  flatten t == flatten u
 
+instance (Ord a) => Ord (Tree a) where
+  t `compare` u  =  flatten t `compare` flatten u
+
 -- | The function should map values keeping ordering, otherwise you'll get a
 -- problematic AVL.  The resulting AVL can only be manipulated by 'insert' and
 -- 'delete' if it follows the 'Invariants.ordered'.
 instance Functor Tree where
-  fmap _ Empty            = Empty
+  fmap _ Empty              = Empty
   fmap f (Node h lst x rst) = Node h (fmap f lst) (f x) (fmap f rst)
 
 
