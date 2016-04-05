@@ -117,14 +117,14 @@ splits (x:xs) = ([],x:xs) : [(x:xs1, xs2) | (xs1,xs2) <- splits xs]
 
 (\/) :: Ord a => Set a -> Set a -> Set a
 S xs \/ S ys = S (join xs ys)
-
-join [] ys = ys
-join xs [] = xs
-join xs@(x:xs') ys@(y:ys') =
-  case compare x y of
-  LT -> x : join xs' ys
-  EQ -> x : join xs' ys'
-  GT -> y : join xs  ys'
+  where
+  join [] ys = ys
+  join xs [] = xs
+  join xs@(x:xs') ys@(y:ys') =
+    case compare x y of
+    LT -> x : join xs' ys
+    EQ -> x : join xs' ys'
+    GT -> y : join xs  ys'
 
 (/\) :: Ord a => Set a -> Set a -> Set a
 S xs /\ S ys = S (meet xs ys)
