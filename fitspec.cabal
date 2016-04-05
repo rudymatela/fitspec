@@ -1,15 +1,20 @@
 name:                fitspec
 version:             0.1.0.1
--- synopsis:
--- description:
+synopsis:            refining property sets for functional testing
+description:
+  FitSpec provides automated assistance in the task of
+  refining property sets for functional testing.
+  .
+  When provided with a tuple of functions under test
+  and a set of properties lifted over those functions,
+  FitSpec provides a measure of minimality and completeness
+  of those properties.
 license:             BSD3
 license-file:        LICENSE
-author:              Rudy Matela, Jonas Duregård
-maintainer:          rudy@matela.com.br
--- copyright:
--- category:
+author:              Rudy Matela,  Colin Runciman
+maintainer:          Rudy Matela <rudy@matela.com.br>
+category:            Testing
 build-type:          Simple
--- extra-source-files:
 cabal-version:       >=1.10
 
 library

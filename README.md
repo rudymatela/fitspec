@@ -1,11 +1,10 @@
 FitSpec
 =======
 
-FitSpec assists you in refining property-sets for testing Haskell programs.
-FitSpec does black-box mutation testing and offers guidance towards
-a minimal and complete property-set.
-
-**This a work in progress: currently in early stage**
+FitSpec provides automated assistance in the task of
+refining property sets for functional testing.
+FitSpec does black-box mutation testing and offers guidance
+towards a minimal and complete property-set.
 
 
 Compiling and Running
