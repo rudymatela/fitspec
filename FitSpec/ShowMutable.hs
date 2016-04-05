@@ -183,7 +183,7 @@ showMutantS (Function bs) = showLambda ["??"] bs
 
 -- | Show top-level (maybe tuple) named 'MutantS' as a tuple.
 showMutantSAsTuple :: [String] -> MutantS -> String
-showMutantSAsTuple ns (Tuple ms) = showTuple $ zipWith show1 (ns +- defaultNames) ms
+showMutantSAsTuple ns (Tuple ms) = showTuple $ zipWith show1 (ns +- defaultFunctionNames) ms
   where show1 n  (Unmutated _) = n
         show1 n  (Function bs) = showLambda (fvnames n) bs
         show1 _  m             = showMutantS m
