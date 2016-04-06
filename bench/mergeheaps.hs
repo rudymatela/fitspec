@@ -55,7 +55,7 @@ main :: IO ()
 main = do 
   as <- getArgsWith sargs
   let run f = reportWithExtra em as f properties
-  case (extra as) of
+  case concat (extra as) of
 --  "bool"  -> run (merge :: Ty Bool)
 --  "bools" -> run (merge :: Ty [Bool])
     "i"     -> run (merge :: Ty Int)

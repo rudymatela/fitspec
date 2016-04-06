@@ -34,7 +34,7 @@ data Args = Args
   , verbose      :: Bool         -- ^ whether to show detailed results
   , showMutantAs :: ShowMutantAs -- ^ how to show mutants
   , rows         :: Maybe Int    -- ^ number of surviving mutants to show
-  , extra        :: String       -- ^ ignored argument (user defined meaning)
+  , extra        :: [String]     -- ^ ignored argument (user defined meaning)
   }
 
 -- | Number of tests as a function of the number of mutants
@@ -61,7 +61,7 @@ args = Args { nMutants     =  500
             , verbose      = False
             , showMutantAs = Tuple
             , rows         = Nothing
-            , extra        = ""
+            , extra        = []
             }
 
 -- Non timed-out default arguments.

@@ -58,11 +58,11 @@ main :: IO ()
 main = do
   as <- getArgsWith sargs
   let run f = reportWith as f (uncurry properties)
-  case (extra as) of
+  case concat (extra as) of
     "int"   -> run (fns :: Ty Int)
     "int2"  -> run (fns :: Ty UInt2)
     "int3"  -> run (fns :: Ty UInt3)
-    _       -> run (fns :: Ty UInt2)
+    ""      -> run (fns :: Ty UInt2)
 
 (+++) :: (Show a, Read a, Integral a) => a -> a -> a
 x +++ 0 = x

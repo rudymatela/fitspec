@@ -48,7 +48,7 @@ main :: IO ()
 main = do
   as <- getArgsWith sargs
   let run f = reportWith as f properties
-  case (extra as) of
+  case concat $ extra as of
     "bool"  -> run (sort :: Ty Bool)
     "bools" -> run (sort :: Ty [Bool])
     "int"   -> run (sort :: Ty Int)
@@ -59,7 +59,9 @@ main = do
     "w2"    -> run (sort :: Ty Word2)
     "w3"    -> run (sort :: Ty Word3)
     "unit"  -> run (sort :: Ty ())
-    _       -> run (sort :: Ty Word2)
+    ""      -> run (sort :: Ty Word2)
+    t       -> putStrLn ("unknown type " ++ t ++ "defaulting to Word2")
+            >> run (sort :: Ty Word2)
 
 -- This hack is only necessary when using sortCounter as a manual mutant
 instance Bounded a => Bounded [a] where

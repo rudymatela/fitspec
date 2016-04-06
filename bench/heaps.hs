@@ -71,7 +71,7 @@ main :: IO ()
 main = do 
   as <- getArgsWith sargs
   let run f = reportWithExtra em as f (uncurry3 properties)
-  case (extra as) of
+  case concat (extra as) of
 --  "bool"  -> run (fns :: Ty Bool)
 --  "bools" -> run (fns :: Ty [Bool])
     "i"     -> run (fns :: Ty Int)

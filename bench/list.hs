@@ -50,14 +50,14 @@ main :: IO ()
 main = do 
   as <- getArgsWith sargs
   let run f = reportWith as f (uncurry4 properties)
-  case (extra as) of
+  case concat (extra as) of
     "bool"  -> run (fns :: Ty Bool)
     "bools" -> run (fns :: Ty [Bool])
     "int"   -> run (fns :: Ty Int)
     "int2"  -> run (fns :: Ty UInt2)
     "int3"  -> run (fns :: Ty UInt3)
     "unit"  -> run (fns :: Ty ())
-    _       -> run (fns :: Ty UInt2)
+    ""      -> run (fns :: Ty UInt2)
 
 -- Some manual mutants
 (++-) :: [a] -> [a] -> [a]

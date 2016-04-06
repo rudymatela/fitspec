@@ -62,7 +62,8 @@ fns = (powerS, partitionsS)
 main :: IO ()
 main = do
   as <- getArgs
-  mainWith args { names = [ "powerS s"
-                          , "partitionsS s" ] }
+  let psid = read . concat . extra $ as
+  mainWith as { names = [ "powerS s"
+                        , "partitionsS s" ] }
            (fns::Ty Word2)
-           (properties (read (extra as)))
+           (properties psid)

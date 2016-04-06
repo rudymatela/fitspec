@@ -47,7 +47,7 @@ main = do
                          , nTests   = 100
                          , timeout  = 0 }
   let run f ps = reportWith as f ps
-  case extra as of
+  case concat $ extra as of
     "nao" -> run (not,(&&),(||)) (uncurry3 propertiesNAO)
     "na"  -> run (not,(&&))      (uncurry  propertiesNA)
     _     -> run  not                      propertiesN

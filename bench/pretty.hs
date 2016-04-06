@@ -48,9 +48,9 @@ propertiesQS (<>) ($$) nest =
 main = do
   as <- getArgs
   let run ps = reportWith as ((<>),($$),nest) (uncurry3 ps)
-  case (extra as) of
+  case concat (extra as) of
     "qs"    -> run propertiesQS
-    _       -> run properties
+    ""      -> run properties
 
 uncurry3 :: (a -> b -> c -> d) -> (a,b,c) -> d
 uncurry3 f = \(x,y,z) -> f x y z

@@ -53,11 +53,12 @@ properties _ ((<~), insertS, deleteS, (/\), (\/), subS) =
 main :: IO ()
 main = do
   as <- getArgs
-  mainWith args { names = [ "x <~ s"
-                          , "insertS x s"
-                          , "deleteS x s"
-                          , "s /\\ t"
-                          , "s \\/ t"
-                          , "subS s t" ] }
+  let psid = read . concat . extra $ as
+  mainWith as { names = [ "x <~ s"
+                        , "insertS x s"
+                        , "deleteS x s"
+                        , "s /\\ t"
+                        , "s \\/ t"
+                        , "subS s t" ] }
            ((<~)::Elem Word2, insertS, deleteS, (/\), (\/), subS)
-           (properties (read (extra as)))
+           (properties psid)

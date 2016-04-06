@@ -15,6 +15,7 @@ where
 
 import FitSpec.Report
 import System.Console.CmdArgs hiding (args)
+import qualified System.Console.CmdArgs as CA (args)
 import Control.Monad (liftM)
 import FitSpec.Mutable
 import FitSpec.ShowMutable
@@ -41,8 +42,8 @@ annotate as = Args
   , showMutantAs = showMutantAs as  &= name "a"
       &= help "how to show mutants (tuple / nestedtuple / definition / bindings)"
       &= typ  "type"
-  , extra        = extra        as  &= opt ""
-      &= help "user-defined meaning: test-type / property-set ?"
+  , extra        = extra        as  &= CA.args
+      &= typ "extra arguments"
   } &= summary "FitSpec"
     &= program "program"
     &= help "Refine property-sets for functional testing"

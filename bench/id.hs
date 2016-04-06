@@ -24,11 +24,11 @@ main :: IO ()
 main = do
   as <- getArgsWith sargs
   let run f = reportWith as f properties
-  case (extra as) of
+  case concat (extra as) of
     "bool"  -> run (id :: Ty Bool)
     "bools" -> run (id :: Ty [Bool])
     "int"   -> run (id :: Ty Int)
     "int2"  -> run (id :: Ty UInt2)
     "int3"  -> run (id :: Ty UInt3)
     "unit"  -> run (id :: Ty ())
-    _       -> run (id :: Ty UInt2)
+    ""      -> run (id :: Ty UInt2)
