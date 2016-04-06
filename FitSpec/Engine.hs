@@ -3,7 +3,6 @@
 -- This is the main engine, besides FitSpec.Mutable.
 module FitSpec.Engine
   ( property
-  , propertyE
   , Property
 
   , getResults
@@ -39,10 +38,6 @@ type Properties = [Property]
 property :: Testable a
          => a -> Property
 property = results
-
-propertyE :: Testable a
-          => a -> Property
-propertyE = map (id *** errorToFalse) . property
 
 propertyHolds :: Int -> Property -> Bool
 propertyHolds n = all snd . take n

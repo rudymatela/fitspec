@@ -21,12 +21,12 @@ properties :: (Eq a, Show a, Listable a)
            -> Append a
            -> [Property]
 properties (-:) head tail (++) =
-  [ property  $ \xs -> [] ++ xs == xs && xs == xs ++ []
-  , propertyE $ \x xs -> head (x-:xs) == x  -- mutated (:) might return an empty list
-  , propertyE $ \x xs -> tail (x-:xs) == xs -- mutated (:) might return an empty list
-  , property  $ \xs -> null (xs ++ xs) == null xs
-  , property  $ \xs ys zs -> (xs ++ ys) ++ zs == xs ++ (ys ++ zs)
-  , property  $ \x xs ys -> x-:(xs ++ ys) == (x-:xs) ++ ys
+  [ property $ \xs -> [] ++ xs == xs && xs == xs ++ []
+  , property $ \x xs -> head (x-:xs) == x
+  , property $ \x xs -> tail (x-:xs) == xs
+  , property $ \xs -> null (xs ++ xs) == null xs
+  , property $ \xs ys zs -> (xs ++ ys) ++ zs == xs ++ (ys ++ zs)
+  , property $ \x xs ys -> x-:(xs ++ ys) == (x-:xs) ++ ys
   ]
 
 

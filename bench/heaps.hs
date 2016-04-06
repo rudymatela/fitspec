@@ -33,20 +33,20 @@ properties :: (Ord a, Show a, Listable a)
            -> Merge a
            -> [Property]
 properties insert' deleteMin' merge' =
-  [ property  $ \x y h ->      insert' x (insert' y h) == insert' y (insert' x h) --  1
-  , property  $ \h x ->             null (insert' x h) == False                   --  2
-  , property  $ \x h ->          L.insert x (toList h) == toList (insert' x h)    --  3
+  [ property $ \x y h ->      insert' x (insert' y h) == insert' y (insert' x h) --  1
+  , property $ \h x ->             null (insert' x h) == False                   --  2
+  , property $ \x h ->          L.insert x (toList h) == toList (insert' x h)    --  3
 
-  , property  $ \h h1 ->                   merge' h h1 == merge' h1 h             --  4
-  , property  $ \h ->                     merge' h Nil == h                       --  5
-  , property  $ \h h1 h2 ->    merge' h (merge' h1 h2) == merge' h1 (merge' h h2) --  6
-  , propertyE $ \h -> not (null h) ==> findMin (merge' h h) == findMin h          --  7
-  , property  $ \h ->                null (merge' h h) == null h                  --  8
-  , property  $ \h h1 ->           (null h && null h1) == null (merge' h h1)      --  9
+  , property $ \h h1 ->                   merge' h h1 == merge' h1 h             --  4
+  , property $ \h ->                     merge' h Nil == h                       --  5
+  , property $ \h h1 h2 ->    merge' h (merge' h1 h2) == merge' h1 (merge' h h2) --  6
+  , property $ \h -> not (null h) ==> findMin (merge' h h) == findMin h          --  7
+  , property $ \h ->                null (merge' h h) == null h                  --  8
+  , property $ \h h1 ->           (null h && null h1) == null (merge' h h1)      --  9
 
-  , property  $ \h h1 x ->     merge' h (insert' x h1) == insert' x (merge' h h1) -- 10
-  , propertyE $ \h -> not (null h) ==> merge' h (deleteMin' h) == deleteMin' (merge' h h) -- 11
-  , propertyE $ \x ->       deleteMin' (insert' x Nil) == Nil                     -- 12
+  , property $ \h h1 x ->     merge' h (insert' x h1) == insert' x (merge' h h1) -- 10
+  , property $ \h -> not (null h) ==> merge' h (deleteMin' h) == deleteMin' (merge' h h) -- 11
+  , property $ \x ->       deleteMin' (insert' x Nil) == Nil                     -- 12
   ]
 
 sargs = args
