@@ -60,8 +60,7 @@ main = do
     "w3"    -> run (sort :: Ty Word3)
     "unit"  -> run (sort :: Ty ())
     ""      -> run (sort :: Ty Word2)
-    t       -> putStrLn ("unknown type " ++ t ++ "defaulting to Word2")
-            >> run (sort :: Ty Word2)
+    t       -> putStrLn $ "unknown type " ++ t
 
 -- This hack is only necessary when using sortCounter as a manual mutant
 instance Bounded a => Bounded [a] where
