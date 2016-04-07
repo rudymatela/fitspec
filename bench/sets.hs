@@ -53,7 +53,7 @@ properties _ ((<~), insertS, deleteS, (/\), (\/), subS) =
 main :: IO ()
 main = do
   as <- getArgs
-  let psid = read . concat . extra $ as
+  let psid = case concat . extra $ as of "" -> 0; cs -> read cs
   mainWith as { names = [ "x <~ s"
                         , "insertS x s"
                         , "deleteS x s"
