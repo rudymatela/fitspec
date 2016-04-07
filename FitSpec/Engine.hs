@@ -81,17 +81,19 @@ reduceImplications (r:rs) = r : map (r `reduce`) (reduceImplications rs)
                           else r'
 
 
+-- | A line of result for a single equivalence class of properties
+--   with the exact same surviving mutants.
 data Result a = Result
-              { sets             :: [[Int]]
-              , implied          :: [Int]
-              , survivors        :: [a]
-              , smallestSurvivor :: Maybe a
-              , nSurvivors       :: Int
-              , nKilled          :: Int
-              , totalMutants     :: Int
-              , score            :: Int
-              , maxTests         :: Int
-              }
+  { sets             :: [[Int]] -- ^ property-sets in the equivalence class
+  , implied          :: [Int]   -- ^ properties implied by this class
+  , survivors        :: [a]     -- ^ list of surviving mutants
+  , smallestSurvivor :: Maybe a -- ^ smallest surviving mutant, if any
+  , nSurvivors       :: Int -- ^ number of surviving mutants
+  , nKilled          :: Int -- ^ number of killed mutants
+  , totalMutants     :: Int -- ^ total number of mutants generated and tested
+  , score            :: Int -- ^ percentage of killed mutants, 0-100
+  , maxTests         :: Int -- ^ Requested number of tests (same for all rs.)
+  }
 type Results a = [Result a]
 
 
