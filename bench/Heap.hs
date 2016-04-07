@@ -1,4 +1,8 @@
--- This heap code is from QuickSpec examples.
+-- Heap code from QuickSpec examples.
+-- https://github.com/nick8325/quickspec/blob/0.9.6/examples/Heaps.hs
+--
+-- Copyright (c) 2009-2014, Nick Smallbone
+-- https://github.com/nick8325/quickspec/blob/0.9.6/LICENSE (BSD3 license)
 module Heap where
 
 data Heap a = Nil | Branch Int a (Heap a) (Heap a) deriving Show
