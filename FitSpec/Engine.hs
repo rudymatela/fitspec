@@ -61,7 +61,7 @@ propertiesNTests :: Int -> [Property] -> [Int]
 propertiesNTests n = map (length . take n)
 
 propertiesTestsExhausted :: Int -> [Property] -> [Bool]
-propertiesTestsExhausted n = map (< n) . propertiesNTests n
+propertiesTestsExhausted n = map (<= n) . propertiesNTests (n+1)
 
 filterNonCanon :: [Result a] -> [Result a]
 filterNonCanon [] = []
