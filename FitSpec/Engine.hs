@@ -90,6 +90,7 @@ data Result a = Result
               , nKilled          :: Int
               , totalMutants     :: Int
               , score            :: Int
+              , maxTests         :: Int
               }
 type Results a = [Result a]
 
@@ -104,7 +105,7 @@ getResultsExtra :: (Mutable a)
                 => [a]
                 -> a -> (a -> [Property]) -> Int -> Int
                 -> Results a
-getResultsExtra ems f ps nms nts = map (uncurry processRawResult)
+getResultsExtra ems f ps nms nts = map (uncurry $ processRawResult nts)
                                  $ getRawResults is pmap ms
   where is = [1..(length $ ps f)]
         pmap f = propertiesToMap (ps f) nts
@@ -124,8 +125,8 @@ getResultsExtraTimeout t ems f ps nm0 nt0 = lastTimeout t resultss
              | (nm,nt) <- iterate (incHalf *** incHalf) (nm0,nt0) ]
     incHalf x = x + x `div` 2
 
-processRawResult :: [[Int]] -> [(a,Bool)] -> Result a
-processRawResult iss mhs = Result
+processRawResult :: Int -> [[Int]] -> [(a,Bool)] -> Result a
+processRawResult nt iss mhs = Result
   { sets      = relevantPropertySets iss
   , implied   = relevantImplications iss
   , survivors = ms
@@ -134,6 +135,7 @@ processRawResult iss mhs = Result
   , nKilled      = nk
   , totalMutants = nm
   , score        = nk*100 `div` nm
+  , maxTests     = nt
   }
   where ms = [m | (m,h) <- mhs, h]
         nm = length mhs

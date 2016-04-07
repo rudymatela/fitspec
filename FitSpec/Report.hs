@@ -37,10 +37,6 @@ data Args = Args
   , extra        :: [String]     -- ^ ignored argument (user defined meaning)
   }
 
--- | Number of tests as a function of the number of mutants
-nTestsF :: Args -> Int -> Int
-nTestsF as nm = nm * nTests as `div` nMutants as
-
 -- | Default arguments for 'reportWith':
 --
 -- * @nMutants = 500@, start with  500 mutants
@@ -108,7 +104,7 @@ reportWithExtra :: (Mutable a, ShowMutable a)
                 => [a] -> Args -> a -> (a -> [Property]) -> IO ()
 reportWithExtra extraMutants args f properties = do
   let nm = nMutants args
-      nt = nTestsF args nm
+      nt = nTests args
   case propertiesCE nt (properties f) of
     Nothing -> reportWithExtra' extraMutants args f properties
     Just ce -> do
@@ -128,7 +124,7 @@ reportWithExtra' extraMutants args f properties = do
                                     (nMutants args) (nTests args)
 
   let nm = totalMutants $ head results
-      nt = nTestsF args nm
+      nt = maxTests $ head results
       nts = propertiesNTests nt (properties f)
   putStrLn $ "Apparent " ++ qualifyCM results ++ " specification based on"
   putStrLn $ showNumberOfTestsAndMutants nts nm False
