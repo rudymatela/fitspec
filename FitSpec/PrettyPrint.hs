@@ -10,10 +10,12 @@ module FitSpec.PrettyPrint
   , columns
   , showQuantity
   , showEach
+  , headToUpper
   )
 where
 
 import Data.List (intercalate,transpose,isSuffixOf)
+import Data.Char (toUpper)
 
 showQuantity :: Int -> String -> String
 showQuantity 1 what = "1 " ++ what
@@ -133,3 +135,7 @@ removeTrailing :: Eq a => a -> [a] -> [a]
 removeTrailing x = reverse
                  . dropWhile (==x)
                  . reverse
+
+headToUpper :: [Char] -> [Char]
+headToUpper [] = []
+headToUpper (c:cs) = toUpper c : cs
