@@ -126,8 +126,12 @@ reportWithExtra' extraMutants args f properties = do
   let nm = totalMutants $ head results
       nt = maxTests $ head results
       nts = propertiesNTests nt (properties f)
-  putStrLn $ "Apparent " ++ qualifyCM results ++ " specification based on"
-  putStrLn $ showNumberOfTestsAndMutants nts nm False
+      tex = and $ propertiesTestsExhausted nt (properties f)
+      mex = mutantsExhausted $ head results
+      apparent | tex && mex = ""
+               | otherwise  = "apparent "
+  putStrLn . headToUpper $ apparent ++ qualifyCM results ++ " specification based on"
+  putStrLn $ showNumberOfTestsAndMutants tex mex nts nm False
 
   let showR | verbose args = showDetailedResults
             | otherwise    = showResults
@@ -177,12 +181,17 @@ showDetailedResults mlimit showMutant rs = completeness
                    cs -> "Conjectures:\n" ++ cs
 
 
-showNumberOfTestsAndMutants :: [Int] -> Int -> Bool -> String
-showNumberOfTestsAndMutants nts nm ssum = numTests ++ numMutants
+showNumberOfTestsAndMutants :: Bool -> Bool -> [Int] -> Int -> Bool -> String
+showNumberOfTestsAndMutants tex mex nts nm ssum = numTests ++ numMutants
   where
-    numMutants = "for each of " ++ showQuantity nm "mutant variation" ++ ".\n"
-    numTests | ssum = showQuantity (sum nts) "test case" ++ "\n"
+    mexS | mex = " (exhausted)"
+         | otherwise = ""
+    numMutants = "for each of " ++ showQuantity nm "mutant variation" ++ mexS ++ ".\n"
+    numTests | ssum = showQuantity (sum nts) "test case"
+                   ++ (if tex then " (exhausted)" else "")
+                   ++ "\n"
              | otherwise = unlines
+                         . (++ ["(test cases exhausted)" | tex])
                          . sortGroupAndCollapse fst snd testsForProps
                          $ zip nts [1..]
     testsForProps n ps = showQuantity n "test case"

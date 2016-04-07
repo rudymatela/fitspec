@@ -12,6 +12,7 @@ module FitSpec.Engine
   , Results
 
   , propertiesNTests
+  , propertiesTestsExhausted
   , propertiesToMap
   , propertiesHold
   , propertiesCE
@@ -93,6 +94,7 @@ data Result a = Result
   , totalMutants     :: Int -- ^ total number of mutants generated and tested
   , score            :: Int -- ^ percentage of killed mutants, 0-100
   , maxTests         :: Int -- ^ Requested number of tests (same for all rs.)
+  , mutantsExhausted :: Bool -- ^ mutants were exhausted
   }
 type Results a = [Result a]
 
@@ -107,11 +109,13 @@ getResultsExtra :: (Mutable a)
                 => [a]
                 -> a -> (a -> [Property]) -> Int -> Int
                 -> Results a
-getResultsExtra ems f ps nms nts = map (uncurry $ processRawResult nts)
+getResultsExtra ems f ps nms nts = map (uncurry $ processRawResult mex nts)
                                  $ getRawResults is pmap ms
   where is = [1..(length $ ps f)]
         pmap f = propertiesToMap (ps f) nts
-        ms = take nms (tail $ mutants f) ++ ems
+        ms' = take (nms+1) (tail $ mutants f)
+        mex = length ms' <= nms
+        ms = take nms ms' ++ ems
 
 getResultsExtraTimeout :: (Mutable a)
                        => Int
@@ -127,8 +131,8 @@ getResultsExtraTimeout t ems f ps nm0 nt0 = lastTimeout t resultss
              | (nm,nt) <- iterate (incHalf *** incHalf) (nm0,nt0) ]
     incHalf x = x + x `div` 2
 
-processRawResult :: Int -> [[Int]] -> [(a,Bool)] -> Result a
-processRawResult nt iss mhs = Result
+processRawResult :: Bool -> Int -> [[Int]] -> [(a,Bool)] -> Result a
+processRawResult mex nt iss mhs = Result
   { sets      = relevantPropertySets iss
   , implied   = relevantImplications iss
   , survivors = ms
@@ -138,6 +142,7 @@ processRawResult nt iss mhs = Result
   , totalMutants = nm
   , score        = nk*100 `div` nm
   , maxTests     = nt
+  , mutantsExhausted = mex
   }
   where ms = [m | (m,h) <- mhs, h]
         nm = length mhs
