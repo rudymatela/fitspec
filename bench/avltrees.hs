@@ -10,6 +10,9 @@ import Prelude hiding (insert,find)
 
 -- TODO: separate testing of data invariants from properties over trees.
 
+-- This instance could be made more efficient by choosing
+-- all possible mid-points of a list, then recursively
+-- generating trees for the rest of elements.
 instance (Ord a, Listable a) => Listable (Tree a) where
   tiers = map (nubBy same . sort) (consFromNoDupList fromList)
 
