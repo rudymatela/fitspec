@@ -9,6 +9,8 @@ description:
   and a set of properties lifted over those functions,
   FitSpec provides a measure of minimality and completeness
   of those properties.
+
+homepage:            https://github.com/rudymatela/fitspec#readme
 license:             BSD3
 license-file:        LICENSE
 author:              Rudy Matela,  Colin Runciman
@@ -16,6 +18,15 @@ maintainer:          Rudy Matela <rudy@matela.com.br>
 category:            Testing
 build-type:          Simple
 cabal-version:       >=1.10
+
+source-repository head
+  type:            git
+  location:        https://github.com/rudymatela/fitspec
+
+source-repository this
+  type:            git
+  location:        https://github.com/rudymatela/fitspec
+  tag:             v0.1.0.1
 
 library
   exposed-modules: FitSpec
