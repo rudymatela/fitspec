@@ -7,10 +7,6 @@
 #   GHCFLAGS = -O2 -dynamic
 #   GHC = ghc-7.6
 #   include haskell.mk
-#
-# NOTE:
-#   * Setting -O2 on GHCFLAGS will break GHCi
-#                (which does not support -O2)
 
 
 
