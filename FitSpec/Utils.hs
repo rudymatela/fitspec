@@ -7,15 +7,10 @@ module FitSpec.Utils
   , uncurry3
   , count
   , compositions
-  , boolToMaybe
-  , eithers
   , subsets
   , contained
   , contains
-  , spread
   , filterU
-  , indexDefault
-  , bindArgumentType
   , sortAndGroupOn
   , sortAndGroupFstBySnd
   , sortGroupAndCollapse
@@ -66,18 +61,6 @@ count p = length . filter p
 compositions :: [Bool] -> [Bool]
 compositions = map and . subsets
 
--- | Given a value and a boolean, returns Just if True.
-boolToMaybe :: a -> Bool -> Maybe a
-boolToMaybe x p = if p
-                    then Just x
-                    else Nothing
-
--- | 'eithers' returns all lefts and rights (of the same types) in a list
---
--- > eithers [Left x, Right y, Left z, Right w] == [x,y,z,w]
-eithers :: [Either a a] -> [a]
-eithers = map (either id id)
-
 -- | 'subsets' @xs@ returns the list of sublists formed by taking values of @xs@
 subsets :: [a] -> [[a]]
 subsets []     = [[]]
@@ -92,14 +75,6 @@ xs `contained` ys = all (`elem` ys) xs
 contains :: Eq a => [a] -> [a] -> Bool
 contains = flip contained
 
--- | Spread applies a function to different elements of a list to build
---   different lists.
---
--- > spread f [x,y,z]  ==  [ [f x, y, z], [x, f y, z], [x, y, f z] ]
-spread :: (a -> a) -> [a] -> [[a]]
-spread f [] = []
-spread f (x:xs) = (f x:xs) : map (x:) (spread f xs)
-
 -- | 'filterU' filter greater-later elements in a list according to a partial
 --   ordering relation.
 --
@@ -107,16 +82,6 @@ spread f (x:xs) = (f x:xs) : map (x:) (spread f xs)
 filterU :: (a -> a -> Bool) -> [a] -> [a]
 filterU f []     = []
 filterU f (x:xs) = x : filter (f x) (filterU f xs)
-
-indexDefault :: [a] -> Int -> a -> a
-indexDefault []     _ x = x
-indexDefault (x:_)  0 _ = x
-indexDefault (_:xs) n x = indexDefault xs (n-1) x
-
--- | Takes a value and a function.  Ignores the value.  Binds the argument of
---   the function to the type of the value.
-bindArgumentType :: a -> (a -> b) -> a -> b
-bindArgumentType _ f = f
 
 sortOn :: Ord b => (a -> b) -> [a] -> [a]
 sortOn f = sortBy (compare `on` f)
