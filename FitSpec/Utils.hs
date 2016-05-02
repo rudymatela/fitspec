@@ -119,8 +119,7 @@ bindArgumentType :: a -> (a -> b) -> a -> b
 bindArgumentType _ f = f
 
 sortOn :: Ord b => (a -> b) -> [a] -> [a]
-sortOn f =
-  map snd . sortBy (comparing fst) . map (\x -> let y = f x in y `seq` (y, x))
+sortOn f = sortBy (compare `on` f)
 
 sortAndGroupOn :: Ord b => (a -> b) -> [a] -> [[a]]
 sortAndGroupOn f = groupBy ((==) `on` f)
