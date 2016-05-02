@@ -780,6 +780,7 @@ tests/test-mutate.o: \
   FitSpec/ShowMutable.hs \
   ../leancheck/Test/Check/Error.hs \
   ../leancheck/Test/Check.hs \
+  ../leancheck/Test/Check/Function/ListsOfPairs.hs \
   ../leancheck/Test/Check/IO.hs \
   ../leancheck/Test/Check/Derive.hs \
   ../leancheck/Test/Check/Utils.hs \
@@ -800,6 +801,7 @@ tests/test-mutate: \
   FitSpec/ShowMutable.hs \
   ../leancheck/Test/Check/Error.hs \
   ../leancheck/Test/Check.hs \
+  ../leancheck/Test/Check/Function/ListsOfPairs.hs \
   ../leancheck/Test/Check/IO.hs \
   ../leancheck/Test/Check/Derive.hs \
   ../leancheck/Test/Check/Utils.hs \
@@ -847,4 +849,10 @@ tests/test-showmutable: \
   ../leancheck/Test/Check/Utils.hs \
   ../leancheck/Test/Check/Basic.hs \
   ../leancheck/Test/Check/Core.hs \
+  FitSpec/Utils.hs
+tests/test-utils.o: \
+  tests/test-utils.hs \
+  FitSpec/Utils.hs
+tests/test-utils: \
+  tests/test-utils.hs \
   FitSpec/Utils.hs

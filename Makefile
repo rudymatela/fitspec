@@ -41,7 +41,8 @@ BENCHS = bench/avltrees \
          bench/spring
 TESTS = tests/test-mutate \
         tests/test-showmutable \
-        tests/test-derive
+        tests/test-derive \
+        tests/test-utils
 
 all: $(OBJS)
 
@@ -51,6 +52,7 @@ test: all benchs $(TESTS)
 	./tests/test-mutate
 	./tests/test-showmutable
 	./tests/test-derive
+	./tests/test-utils
 
 legacy-test:
 	make clean && make -C $(LEANCHECKPATH) clean && make test GHC=ghc-7.8 GHCFLAGS="-Werror -dynamic"

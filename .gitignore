@@ -36,3 +36,4 @@ eg/sorting
 tests/test-mutate
 tests/test-showmutable
 tests/test-derive
+tests/test-utils
