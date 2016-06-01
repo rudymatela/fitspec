@@ -48,6 +48,8 @@ all: $(OBJS)
 
 benchs: $(BENCHS) all
 
+ghci: FitSpec.ghci
+
 test: all benchs $(TESTS)
 	./tests/test-mutate
 	./tests/test-showmutable
