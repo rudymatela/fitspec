@@ -56,8 +56,8 @@ main = do
   as <- getArgsWith sargs
   let run f = reportWithExtra em as f properties
   case concat (extra as) of
---  "bool"  -> run (merge :: Ty Bool)
---  "bools" -> run (merge :: Ty [Bool])
+    "bool"  -> run (merge :: Ty Bool)
+    "bools" -> run (merge :: Ty [Bool])
     "i"     -> run (merge :: Ty Int)
     "i1"    -> run (merge :: Ty Int1)
     "i2"    -> run (merge :: Ty Int2)
@@ -95,3 +95,11 @@ crazyMerge h h1 = insert maxBound $ merge h h1
 mergeEqNil :: (Ord a) => Heap a -> Heap a -> Heap a
 mergeEqNil h h1 | h == h1   = Nil
                 | otherwise = merge h h1
+
+-- Only necessary for crazyMerge + bools to compile
+-- (it won't run, because it won't be able to PRINT surviving
+-- mutants).
+-- all other types should work fine
+instance Bounded a => Bounded [a] where
+  minBound = []
+  maxBound = repeat maxBound
