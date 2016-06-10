@@ -7,7 +7,7 @@ module Set (Set, elemList, set, emptyS, singleS, pairS, insertS, deleteS,
             (\/), (/\), (\\), unionS, interS, subS, disjointS,
             elemSubsetsOf, powerS, partitionsS, subsetPartitionsS,
             (<|), allS, anyS, exactly, forAll, thereExists, forExactly,
-            minimalS, mapS, mapMonoS, unionMapS, regular, elementsS) where
+            minimalS, mapS, mapMonoS, unionMapS, regular) where
 
 import Data.List (nub, sort, intersperse)
 
@@ -33,9 +33,6 @@ instance (Ord a, Show a) => Show (Set a)
 
 set :: Ord a => [a] -> Set a
 set = S . nub . sort
-
-elementsS :: Ord a => Set a -> [a]
-elementsS (S xs) = xs
 
 emptyS :: Ord a => Set a
 emptyS = S []
@@ -117,14 +114,14 @@ splits (x:xs) = ([],x:xs) : [(x:xs1, xs2) | (xs1,xs2) <- splits xs]
 
 (\/) :: Ord a => Set a -> Set a -> Set a
 S xs \/ S ys = S (join xs ys)
-  where
-  join [] ys = ys
-  join xs [] = xs
-  join xs@(x:xs') ys@(y:ys') =
-    case compare x y of
-    LT -> x : join xs' ys
-    EQ -> x : join xs' ys'
-    GT -> y : join xs  ys'
+
+join [] ys = ys
+join xs [] = xs
+join xs@(x:xs') ys@(y:ys') =
+  case compare x y of
+  LT -> x : join xs' ys
+  EQ -> x : join xs' ys'
+  GT -> y : join xs  ys'
 
 (/\) :: Ord a => Set a -> Set a -> Set a
 S xs /\ S ys = S (meet xs ys)
@@ -179,6 +176,9 @@ powerS =
     where
     ss = nonEmptySublists xs
 
+-- outer 'set' used to be 'S' but then ordering between
+-- partitions can be wrong
+-- TO DO: instead reorder partitionsList computation?
 partitionsS :: Ord a => Set a -> Set (Set (Set a))
 partitionsS = set . map (S . map S) . partitionsList . elemList
   where
