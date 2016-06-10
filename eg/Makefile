@@ -1,9 +1,9 @@
 # Makefile for FitSpec
 
 # Configuration variables
-FITSPECPATH = ..
-LLCHECKPATH = ../../../leancheck
-GHCFLAGS = -i$(LLCHECKPATH):$(FITSPECPATH)
+FITSPECPATH   = ..
+LEANCHECKPATH = ../../leancheck
+GHCFLAGS = -O2 -i$(LEANCHECKPATH):$(FITSPECPATH)
 
 # Misc variables
 
@@ -22,4 +22,4 @@ clean:
 
 .PHONY: %.ghci
 %.ghci: %.hs
-	ghci $(GHCFLAGS) $<
+	ghci $(GHCFLAGS) -O0 $<
