@@ -36,6 +36,7 @@ BENCHS = bench/avltrees \
          bench/pretty \
          bench/sets \
          bench/setsosets \
+         bench/digraphs \
          bench/sieve \
          bench/sorting \
          bench/spring
@@ -114,5 +115,7 @@ hlint:
 bench/avltrees: bench/AVLTree.o
 
 bench/heaps: bench/Heap.o
+
+bench/digraphs: bench/Digraph.o
 
 include mk/haskell.mk

@@ -30,6 +30,7 @@ bench/setsosets
 bench/sieve
 bench/sorting
 bench/spring
+bench/digraphs
 eg/sorting
 
 # test binaries
