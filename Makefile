@@ -25,6 +25,7 @@ LISTLIBS=find -name \*.hs \
                     -o -path "./patterns/*" \
                     -o -path "./tests/*" \
                     -o -path "./bench/*" \
+					-o -path "./eg/*" \
                     -o -path "./Setup.hs" \)
 OBJS = $(shell $(LISTLIBS) | sed -e 's/hs$$/o/')
 BENCHS = bench/avltrees \
