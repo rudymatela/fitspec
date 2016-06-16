@@ -115,6 +115,11 @@ hlint:
 	  --ignore "Use ***" \
 	  FitSpec.hs FitSpec bench tests
 
+haddock:
+	./mk/haddock-i base template-haskell | \
+	xargs haddock -html -odoc $(shell $(LISTLIBS)) --no-print-missing-docs \
+	  --optghc=-i$(GHCIMPORTDIRS)
+
 bench/avltrees: bench/AVLTree.o
 
 bench/heaps: bench/Heap.o

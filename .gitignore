@@ -38,3 +38,10 @@ tests/test-mutate
 tests/test-showmutable
 tests/test-derive
 tests/test-utils
+
+# Haddock
+doc/*.html
+doc/*.css
+doc/*.js
+doc/*.png
+doc/*.gif

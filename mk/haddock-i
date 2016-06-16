@@ -1,0 +1,19 @@
+#!/bin/bash
+#
+# $ haddock-i <package1> <package2> ... <packageN>
+#
+# will print -i parameters necessary for haddock to link to Haddock
+# documentation installed on your system, so you can:
+#
+# $ haddock-i base template-haskell | xargs haddock <files>
+errxit() {
+	echo "$@" > /dev/stderr
+	exit 1
+}
+
+for pkg in "$@"; do
+	ghc-pkg field $pkg haddock-html,haddock-interfaces ||
+	errxit "error: haddock-i: cannot find package $pkg (ghc-pkg)"
+done |
+sed "s/.*: //" |
+sed "N;s/\n/,/;s/^/-i/"
