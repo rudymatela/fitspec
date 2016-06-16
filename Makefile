@@ -28,23 +28,25 @@ LISTLIBS=find -name \*.hs \
 					-o -path "./eg/*" \
                     -o -path "./Setup.hs" \)
 OBJS = $(shell $(LISTLIBS) | sed -e 's/hs$$/o/')
-BENCHS = bench/avltrees \
-         bench/bools \
-         bench/heaps \
-         bench/mergeheaps \
-         bench/id \
-         bench/list \
-         bench/pretty \
-         bench/sets \
-         bench/setsosets \
-         bench/digraphs \
-         bench/sieve \
-         bench/sorting \
-         bench/spring
-TESTS = tests/test-mutate \
-        tests/test-showmutable \
-        tests/test-derive \
-        tests/test-utils
+BENCHS = \
+  bench/avltrees   \
+  bench/bools      \
+  bench/digraphs   \
+  bench/heaps      \
+  bench/id         \
+  bench/list       \
+  bench/mergeheaps \
+  bench/pretty     \
+  bench/sets       \
+  bench/setsofsets \
+  bench/sieve      \
+  bench/sorting    \
+  bench/spring
+TESTS = \
+  tests/test-derive      \
+  tests/test-mutate      \
+  tests/test-showmutable \
+  tests/test-utils
 
 all: $(OBJS)
 

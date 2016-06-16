@@ -30,6 +30,7 @@ source-repository this
   location:        https://github.com/rudymatela/fitspec
   tag:             v0.1.0.1
 
+
 library
   exposed-modules: FitSpec
                  , FitSpec.Engine
@@ -46,75 +47,6 @@ library
   hs-source-dirs:    .
   default-language:  Haskell2010
 
-benchmark bools
-  main-is:           bools.hs
-  build-depends: base >= 4 && < 5, leancheck, cmdargs, template-haskell
-  hs-source-dirs:    ., bench
-  default-language:  Haskell2010
-  type:              exitcode-stdio-1.0
-
-benchmark spring
-  main-is:           spring.hs
-  build-depends: base >= 4 && < 5, leancheck, cmdargs, template-haskell
-  hs-source-dirs:    ., bench
-  default-language:  Haskell2010
-  type:              exitcode-stdio-1.0
-
-benchmark sorting
-  main-is:           sorting.hs
-  build-depends: base >= 4 && < 5, leancheck, cmdargs, template-haskell
-  hs-source-dirs:    ., bench
-  default-language:  Haskell2010
-  type:              exitcode-stdio-1.0
-
-benchmark heaps
-  main-is:           heaps.hs
-  build-depends: base >= 4 && < 5, leancheck, cmdargs, template-haskell
-  hs-source-dirs:    ., bench
-  default-language:  Haskell2010
-  type:              exitcode-stdio-1.0
-
-benchmark list
-  main-is:           list.hs
-  build-depends: base >= 4 && < 5, leancheck, cmdargs, template-haskell
-  hs-source-dirs:    ., bench
-  default-language:  Haskell2010
-  type:              exitcode-stdio-1.0
-
-benchmark avltrees
-  main-is:           avltrees.hs
-  build-depends: base >= 4 && < 5, leancheck, cmdargs, template-haskell
-  hs-source-dirs:    ., bench
-  default-language:  Haskell2010
-  type:              exitcode-stdio-1.0
-
-benchmark digraphs
-  main-is:           digraphs.hs
-  build-depends: base >= 4 && < 5, leancheck, cmdargs, template-haskell
-  hs-source-dirs:    ., bench
-  default-language:  Haskell2010
-  type:              exitcode-stdio-1.0
-
-benchmark pretty
-  main-is:           pretty.hs
-  build-depends: base >= 4 && < 5, leancheck, cmdargs, template-haskell, pretty
-  hs-source-dirs:    ., bench
-  default-language:  Haskell2010
-  type:              exitcode-stdio-1.0
-
-benchmark sieve
-  main-is:           sieve.hs
-  build-depends: base >= 4 && < 5, leancheck, cmdargs, template-haskell
-  hs-source-dirs:    ., bench
-  default-language:  Haskell2010
-  type:              exitcode-stdio-1.0
-
-benchmark id
-  main-is:           id.hs
-  build-depends: base >= 4 && < 5, leancheck, cmdargs, template-haskell
-  hs-source-dirs:    ., bench
-  default-language:  Haskell2010
-  type:              exitcode-stdio-1.0
 
 test-suite mutate
   type:                exitcode-stdio-1.0
@@ -136,3 +68,95 @@ test-suite derive
   hs-source-dirs:      ., tests
   build-depends: base >= 4 && < 5, leancheck, cmdargs, template-haskell
   default-language:    Haskell2010
+
+
+benchmark avltrees
+  main-is:           avltrees.hs
+  build-depends: base >= 4 && < 5, leancheck, cmdargs, template-haskell
+  hs-source-dirs:    ., bench
+  default-language:  Haskell2010
+  type:              exitcode-stdio-1.0
+
+benchmark bools
+  main-is:           bools.hs
+  build-depends: base >= 4 && < 5, leancheck, cmdargs, template-haskell
+  hs-source-dirs:    ., bench
+  default-language:  Haskell2010
+  type:              exitcode-stdio-1.0
+
+benchmark digraphs
+  main-is:           digraphs.hs
+  build-depends: base >= 4 && < 5, leancheck, cmdargs, template-haskell
+  hs-source-dirs:    ., bench
+  default-language:  Haskell2010
+  type:              exitcode-stdio-1.0
+
+benchmark heaps
+  main-is:           heaps.hs
+  build-depends: base >= 4 && < 5, leancheck, cmdargs, template-haskell
+  hs-source-dirs:    ., bench
+  default-language:  Haskell2010
+  type:              exitcode-stdio-1.0
+
+benchmark id
+  main-is:           id.hs
+  build-depends: base >= 4 && < 5, leancheck, cmdargs, template-haskell
+  hs-source-dirs:    ., bench
+  default-language:  Haskell2010
+  type:              exitcode-stdio-1.0
+
+benchmark list
+  main-is:           list.hs
+  build-depends: base >= 4 && < 5, leancheck, cmdargs, template-haskell
+  hs-source-dirs:    ., bench
+  default-language:  Haskell2010
+  type:              exitcode-stdio-1.0
+
+benchmark mergeheaps
+  main-is:           mergeheaps.hs
+  build-depends: base >= 4 && < 5, leancheck, cmdargs, template-haskell
+  hs-source-dirs:    ., bench
+  default-language:  Haskell2010
+  type:              exitcode-stdio-1.0
+
+benchmark pretty
+  main-is:           pretty.hs
+  build-depends: base >= 4 && < 5, leancheck, cmdargs, template-haskell, pretty
+  hs-source-dirs:    ., bench
+  default-language:  Haskell2010
+  type:              exitcode-stdio-1.0
+
+benchmark sets
+  main-is:           sets.hs
+  build-depends: base >= 4 && < 5, leancheck, cmdargs, template-haskell
+  hs-source-dirs:    ., bench
+  default-language:  Haskell2010
+  type:              exitcode-stdio-1.0
+
+benchmark setsofsets
+  main-is:           setsofsets.hs
+  build-depends: base >= 4 && < 5, leancheck, cmdargs, template-haskell
+  hs-source-dirs:    ., bench
+  default-language:  Haskell2010
+  type:              exitcode-stdio-1.0
+
+benchmark sieve
+  main-is:           sieve.hs
+  build-depends: base >= 4 && < 5, leancheck, cmdargs, template-haskell
+  hs-source-dirs:    ., bench
+  default-language:  Haskell2010
+  type:              exitcode-stdio-1.0
+
+benchmark sorting
+  main-is:           sorting.hs
+  build-depends: base >= 4 && < 5, leancheck, cmdargs, template-haskell
+  hs-source-dirs:    ., bench
+  default-language:  Haskell2010
+  type:              exitcode-stdio-1.0
+
+benchmark spring
+  main-is:           spring.hs
+  build-depends: base >= 4 && < 5, leancheck, cmdargs, template-haskell
+  hs-source-dirs:    ., bench
+  default-language:  Haskell2010
+  type:              exitcode-stdio-1.0
