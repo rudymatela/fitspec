@@ -34,10 +34,10 @@ properties sort =
   ordered _        = True
 
 main =
-  reportWith args { names = ["sort xs"]
-                  , nMutants = 4000
-                  , nTests   = 4000
-                  , timeout  = 0
-                  }
-             (sort::[Word2]->[Word2])
-             properties
+  mainWith args { names = ["sort xs"]
+                , nMutants = 4000
+                , nTests   = 4000
+                , timeout  = 0
+                }
+           (sort::[Word2]->[Word2])
+           properties
