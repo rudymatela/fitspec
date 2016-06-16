@@ -1,14 +1,19 @@
 name:                fitspec
 version:             0.1.0.1
-synopsis:            refining property sets for functional testing
+synopsis:            refining property sets for testing Haskell programs
 description:
-  FitSpec provides automated assistance in the task of
-  refining property sets for functional testing.
+  FitSpec provides automated assistance in the task of refining test properties
+  for Haskell functions.
   .
-  When provided with a tuple of functions under test
-  and a set of properties lifted over those functions,
-  FitSpec provides a measure of minimality and completeness
-  of those properties.
+  FitSpec tests mutant variations of functions under test against a given
+  property set, recording any surviving mutants that pass all tests. FitSpec
+  then reports:
+  .
+  * *surviving mutants:* indicating incompleteness of properties,
+    prompting the user to amend a property or to add a new one;
+  .
+  * *conjectures:* indicating redundancy in the property set,
+    prompting the user to remove properties so to reduce the cost of testing.
 
 homepage:            https://github.com/rudymatela/fitspec#readme
 license:             BSD3
