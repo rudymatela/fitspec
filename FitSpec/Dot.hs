@@ -2,6 +2,7 @@
 module FitSpec.Dot where
 
 import FitSpec
+import FitSpec.Engine
 import FitSpec.Utils
 import Data.List
 

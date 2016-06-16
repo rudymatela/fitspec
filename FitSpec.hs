@@ -41,15 +41,44 @@
 --
 -- FitSpec was tested on GHC 7.10, 7.8, 7.6 and 7.4.
 module FitSpec
-  ( module FitSpec.Engine
-  , module FitSpec.Report
-  , module FitSpec.Main
+  (
+  -- * Encoding properties
+    Property
+  , property
 
-  , module FitSpec.Mutable
-  , module FitSpec.ShowMutable
-  , module FitSpec.Derive
+  -- * Configuring reports
+  , Args (..), ShowMutantAs (..)
+  , args
+  , fixargs
+
+  -- * Reporting results
+  , report
+  , reportWith
+  , reportWithExtra
+
+  -- ** Parsing command line arguments
+  , mainWith
+  , defaultMain
+  , getArgs
+  , getArgsWith
+
+  -- * Mutable types
+  , Mutable (..)
+  , mutiersEq
+
+  , ShowMutable (..)
+  , mutantSEq
+  , showMutantAsTuple
+  , showMutantDefinition
+  , showMutantNested
+  , showMutantBindings
+
+  -- * Automatic derivation
+  , deriveMutable
+  , deriveMutableE
+
+  -- * Re-export modules
   , module FitSpec.TestTypes
-
   , module Test.Check
   )
 where
