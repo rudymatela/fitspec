@@ -1,7 +1,7 @@
 FitSpec
 =======
 
-FitSpec provides automated assistance in the task of refining [test properties]
+FitSpec provides automated assistance in the task of refining test properties
 for Haskell functions.  FitSpec tests mutant variations of functions under test
 against a given property set, recording any surviving mutants that pass all
 tests.  FitSpec then reports:
