@@ -1,318 +1,153 @@
 FitSpec
 =======
 
-FitSpec provides automated assistance in the task of
-refining property sets for functional testing.
-FitSpec does black-box mutation testing and offers guidance
-towards a minimal and complete property-set.
+FitSpec provides automated assistance in the task of refining [test properties]
+for Haskell functions.  FitSpec tests mutant variations of functions under test
+against a given property set, recording any surviving mutants that pass all
+tests.  FitSpec then reports:
 
+* *surviving mutants:*
+  indicating incompleteness of properties,
+  prompting the user to amend a property or to add a new one;
+* *conjectures:*
+  indicating redundancy in the property set,
+  prompting the user to remove properties so to reduce the cost of testing.
 
-Compiling and Running
----------------------
+Installing FitSpec
+------------------
 
-You can compile and run in several different ways.
-This README provides a few options:
+*This does not work **yet** as no package has been published on Hackage*
 
-* via Cabal, without sandboxes (*for now, not recommended*)
-* via Cabal, with sandboxes (recommended)
-* via GHC directly (recommended)
+To install the latest FitSpec version from Hackage, just:
 
-For details, see each subsection.
+    $ cabal install fitspec
 
-### Via Cabal, without sandboxes
-
-If needed, install [cmdargs] and [pretty]:
-
-	$ cabal install cmdargs pretty
-
-
-Clone then install LeanCheck:
-
-	$ git clone git@github.com:rudymatela/leancheck
-	$ cd leancheck
-	$ cabal install
-
-
-Clone FitSpec, then run an example benchmark, e.g.:
-
-	$ git clone git@github.com:rudymatela/fitspec
-	$ cd fitspec
-	$ cabal bench sorting
-
-
-The drawback of this solution is that everytime there is an update in LeanCheck,
-you have to reinstall it after pulling.
-
-
-### Via Cabal, with sandboxes
-
-*Cabal > 1.18 is needed*
-
-Clone leancheck and fitspec and enter fitspec folder:
-
-	$ git clone git@github.com:rudymatela/leancheck
-	$ git clone git@github.com:rudymatela/fitspec
-	$ cd fitspec
-
-
-Initialize a sandbox, add leancheck as a source, then install dependencies:
-
-	$ cabal sandbox init
-	$ cabal sandbox add-source ../../leancheck
-	$ cabal install --only-dependencies
-
-
-Run the sorting example:
-
-	$ cabal bench sorting
-
-
-An advantage of this solution is that LeanCheck is recompiled automatically if
-there is an update.
-
-To create a new benchmark, you should create a file in the bench folder and
-create a new section in the [cabal file].
-
-
-### Via GHC directly
-
-*If you prefer to use cabal, see the previous sections.*
-
-
-If needed, install [cmdargs] and [pretty]:
-
-	$ cabal install cmdargs pretty
-
-
-Clone both leancheck and fitspec:
-
-	$ git clone git@github.com:rudymatela/leancheck
-	$ git clone git@github.com:rudymatela/fitspec
-
-
-If you want to compile a file that uses FitSpec on GHC, you do:
-
-	$ ghc -ipath/to/leancheck:path/to/fitspec file.hs
-
-
-**Example:** suppose leancheck and fitspec have been cloned in the same
-directory, do this to run the sorting example benchmark:
-
-	$ ls
-	fitspec leancheck
-	$ cd fitspec/bench
-	$ ghc -i..:../../leancheck sorting.hs
-	$ ./sorting
-	...
-	...
-
-Some of the benchmarks have command line parameters:
-use `--help` for instructions.
+Pre-requisites are [cmdargs], [pretty] and [leancheck].
+They should be automatically resolved and installed by [Cabal].
 
 
 Using FitSpec
 -------------
 
-### To guide property creation
+As an example, consider the following properties describing a `sort` function:
 
-Suppose we want to write properties for the function sort,
-but we do not know where to start.
-We can use FitSpec to guide property creation.
+    prop_ordered xs = ordered (sort xs)
+    prop_length xs = length (sort xs) == length xs
+    prop_elem x xs = elem x (sort xs) == elem x xs
+    prop_notElem x xs = notElem x (sort xs) == notElem x xs
+    prop_min x xs = head (sort (x:xs)) == minimum (x:xs)
 
+We provide the above properties to FitSpec in the following program:
 
-We first import what is needed:
+    import FitSpec
+    import Data.List
 
-	import FitSpec
-	import Data.List (sort)
+    properties sort =
+      [ property $ \xs -> ordered (sort xs)
+      , property $ \xs -> length (sort xs) == length xs
+      , property $ \x xs -> elem x (sort xs) == elem x xs
+      , property $ \x xs -> notElem x (sort xs) == elem x xs
+      , property $ \x xs -> head (sort (x:xs) == minimum (x:xs)
+      ]
+      where
+      ordered (x:y:xs) = x <= y && ordered (y:xs)
+      ordered _        = True
 
+    main = mainWith args { names = ["sort xs"]
+                         , nMutants = 4000
+                         , nTests = 4000
+                         , timeout = 0
+                         }
+                    (sort::[Word2]->[Word2])
+                    properties
 
-Then we need a property list function: given a sorting implementation, return
-the properties applied to *that* implementation.  Since we don't have any
-properties, we will start by returning and empty list:
+The above program reports, after a few seconds, that our property set is
+apparently *neither minimal nor complete*.
 
-	properties :: (Show a, Ord a, Listable a)
-	           => ([a] -> [a]) -> [Properties]
-	properties sort' =
-	  []
+    $ ./fitspec-sort
+    Apparent incomplete and non-minimal specification based on
+    4000 test cases for each of properties 1, 2, 3, 4 and 5
+    for each of 4000 mutant variations.
 
+    3 survivors (99% killed), smallest:
+      \xs -> case xs of
+               [0,0,1] -> [0,1,1]
+               _ -> sort xs
 
-Then, we need a main function, that calls the FitSpec's `report` function,
-which will report the results of mutation testing.
-It needs a function to be mutated and the property list.
+    apparent minimal property subsets:  {1,2,3} {1,2,4}
+    conjectures:  {3}    =  {4}     96% killed (weak)
+                  {1,3} ==> {5}     98% killed (weak)
 
-	main = report (sort::[Int]->[Int]) properties
+*Completeness:* Of 4000 mutants, 3 survive testing against our 5 properties.
+The surviving mutant is clearly not a valid implementation of `sort`, but
+indeed satisfies those properties.  As a specification, the property set is
+*incomplete* as it omits to require that sorting preserves the number of
+occurrences of each element value: `\x xs -> count x (sort xs) == count x xs`
 
-Optionally, for a nicer output, you might want to use the reportWith function,
-which allows specifying function and argument names (among other options):
+*Minimality:*
+So far as testing has revealed, properties 3 and 4 are equivalent and property
+5 follows from 1 and 3 (conjectures).  It is *up to the user* to check whether
+these conjectures are true.  Indeed they are, so in future testing we could
+safely omit properties 4 and 5.
 
-	main = reportWith args { callNames = ["sort xs"] }
-	                  (sort::[Int]->[Int]) properties
+*Refinement:* If we omit redundant properties, and add a property to kill the
+surviving mutant, our refined properties are:
 
-By having the three sections above in a file called sorting.hs,
-we then compile and run:
+    properties sort =
+      [ \xs ->   ordered (sort xs)
+      , \xs ->    length (sort xs) == length xs
+      , \x xs ->  elem x (sort xs) == elem x xs
+      , \x xs -> count x (sort xs) == count x xs
+      ]
 
-	$ ghc -ipath/to/leancheck:path/to/fitspec sorting.hs
-	[9 of 9] Compiling Main             ( sorting.hs, sorting.o )
-	Linking sorting ...
+(The implementation of `count` is left as an exercise to the reader.)
 
-	$ ./sorting
-	Results based on at most 4000 test cases for each of 2000 mutant variations.
+FitSpec now reports:
 
-	Property   #Survivors    Smallest or simplest
-	 sets       (%Killed)     surviving mutant
+    Apparent complete but non-minimal specification based on
+    4000 test cases for each of properties 1, 2, 3 and 4
+    for each of 4000 mutant variations.
 
-	[]         2000 (0%)     \xs -> case xs of
-	                                  [] -> [0]
-	                                  _ -> sort xs
+    0 survivors (100% killed).
 
-The output is self-explanatory.  Obviously, our empty property set `[]` did not
-kill any mutant (`0%`).  In other words, all of the `2000` mutants survived.
-(The actual number of mutants tested will vary depending on your machine, it
-will probably be higher than 2000 *in this case*, by default FitSpec runs for
-at least 5 seconds.)
+    apparent minimal property subsets:  {1,4}
+    conjectures:  {4} ==> {2,3}     99% killed (weak)
 
-The surviving mutant shown on the third column is clearly not a valid
-implementation of sort.  For the empty list, it returns `[0]`.  We should
-improve our property set by killing that mutant.  Lets start very simple by
-adding a property stating that sorting an empty list must yield an empty list:
-
-	properties sort' =
-	  [ property $ sort' [] == []
-	  ]
-
-Above, we need to apply the function `property` to each property in the list.
-Now:
-
-	$ ./sorting
-	Results based on at most 4000 test cases for each of 2000 mutant variations.
-
-	Property   #Survivors    Smallest or simplest
-	 sets       (%Killed)     surviving mutant
-
-	[1]        984 (49%)     \xs -> case xs of
-	                                  [0] -> []
-	                                  _ -> sort xs
-
-	[]         2000 (0%)     \xs -> case xs of
-	                                  [] -> [0]
-	                                  _ -> sort xs
-
-The last row of results is the same as before (all mutants still obviously
-survive the empty property set).  The *first row* show that there are `984`
-*surviving mutants* (`49%`) for the first property `[1]`: the smallest one is
-shown on the third column.  It sorts `[0]` to `[]`, which is not valid.  Lets
-still be very simple -- sorting a list with one value must yield a list with
-the same value:
-
-	properties sort' =
-	  [ property $        sort' [] == []
-	  , property $ \x -> sort' [x] == [x]
-	  ]
-
-Note that, our new property (2) has a free variable.  Now:
-
-	$ ./sorting
-	Results based on at most 1000 test cases for each of 500 mutant variations.
-
-	Property   #Survivors   Smallest or simplest
-	 sets       (%Killed)    surviving mutant
-
-	[1,2]      134 (73%)    \xs -> case xs of
-	                                 [0,0] -> []
-	                                 _ -> sort xs
-	...
-
-Only 27% of mutants to go, perhaps a property stating that the length of the
-sorted list should not change?
-
-	properties sort' =
-	  [ property $                 sort' [] == []
-	  , property $ \x  ->         sort' [x] == [x]
-	  , property $ \xs -> length (sort' xs) == length xs
-	  ]
-
-Now:
-
-	$ ./sorting
-	Results based on at most 1000 test cases for each of 500 mutant variations.
-
-	Property   #Survivors   Smallest or simplest
-	 sets       (%Killed)    surviving mutant
-
-	[2,3]      12 (97%)     \xs -> case xs of
-	                                 [0,0] -> [0,1]
-	                                 _ -> sort xs
-	...
-
-	Conjectures based on at most 1000 test cases for each of 500 mutant variations:
-	[3] ==> [1]     95% killed (likely)
-
-The first row show that the current candidate minimal-complete propety-set
-kills all but `4` mutants and is composed only by properties 2 and 3 (`[2,3]`).
-When possible, FitSpec also reports *conjectures* based on test results.  In
-this case, that property `sort [] == []` (1) follows from the length property
-(3).  Since that is *clearly* true, we can safely remove that property.
-
-	properties sort' =
-	  [ property $ \x    ->         sort' [x] == [x]
-	  , property $ \xs   -> length (sort' xs) == length xs
-	  , property $ \x xs -> elem x (sort' xs) == elem x xs
-	  ]
-
-Now:
-
-	$ ./sorting
-	Property   #Survivors   Smallest or simplest
-	 sets       (%Killed)    surviving mutant
-
-	 [2,3]      2 (99%)      \xs -> case xs of
-	                                  [0,1] -> [1,0]
-	                                  _ -> sort xs
-	...
-	Conjectures based on at most 1000 test cases for each of 500 mutant variations:
-	[2,3] ==> [1]     99% killed (possible+)
-
-We could go on, but *at this point, you probably got how it works*.  As an
-exercise you can try to improve our property-set over `sort` by killing the
-above mutant by adding a new property.  Later, you can try to improve the
-results by increasing the time limit (`minimumTime = 10` on args).
+As reported, properties 2 and 3 are implied by property 4, since that is true,
+we can safely remove properties 2 and 3 to arrive at a minimal and complete
+propety set.
 
 
-### To analyse minimality and completeness of property-sets
+### User-defined datatypes
 
-If you are new to the tool,
-I recommend reading the [previous section](#to-guide-property-creation)
-of this README file.
+If you want to use FitSpec to analyse functions over user-defined datatypes,
+those datatypes should be made instances of the [Listable], [Mutable] and
+[ShowMutable] typeclasses.  Check the Haddock documentation of each class for
+how to define instances manually.  If datatypes do not follow a data invariant,
+instances can be automatically derived using [TH] by:
 
-Then, just look at one of the [example programs on the bench folder](bench).
-
-
-Important modules
------------------
-
-* [FitSpec](FitSpec.hs):
-  the entry point, import this to use FitSpec;
-
-* [FitSpec.Engine](FitSpec/Engine.hs):
-  main engine that does calculations and generate reports;
-
-* [FitSpec.Mutable](FitSpec/Mutable.hs):
-  list mutations of a given function without repetitions;
-
-* [FitSpec.ShowMutable](FitSpec/ShowMutable.hs):
-  show mutations;
-
-* [example benchmarks](bench):
-  example use cases for FitSpec,
-  some are customizable using command line arguments
-  (sorting, booleans, lists, pretty-printing, etc).
+    deriveMutable ''DataType
 
 
-The modules FitSpec.Grey refer to the "grey-box" version, that does mutant
-classification.  Normal FitSpec is simpler, you should probably start with it.
+More documentation
+------------------
+
+For more examples, see the [eg](eg) and [bench](bench) folders.
+
+For further documentation, consult the [doc](doc) folder and [FitSpec API]
+documentation on Hackage.
+
+(TODO: link to a possible future FitSpec paper goes here)
 
 
-[leancheck]: https://github.com/rudymatela/leancheck
+[Listable]: https://hackage.haskell.org/package/leancheck/docs/Test-Check.html#t:Listable
+[Mutable]: https://hackage.haskell.org/package/fitspec/docs/FitSpec.html#t:Mutable
+[ShowMutable]: https://hackage.haskell.org/package/fitspec/docs/FitSpec.html#t:ShowMutable
+[FitSpec API]: https://hackage.haskell.org/package/fitspec/docs/FitSpec.html
+
+[leancheck]: https://hackage.haskell.org/package/leancheck
 [cmdargs]: https://hackage.haskell.org/package/cmdargs
 [pretty]: https://hackage.haskell.org/package/pretty
-[cabal file]: fitspec.cabal
+
+[TH]: https://wiki.haskell.org/Template_Haskell
+[Cabal]: https://www.haskell.org/cabal
