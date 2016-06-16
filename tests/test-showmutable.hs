@@ -122,13 +122,6 @@ prop_1 :: ( Eq a, Show a, Listable a, ShowMutable a
 prop_1 f x fx = fx /= f x
            ==> showMutantAsTuple    ["f x"] f (mutate f x fx) == showMutantF "f" x fx
             && showMutantDefinition ["f x"] f (mutate f x fx) == showMutantB "f" x fx
--- TODO: fix above property that fails for 'showMutant'
---       instead of showMutantN ["f x"], see:
---
--- > > putStrLn $ showMutant id (mutate id (0::Int) (1::Int))
--- > \x -> case x of
--- >         0 -> 1
--- >         _ -> f
 
 prop_11 :: ( Eq a, Show a, Listable a, ShowMutable a
            , Eq b, Show b, Listable b, ShowMutable b
