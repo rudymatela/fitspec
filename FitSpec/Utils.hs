@@ -1,6 +1,4 @@
 -- | General purpose utility functions for FitSpec
---
--- TODO: Cleanup FitSpec.Utils (split module / move functions)
 {-# LANGUAGE CPP #-}
 module FitSpec.Utils
   ( (...)
