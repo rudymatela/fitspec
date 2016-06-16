@@ -97,7 +97,7 @@ prepare-legacy-test-via-cabal:
 	cd $(LEANCHECKPATH) && cabal clean && cd -
 	cabal-ghc-7.4 install --only-dependencies
 
-clean: clean-hi-o
+clean: clean-hi-o clean-haddock
 	rm -f $(TESTS) $(BENCHS)
 
 # Debug: just list all source files compiled normally
@@ -115,7 +115,12 @@ hlint:
 	  --ignore "Use ***" \
 	  FitSpec.hs FitSpec bench tests
 
-haddock:
+haddock: doc/index.html
+
+clean-haddock:
+	rm -f doc/*.{html,css,js,png,gif}
+
+doc/index.html: $(shell $(LISTLIBS))
 	./mk/haddock-i base template-haskell | \
 	xargs haddock -html -odoc $(shell $(LISTLIBS)) --no-print-missing-docs \
 	  --optghc=-i$(GHCIMPORTDIRS)
