@@ -49,8 +49,6 @@
 -- > apparent minimal property subsets:  {1,2,3} {1,2,4}
 -- > conjectures:  {3}    =  {4}     96% killed (weak)
 -- >               {1,3} ==> {5}     98% killed (weak)
-
-
 module FitSpec
   (
   -- * Encoding properties
@@ -93,7 +91,6 @@ module FitSpec
   , module Test.Check
   )
 where
--- TODO: Explictly export *only* needed functions
 
 import FitSpec.Engine
 import FitSpec.Report

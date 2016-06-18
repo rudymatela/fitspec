@@ -54,6 +54,8 @@ getArgsWith = cmdArgs . annotate
 getArgs :: IO Args
 getArgs = getArgsWith args
 
+-- | Same as 'reportWith', but allow overriding of configuration via command
+--   line arguments.
 mainWith :: (Mutable a, ShowMutable a)
          => Args
          -> a -> (a -> [Property]) -> IO ()
@@ -61,6 +63,7 @@ mainWith as f ps = do
   as' <- getArgsWith as
   reportWith as' f ps
 
+-- | Same as 'report', but allow configuration via command line arguments.
 defaultMain :: (Mutable a, ShowMutable a)
             => a -> (a -> [Property]) -> IO ()
 defaultMain = mainWith args

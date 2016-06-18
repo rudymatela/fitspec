@@ -33,11 +33,21 @@ import Data.Maybe (catMaybes, listToMaybe)
 import Data.List ((\\),union,transpose)
 import FitSpec.Mutable
 
+-- | An encoded representation of a property suitable for use by FitSpec.
+--
+-- Each list of strings is a printable representation of one possible choice of
+-- argument values for the property.  Each boolean indicate whether the
+-- property holds for this choice.
 type Property = [([String],Bool)]
 type Properties = [Property]
 
-property :: Testable a
-         => a -> Property
+-- | Given a 'Testable' type (as defined by 'Test.Check'), returns a 'Property'.
+--
+-- This function should be used on every property to create a property list to
+-- be passed to 'report', 'reportWith', 'mainDefault' or 'mainWith'.
+--
+-- > property $ \x y -> x + y < y + (x::Int)
+property :: Testable a => a -> Property
 property = results
 
 propertyHolds :: Int -> Property -> Bool
