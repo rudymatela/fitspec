@@ -44,8 +44,8 @@ We provide the above properties to FitSpec in the following program:
       [ property $ \xs -> ordered (sort xs)
       , property $ \xs -> length (sort xs) == length xs
       , property $ \x xs -> elem x (sort xs) == elem x xs
-      , property $ \x xs -> notElem x (sort xs) == elem x xs
-      , property $ \x xs -> head (sort (x:xs) == minimum (x:xs)
+      , property $ \x xs -> notElem x (sort xs) == notElem x xs
+      , property $ \x xs -> head (sort (x:xs)) == minimum (x:xs)
       ]
       where
       ordered (x:y:xs) = x <= y && ordered (y:xs)
