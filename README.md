@@ -16,8 +16,6 @@ tests.  FitSpec then reports:
 Installing FitSpec
 ------------------
 
-*This does not work **yet** as no package has been published on Hackage*
-
 To install the latest FitSpec version from Hackage, just:
 
     $ cabal install fitspec

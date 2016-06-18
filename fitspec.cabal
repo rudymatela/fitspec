@@ -39,12 +39,15 @@ source-repository this
 library
   exposed-modules: FitSpec
                  , FitSpec.Engine
-                 , FitSpec.Main
+                 , FitSpec.Report
                  , FitSpec.Mutable
+                 , FitSpec.Mutable.Tuples
                  , FitSpec.ShowMutable
+                 , FitSpec.ShowMutable.Tuples
                  , FitSpec.Derive
-                 , FitSpec.TestTypes
+                 , FitSpec.Main
                  , FitSpec.Most
+                 , FitSpec.TestTypes
   other-modules: FitSpec.Utils
                , FitSpec.PrettyPrint
                , FitSpec.Dot
