@@ -1,45 +1,56 @@
 -- | FitSpec: refining property-sets for functional testing
 --
--- Example, properties over 'not':
+-- FitSpec provides automated assistance in the task of refining test properties
+-- for Haskell functions.  FitSpec tests mutant variations of functions under test
+-- against a given property set, recording any surviving mutants that pass all
+-- tests.  FitSpec then reports:
+--
+-- * /surviving mutants:/
+--   indicating incompleteness of properties,
+--   prompting the user to amend a property or to add a new one;
+-- * /conjectures:/
+--   indicating redundancy in the property set,
+--   prompting the user to remove properties so to reduce the cost of testing.
+--
+-- Example, refining a @sort@ specification:
 --
 -- > import FitSpec
+-- > import Data.List (sort)
 -- >
--- > properties :: (Bool -> Bool) -> [Bool]
--- > properties not =
--- >   [ property $ \p -> not (not p) == p
--- >   , property $ \p -> not p /= p
--- >   , property $       not True == False
+-- > properties sort =
+-- >   [ property $ \xs   -> ordered (sort xs)
+-- >   , property $ \xs   -> length (sort xs) == length xs
+-- >   , property $ \x xs -> elem x (sort xs) == elem x xs
+-- >   , property $ \x xs -> notElem x (sort xs) == notElem x xs
+-- >   , property $ \x xs -> minimum (x:xs) == head (sort (x:xs))
 -- >   ]
+-- >   where
+-- >   ordered (x:y:xs) = x <= y && ordered (y:xs)
+-- >   ordered _        = True
 -- >
--- > main = report not properties
+-- > main = mainWith args { names = ["sort xs"]
+-- >                      , nMutants = 4000
+-- >                      , nTests   = 4000
+-- >                      , timeout  = 0
+-- >                      }
+-- >                 (sort::[Word2]->[Word2])
 --
--- FitSpec reports:
+-- The above program reports the following:
 --
--- > Results based on at most 2 test cases
--- >     for each of 3 mutant variations.
+-- > Apparent incomplete and non-minimal specification based on
+-- > 4000 test cases for each of properties 1, 2, 3, 4 and 5
+-- > for each of 4000 mutant variations.
 -- >
--- > Property    #Survivors   Smallest or simplest
--- >  sets        (%Killed)    surviving mutant
+-- > 3 survivors (99% killed), smallest:
+-- >   \xs -> case xs of
+-- >            [0,0,1] -> [0,1,1]
+-- >            _ -> sort xs
 -- >
--- > [2] [1,3]   0 (100%)
--- >
--- > [1]         1 (66%)      \p -> case p of
--- >                                  False -> False
--- >                                  True -> True
--- >                                  _ -> not p
--- >
--- > [3]         1 (66%)      \p -> case p of
--- >                                  False -> False
--- >                                  _ -> not p
--- >
--- > Conjectures based on at most 2 test cases
--- >         for each of 3 mutant variations:
--- > [2]  =  [1,3]     100% killed (very weak)
--- >
--- > Tests and mutants were exhausted,
--- > results are known to be correct.
---
--- FitSpec was tested on GHC 7.10, 7.8, 7.6 and 7.4.
+-- > apparent minimal property subsets:  {1,2,3} {1,2,4}
+-- > conjectures:  {3}    =  {4}     96% killed (weak)
+-- >               {1,3} ==> {5}     98% killed (weak)
+
+
 module FitSpec
   (
   -- * Encoding properties
