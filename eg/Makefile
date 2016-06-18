@@ -7,10 +7,10 @@ GHCFLAGS = -O2 -i$(LEANCHECKPATH):$(FITSPECPATH)
 
 # Misc variables
 
-all: sorting
+all: sorting negation
 
 clean:
-	rm -f *.hi *.o sorting
+	rm -f *.hi *.o sorting negation
 
 # Implicit rules:
 
