@@ -15,27 +15,30 @@ import Test.Check.Error (errorToNothing)
 --
 -- A type is 'Mutable' when there exists a function that
 -- is able to list mutations of a value.
--- Ideally: list all values with no repetitions.
+-- Ideally: list all possible values without repetitions.
 --
 -- Instances are usually defined by a 'mutiers' function that
 -- given a value, returns tiers of mutants of that value:
---   the first  tier contains the null mutant, of size 0,
+--   the first  tier contains the equivalent mutant, of size 0,
 --   the second tier contains mutants of size 1,
 --   the third  tier contains mutants of size 2,
 --   and so on.
 --
--- The null mutant is the actual function without mutations.
+-- The equivalent mutant is the actual function without mutations.
 --
 -- The size of a mutant is given by the sum of:
 --   the number of mutated points (relations) and
 --   the sizes of mutated arguments and results.
 --
--- To get only strict (non-null) mutants,
+-- To get only inequivalent mutants,
 -- just take the 'tail' of either 'mutants' or 'mutiers':
 --
 -- > tail mutants
 --
 -- > tail mutiers
+--
+-- Given that the underlying 'Listable' enumeration has no repetitions
+-- parametric instances defined in this file will have no repeated mutants.
 class Mutable a where
   mutiers :: a -> [[a]]
   mutants :: a -> [a]
@@ -47,16 +50,21 @@ class Mutable a where
 -- *** *** Instances for (non-functional) data types *** ***
 
 -- | Implementation of 'mutiers' for non-functional data types.
--- To declare:
+-- Use this to create instances for user-defined data types, e.g.:
 --
--- > instance MyData where mutiers = mutiersEq
--- > instance (Eq a, Eq b) => MyDt a b where mutiers = mutiersEq
+-- > instance MyData
+-- >   where mutiers = mutiersEq
+--
+-- and for parametric datatypes:
+--
+-- > instance (Eq a, Eq b) => MyDt a b
+-- >   where mutiers = mutiersEq
 --
 -- Examples:
 --
 -- > mutiersEq True = [[True], [False]]
--- > mutiersEq 2   = [[2], [0], [1], [], [3], [4], [5], [6], [7], [8], [9], ...
--- > mutiersEq [1] = [[[1]], [[]], [[0]], [[0,0]], [[0,0,0],[0,1],[1,0],[-1]]...
+-- > mutiersEq 2   = [[2], [0], [1], [], [3], [4], [5], [6], [7], [8], [9], ...]
+-- > mutiersEq [1] = [[[1]], [[]], [[0]], [[0,0]], [[0,0,0],[0,1],[1,0],[-1]], ...]
 mutiersEq :: (Listable a, Eq a) => a -> [[a]]
 mutiersEq x = [x] : deleteT x tiers
 
@@ -137,9 +145,7 @@ mutationsFor f x = case errorToNothing (f x) of
 tiersMutantsOn :: (Eq a, Mutable b) => (a->b) -> [a] -> [[a->b]]
 tiersMutantsOn f xs = mutate f `mapT` products (map (mutationsFor f) xs)
 
--- | Given that the underlying enumeration for argument/result values is
--- without repetitions, this instance does not repeat mutants.
---
+-- |
 -- > mutants not =
 -- >   [ not
 -- >   , \p -> case p of False -> False; _ -> not p

@@ -104,7 +104,8 @@ class ShowMutable a where
 -- | For a given type @Type@ instance of @Eq@ and @Show@,
 -- define the 'ShowMutable' instance as:
 --
--- > instance ShowMutable Type where mutantS = mutantSEq
+-- > instance ShowMutable Type
+-- >   where mutantS = mutantSEq
 mutantSEq :: (Eq a, Show a)
           => a -> a -> MutantS
 mutantSEq x x' = if x == x'

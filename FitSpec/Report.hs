@@ -49,7 +49,7 @@ data Args = Args
 --
 -- * @names = []@, default function call template:
 --
---   > ["f x y z w x' y' z' ...","g ...","h ...","f' ...",...]
+--   > ["f x y z", "g x y z", "h x y z", ...]
 args :: Args
 args = Args { nMutants     =  500
             , nTests       = 1000
@@ -102,9 +102,8 @@ report :: (Mutable a, ShowMutable a)
 report = reportWith args
 
 
--- | Same as 'report' but can be configured via 'Args': 'args' or 'fixargs'.
---
--- e.g.:
+-- | Same as 'report' but can be configured via 'Args' ('args' or 'fixargs'),
+--   e.g.:
 --
 -- > reportWith args { timeout = 10 } fun properties
 reportWith :: (Mutable a, ShowMutable a)

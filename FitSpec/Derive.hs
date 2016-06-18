@@ -6,7 +6,7 @@
 -- used to derive those.  However, it will not work on all cases: when that
 -- happens, you should write your instances manually.
 {-# LANGUAGE TemplateHaskell, CPP #-}
-module FitSpec.Derive 
+module FitSpec.Derive
   ( deriveMutable
   , deriveMutableE
   , module FitSpec.Mutable
@@ -40,7 +40,7 @@ deriveMutable :: Name -> DecsQ
 deriveMutable = deriveMutableE []
 
 -- | Derives a Mutable instance for a given type ('Name') using a given context
---   ('[Name]') for all type variables.
+--   for all type variables.
 deriveMutableE :: [Name] -> Name -> DecsQ
 deriveMutableE cs t = do
   is <- t `isInstanceOf` ''Mutable
