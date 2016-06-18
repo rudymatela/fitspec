@@ -140,23 +140,19 @@ tiersMutantsOn f xs = mutate f `mapT` products (map (mutationsFor f) xs)
 -- | Given that the underlying enumeration for argument/result values is
 -- without repetitions, this instance does not repeat mutants.
 --
--- > mutiers not =
--- >   [ [ not ]
--- >   , [ \p -> case p of
--- >               False -> False
--- >               _ -> not p
--- >     , \p -> case p of
--- >               True -> True
--- >               _ -> not p ]
--- >   , [ \p -> case p of
--- >               False -> False
--- >               True -> True ] ]
+-- > mutants not =
+-- >   [ not
+-- >   , \p -> case p of False -> False; _ -> not p
+-- >   , \p -> case p of True  -> True;  _ -> not p
+-- >   , \p -> case p of False -> False; True -> True
+-- >   ]
 instance (Eq a, Listable a, Mutable b) => Mutable (a -> b) where
   mutiers f = tiersMutantsOn f `concatMapT` setsOf tiers
 
 
 -- *** *** Instances for tuples *** ***
 
+-- | > mutants (0,1) = [(0,1),(0,0),(1,1),(0,-1),...]
 instance (Mutable a, Mutable b) => Mutable (a,b) where
   mutiers (f,g) = mutiers f >< mutiers g
 
@@ -174,6 +170,9 @@ instance (Mutable a, Mutable b, Mutable c, Mutable d, Mutable e)
   mutiers (f,g,h,i,j) = productWith (\f' (g',h',i',j') -> (f',g',h',i',j'))
                                     (mutiers f) (mutiers (g,h,i,j))
 
+-- | For Mutable tuple instances greater than sixtuples, see
+--   'FitSpec.Mutable.Tuples'.  Despite being hidden in this Haddock
+--   documentation, 7-tuples up to 12-tuples are exported by 'FitSpec'.
 instance (Mutable a, Mutable b, Mutable c, Mutable d, Mutable e, Mutable f)
       => Mutable (a,b,c,d,e,f) where
   mutiers (f,g,h,i,j,k) = productWith (\f' (g',h',i',j',k') ->
