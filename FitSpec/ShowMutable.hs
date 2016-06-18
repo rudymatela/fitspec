@@ -7,6 +7,7 @@ module FitSpec.ShowMutable
   , showMutantDefinition
   , showMutantBindings
   , MutantS ()
+  , mutantSTuple
   )
 where
 
@@ -328,7 +329,7 @@ mapSnd f (x,y) = (x,f y)
 xs +- ys = xs ++ drop (length xs) ys
 
 
--- Instances of ShowMutable for up to 12-tuples are given here:
+-- Instances of ShowMutable for up to 6-tuples are given here:
 
 instance (ShowMutable a, ShowMutable b, ShowMutable c, ShowMutable d)
       => ShowMutable (a,b,c,d) where
@@ -356,93 +357,5 @@ instance (ShowMutable a, ShowMutable b, ShowMutable c,
                                                     , mutantS j j'
                                                     , mutantS k k' ]
 
-instance (ShowMutable a, ShowMutable b, ShowMutable c, ShowMutable d,
-          ShowMutable e, ShowMutable f, ShowMutable g)
-      => ShowMutable (a,b,c,d,e,f,g) where
-  mutantS (f,g,h,i,j,k,l) (f',g',h',i',j',k',l') = Tuple
-                                                    [ mutantS f f'
-                                                    , mutantS g g'
-                                                    , mutantS h h'
-                                                    , mutantS i i'
-                                                    , mutantS j j'
-                                                    , mutantS k k'
-                                                    , mutantS l l' ]
-
-instance (ShowMutable a, ShowMutable b, ShowMutable c, ShowMutable d,
-          ShowMutable e, ShowMutable f, ShowMutable g, ShowMutable h)
-      => ShowMutable (a,b,c,d,e,f,g,h) where
-  mutantS (f,g,h,i,j,k,l,m) (f',g',h',i',j',k',l',m') = Tuple
-                                                      [ mutantS f f'
-                                                      , mutantS g g'
-                                                      , mutantS h h'
-                                                      , mutantS i i'
-                                                      , mutantS j j'
-                                                      , mutantS k k'
-                                                      , mutantS l l'
-                                                      , mutantS m m' ]
-
-instance (ShowMutable a, ShowMutable b, ShowMutable c, ShowMutable d,
-          ShowMutable e, ShowMutable f, ShowMutable g, ShowMutable h,
-          ShowMutable i)
-      => ShowMutable (a,b,c,d,e,f,g,h,i) where
-  mutantS (f,g,h,i,j,k,l,m,n) (f',g',h',i',j',k',l',m',n') = Tuple
-    [ mutantS f f'
-    , mutantS g g'
-    , mutantS h h'
-    , mutantS i i'
-    , mutantS j j'
-    , mutantS k k'
-    , mutantS l l'
-    , mutantS m m'
-    , mutantS n n' ]
-
-instance (ShowMutable a, ShowMutable b, ShowMutable c, ShowMutable d,
-          ShowMutable e, ShowMutable f, ShowMutable g, ShowMutable h,
-          ShowMutable i, ShowMutable j)
-      => ShowMutable (a,b,c,d,e,f,h,g,i,j) where
-  mutantS (f,g,h,i,j,k,l,m,n,o) (f',g',h',i',j',k',l',m',n',o') = Tuple
-    [ mutantS f f'
-    , mutantS g g'
-    , mutantS h h'
-    , mutantS i i'
-    , mutantS j j'
-    , mutantS k k'
-    , mutantS l l'
-    , mutantS m m'
-    , mutantS n n'
-    , mutantS o o' ]
-
-instance (ShowMutable a, ShowMutable b, ShowMutable c, ShowMutable d,
-          ShowMutable e, ShowMutable f, ShowMutable g, ShowMutable h,
-          ShowMutable i, ShowMutable j, ShowMutable k)
-      => ShowMutable (a,b,c,d,e,f,g,h,i,j,k) where
-  mutantS (f,g,h,i,j,k,l,m,n,o,p) (f',g',h',i',j',k',l',m',n',o',p') = Tuple
-    [ mutantS f f'
-    , mutantS g g'
-    , mutantS h h'
-    , mutantS i i'
-    , mutantS j j'
-    , mutantS k k'
-    , mutantS l l'
-    , mutantS m m'
-    , mutantS n n'
-    , mutantS o o'
-    , mutantS p p' ]
-
-instance (ShowMutable a, ShowMutable b, ShowMutable c, ShowMutable d,
-          ShowMutable e, ShowMutable f, ShowMutable g, ShowMutable h,
-          ShowMutable i, ShowMutable j, ShowMutable k, ShowMutable l)
-      => ShowMutable (a,b,c,d,e,f,g,h,i,j,k,l) where
-  mutantS (f,g,h,i,j,k,l,m,n,o,p,q) (f',g',h',i',j',k',l',m',n',o',p',q') = Tuple
-    [ mutantS f f'
-    , mutantS g g'
-    , mutantS h h'
-    , mutantS i i'
-    , mutantS j j'
-    , mutantS k k'
-    , mutantS l l'
-    , mutantS m m'
-    , mutantS n n'
-    , mutantS o o'
-    , mutantS p p'
-    , mutantS q q' ]
+mutantSTuple :: [MutantS] -> MutantS
+mutantSTuple = Tuple

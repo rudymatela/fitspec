@@ -89,7 +89,9 @@ import FitSpec.Report
 import FitSpec.Main
 
 import FitSpec.Mutable
+import FitSpec.Mutable.Tuples
 import FitSpec.ShowMutable
+import FitSpec.ShowMutable.Tuples
 import FitSpec.Derive
 import FitSpec.TestTypes
 
