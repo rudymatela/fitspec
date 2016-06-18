@@ -121,9 +121,10 @@ clean-haddock:
 	rm -f doc/*.{html,css,js,png,gif}
 
 doc/index.html: $(shell $(LISTLIBS))
-	./mk/haddock-i base template-haskell | \
-	xargs haddock -html -odoc $(shell $(LISTLIBS)) --no-print-missing-docs \
-	  --optghc=-i$(GHCIMPORTDIRS)
+	./mk/haddock-i base template-haskell | xargs \
+	haddock --html --no-print-missing-docs --title=fitspec \
+	  --optghc=-i$(GHCIMPORTDIRS) \
+	  -odoc $(shell $(LISTLIBS))
 
 bench/avltrees: bench/AVLTree.o
 
