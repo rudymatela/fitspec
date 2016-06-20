@@ -10,7 +10,7 @@
 # rebuilding everything for each of those.
 
 # Configuration variables
-LEANCHECKPATH = ../leancheck
+LEANCHECKPATH = ../leancheck/src
 
 # Misc variables
 GHCIMPORTDIRS = $(LEANCHECKPATH):bench
