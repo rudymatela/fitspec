@@ -6,11 +6,11 @@
 -- This module basically re-exports LeanCheck's Test.Types module
 -- and defines Mutable and ShowMutable instances for the types
 -- defined there.
-module FitSpec.TestTypes (module Test.LeanCheck.Types) where
+module FitSpec.TestTypes (module Test.LeanCheck.Utils.Types) where
 
 import FitSpec.Mutable
 import FitSpec.ShowMutable
-import Test.LeanCheck.Types
+import Test.LeanCheck.Utils.Types
 
 -- {- Standard implementation:
 instance Mutable Nat   where mutiers = mutiersEq

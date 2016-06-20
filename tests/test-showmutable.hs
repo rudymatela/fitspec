@@ -8,7 +8,7 @@ import FitSpec
 import FitSpec.ShowMutable
 import FitSpec.PrettyPrint
 import Test.LeanCheck.Error (errorToNothing)
-import Test.LeanCheck.TypeBinding
+import Test.LeanCheck.Utils.TypeBinding
 
 main :: IO ()
 main = do
