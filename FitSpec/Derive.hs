@@ -11,14 +11,14 @@ module FitSpec.Derive
   , deriveMutableE
   , module FitSpec.Mutable
   , module FitSpec.ShowMutable
-  , module Test.Check
+  , module Test.LeanCheck
   )
 where
 
 import FitSpec.Mutable
 import FitSpec.ShowMutable
 
-import Test.Check
+import Test.LeanCheck
 import Language.Haskell.TH
 import Control.Monad (when, unless, liftM, liftM2)
 

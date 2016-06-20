@@ -88,7 +88,7 @@ module FitSpec
 
   -- * Re-export modules
   , module FitSpec.TestTypes
-  , module Test.Check
+  , module Test.LeanCheck
   )
 where
 
@@ -103,4 +103,4 @@ import FitSpec.ShowMutable.Tuples
 import FitSpec.Derive
 import FitSpec.TestTypes
 
-import Test.Check
+import Test.LeanCheck

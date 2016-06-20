@@ -1,6 +1,5 @@
 {-# LANGUAGE CPP #-}
 import FitSpec
-import Test.Check
 import AVLTree
 import Data.List (sort,nubBy)
 

@@ -1,7 +1,6 @@
 import System.Console.CmdArgs hiding (args)
 import FitSpec
 import Data.List
-import Test.Check
 
 type Cons a = a -> [a] -> [a]
 type Head a = [a] -> a

@@ -1,6 +1,5 @@
 {-# LANGUAGE CPP #-}
 import FitSpec
-import Test.Check
 import Text.PrettyPrint
 
 #if __GLASGOW_HASKELL__ < 710

@@ -7,8 +7,8 @@ import Data.Tuple (swap)
 import FitSpec
 import FitSpec.ShowMutable
 import FitSpec.PrettyPrint
-import Test.Check.Error (errorToNothing)
-import Test.TypeBinding
+import Test.LeanCheck.Error (errorToNothing)
+import Test.LeanCheck.TypeBinding
 
 main :: IO ()
 main = do

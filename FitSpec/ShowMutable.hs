@@ -12,7 +12,7 @@ module FitSpec.ShowMutable
 where
 
 import FitSpec.PrettyPrint
-import Test.Check.Error (errorToNothing, Listable(..))
+import Test.LeanCheck.Error (errorToNothing, Listable(..))
 import Data.Maybe (mapMaybe,isNothing)
 import Control.Monad (join)
 import Data.List (intercalate,tails)

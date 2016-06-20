@@ -3,7 +3,7 @@ import Data.List (elemIndices,sortBy)
 
 import Data.Function
 
-import Test.Check
+import Test.LeanCheck
 import FitSpec.Utils
 
 main :: IO ()

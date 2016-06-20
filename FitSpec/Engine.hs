@@ -27,7 +27,7 @@ module FitSpec.Engine
   )
 where
 
-import Test.Check.Error
+import Test.LeanCheck.Error
 import FitSpec.Utils
 import Data.Maybe (catMaybes, listToMaybe)
 import Data.List ((\\),union,transpose)

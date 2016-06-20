@@ -5,7 +5,7 @@
 module FitSpec.Mutable.Tuples () where
 
 import FitSpec.Mutable
-import Test.Check (productWith)
+import Test.LeanCheck (productWith)
 
 instance (Mutable a, Mutable b, Mutable c, Mutable d,
           Mutable e, Mutable f, Mutable g)

@@ -6,10 +6,10 @@ module FitSpec.Mutable
   )
 where
 
-import Test.Check
+import Test.LeanCheck
 import Data.List (intercalate, delete)
 import Data.Maybe
-import Test.Check.Error (errorToNothing)
+import Test.LeanCheck.Error (errorToNothing)
 
 -- | This typeclass is similar to 'Listable'.
 --
