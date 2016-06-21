@@ -10,10 +10,10 @@
 # rebuilding everything for each of those.
 
 # Configuration variables
-LEANCHECKPATH = ../leancheck/src
+LEANCHECKPATH = ../leancheck
 
 # Misc variables
-GHCIMPORTDIRS = $(LEANCHECKPATH):bench
+GHCIMPORTDIRS = $(LEANCHECKPATH)/src:bench
 GHCFLAGS = -dynamic -O2
 LISTHS=find -name \*.hs \
             -a \! \( -path "./dist/*" \
