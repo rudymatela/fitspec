@@ -1,6 +1,7 @@
 -- | Experimental module for deriving Mutable instances
 --
--- Needs GHC and Template Haskell (tested on GHC 7.4, 7.6, 7.8 and 7.10)
+-- Needs GHC and Template Haskell
+-- (tested on GHC 7.4, 7.6, 7.8, 7.10 and 8.0)
 --
 -- Despite Mutable instances being actually very simple, this module can be
 -- used to derive those.  However, it will not work on all cases: when that
@@ -144,8 +145,13 @@ typeArity :: Name -> Q Int
 typeArity t = do
   ti <- reify t
   return . length $ case ti of
+#if __GLASGOW_HASKELL__ < 800
     TyConI (DataD    _ _ ks _ _) -> ks
     TyConI (NewtypeD _ _ ks _ _) -> ks
+#else
+    TyConI (DataD    _ _ ks _ _ _) -> ks
+    TyConI (NewtypeD _ _ ks _ _ _) -> ks
+#endif
     _                            -> error $ "error (arity): symbol "
                                          ++ show t
                                          ++ " is not a newtype or data"
@@ -157,5 +163,10 @@ typeArity t = do
 (|=>|) :: Cxt -> DecsQ -> DecsQ
 c |=>| qds = do ds <- qds
                 return $ map (`ac` c) ds
+#if __GLASGOW_HASKELL__ < 800
   where ac (InstanceD c ts ds) c' = InstanceD (c++c') ts ds
         ac d                   _  = d
+#else
+  where ac (InstanceD o c ts ds) c' = InstanceD o (c++c') ts ds
+        ac d                     _  = d
+#endif
