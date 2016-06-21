@@ -9,10 +9,10 @@ description:
   property set, recording any surviving mutants that pass all tests. FitSpec
   then reports:
   .
-  * *surviving mutants:* indicating incompleteness of properties,
+  * surviving mutants: indicating incompleteness of properties,
     prompting the user to amend a property or to add a new one;
   .
-  * *conjectures:* indicating redundancy in the property set,
+  * conjectures: indicating redundancy in the property set,
     prompting the user to remove properties so to reduce the cost of testing.
 
 homepage:            https://github.com/rudymatela/fitspec#readme
