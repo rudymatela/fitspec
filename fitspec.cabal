@@ -24,7 +24,10 @@ category:            Testing
 build-type:          Simple
 cabal-version:       >=1.10
 
-extra-source-files:  README.md CREDITS.md
+extra-doc-files: README.md
+               , CREDITS.md
+               , doc/modules.md
+               , doc/tutorial-property-creation.md
 
 source-repository head
   type:            git
