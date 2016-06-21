@@ -138,14 +138,14 @@ documentation on Hackage.
 (TODO: link to a possible future FitSpec paper goes here)
 
 
-[Listable]: https://hackage.haskell.org/package/leancheck/docs/Test-Check.html#t:Listable
-[Mutable]: https://hackage.haskell.org/package/fitspec/docs/FitSpec.html#t:Mutable
+[Listable]:    https://hackage.haskell.org/package/leancheck/docs/Test-LeanCheck.html#t:Listable
+[Mutable]:     https://hackage.haskell.org/package/fitspec/docs/FitSpec.html#t:Mutable
 [ShowMutable]: https://hackage.haskell.org/package/fitspec/docs/FitSpec.html#t:ShowMutable
 [FitSpec API]: https://hackage.haskell.org/package/fitspec/docs/FitSpec.html
 
 [leancheck]: https://hackage.haskell.org/package/leancheck
-[cmdargs]: https://hackage.haskell.org/package/cmdargs
-[pretty]: https://hackage.haskell.org/package/pretty
+[cmdargs]:   https://hackage.haskell.org/package/cmdargs
+[pretty]:    https://hackage.haskell.org/package/pretty
 
-[TH]: https://wiki.haskell.org/Template_Haskell
+[TH]:    https://wiki.haskell.org/Template_Haskell
 [Cabal]: https://www.haskell.org/cabal
