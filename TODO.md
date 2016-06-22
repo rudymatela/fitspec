@@ -17,6 +17,12 @@ documentation
   (cabal install, cabal from sandbox, source include)
 
 
+v0.2.3
+------
+
+* move sources into src
+
+
 v0.3
 ----
 
