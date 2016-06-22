@@ -8,7 +8,7 @@ import Heap
 import Control.Monad (unless)
 
 instance (Ord a, Listable a) => Listable (Heap a) where
-  tiers = consFromAscendingList fromList
+  tiers = bagCons fromList
 
 -- a good property to assure that the above does not leave out elements is:
 --

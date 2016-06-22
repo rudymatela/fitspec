@@ -13,7 +13,7 @@ import Prelude hiding (insert,find)
 -- all possible mid-points of a list, then recursively
 -- generating trees for the rest of elements.
 instance (Ord a, Listable a) => Listable (Tree a) where
-  tiers = map (nubBy same . sort) (consFromNoDupList fromList)
+  tiers = map (nubBy same . sort) (noDupListCons fromList)
 
 instance (Ord a, Listable a) => Mutable (Tree a) where
   mutiers = mutiersEq

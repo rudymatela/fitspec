@@ -3,7 +3,7 @@ import FitSpec hiding ((\/))
 
 
 instance (Ord a, Listable a) => Listable (Set a) where
-  tiers = consFromSet set
+  tiers = setCons set
 
 instance (Ord a, Listable a) => Mutable (Set a) where
   mutiers = mutiersEq

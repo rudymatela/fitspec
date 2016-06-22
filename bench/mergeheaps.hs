@@ -8,7 +8,7 @@ import Heap
 import Control.Monad (unless)
 
 instance (Ord a, Listable a) => Listable (Heap a) where
-  tiers = consFromAscendingList fromList
+  tiers = bagCons fromList
 
 instance (Ord a, Listable a) => Mutable (Heap a) where
   mutiers = mutiersEq 
