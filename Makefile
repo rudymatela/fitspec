@@ -61,6 +61,7 @@ test: all benchs $(TESTS)
 	./tests/test-utils
 
 legacy-test:
+	make clean && make -C $(LEANCHECKPATH) clean && make test GHC=ghc-7.10 GHCFLAGS="-Werror -dynamic"
 	make clean && make -C $(LEANCHECKPATH) clean && make test GHC=ghc-7.8 GHCFLAGS="-Werror -dynamic"
 	make clean && make -C $(LEANCHECKPATH) clean && make test GHC=ghc-7.6 GHCFLAGS="-Werror -fno-warn-unrecognised-pragmas"
 	make clean && make -C $(LEANCHECKPATH) clean && make test GHC=ghc-7.4 GHCFLAGS="-Werror -fno-warn-unrecognised-pragmas"
@@ -77,6 +78,8 @@ prepare-test-via-cabal:
 	cabal configure --enable-tests --enable-benchmarks
 
 legacy-test-via-cabal:
+	cabal clean && cd $(LEANCHECKPATH) && cabal clean && cd -
+	cabal-ghc-7.10 configure --enable-tests --enable-benchmarks && cabal-ghc-7.10 build && cabal-ghc-7.10 test
 	cabal clean && cd $(LEANCHECKPATH) && cabal clean && cd -
 	cabal-ghc-7.8 configure --enable-tests --enable-benchmarks && cabal-ghc-7.8 build && cabal-ghc-7.8 test
 	cabal clean && cd $(LEANCHECKPATH) && cabal clean && cd -
