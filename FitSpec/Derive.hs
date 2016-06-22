@@ -36,12 +36,12 @@ deriveListableIfNeeded t = do
     then return []
     else deriveListable t
 
--- | Derives a Mutable instance for a given type ('Name').
+-- | Derives a Mutable instance for a given type 'Name'.
 deriveMutable :: Name -> DecsQ
 deriveMutable = deriveMutableE []
 
--- | Derives a Mutable instance for a given type ('Name') using a given context
---   for all type variables.
+-- | Derives a Mutable instance for a given type 'Name'
+--   using a given context for all type variables.
 deriveMutableE :: [Name] -> Name -> DecsQ
 deriveMutableE cs t = do
   is <- t `isInstanceOf` ''Mutable
