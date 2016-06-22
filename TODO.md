@@ -22,6 +22,10 @@ v0.2.3
 
 * move sources into src
 
+* remove patterns (branch if needed)
+
+* remove results (separate repo?)
+
 
 v0.3
 ----
