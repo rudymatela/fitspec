@@ -1,7 +1,0 @@
-#!/bin/bash
-BINDIR=`dirname $0`
-BENCH=$BINDIR/bench
-$BENCH black list -tbool -n1000 -m1000 -e
-$BENCH black list -tbool -n1000 -m1000
-$BENCH black list -tint -n1000 -m1000 -e
-$BENCH black list -tint -n1000 -m1000
