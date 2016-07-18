@@ -1,7 +1,7 @@
 -- | FitSpec: refining property-sets for functional testing
 --
--- This is the main engine, besides FitSpec.Mutable.
-module FitSpec.Engine
+-- This is the main engine, besides "Test.FitSpec.Mutable".
+module Test.FitSpec.Engine
   ( property
   , Property
 
@@ -28,10 +28,10 @@ module FitSpec.Engine
 where
 
 import Test.LeanCheck.Error
-import FitSpec.Utils
+import Test.FitSpec.Utils
 import Data.Maybe (catMaybes, listToMaybe)
 import Data.List ((\\),union,transpose)
-import FitSpec.Mutable
+import Test.FitSpec.Mutable
 
 -- | An encoded representation of a property suitable for use by FitSpec.
 --

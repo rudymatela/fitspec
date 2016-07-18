@@ -2,7 +2,7 @@
 import System.Exit (exitFailure)
 import Data.List (elemIndices,sort)
 
-import FitSpec
+import Test.FitSpec
 
 data D0       = D0                    deriving (Show,Eq,Ord)
 data D1 a     = D1 a                  deriving (Show,Eq,Ord)

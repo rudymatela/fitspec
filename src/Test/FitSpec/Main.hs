@@ -4,21 +4,21 @@
 --
 -- > main = mainWith args { ... } functions properties
 {-# Language DeriveDataTypeable, StandaloneDeriving #-}
-module FitSpec.Main
+module Test.FitSpec.Main
   ( mainWith
   , defaultMain
   , getArgs
   , getArgsWith
-  , module FitSpec.Report -- deprecated export, remove later
+  , module Test.FitSpec.Report -- deprecated export, remove later
   )
 where
 
-import FitSpec.Report
+import Test.FitSpec.Report
 import System.Console.CmdArgs hiding (args)
 import qualified System.Console.CmdArgs as CA (args)
 import Control.Monad (liftM)
-import FitSpec.Mutable
-import FitSpec.ShowMutable
+import Test.FitSpec.Mutable
+import Test.FitSpec.ShowMutable
 
 deriving instance Data ShowMutantAs
 deriving instance Data Args

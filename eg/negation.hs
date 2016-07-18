@@ -1,5 +1,5 @@
 -- Minimal example: mutation testing a negation specification
-import FitSpec
+import Test.FitSpec
 
 properties not =
   [ property $ \p -> not (not p) == p

@@ -19,7 +19,7 @@
 -- conjectures:  {3}    =  {4}     96% killed (weak)
 --               {1,3} ==> {5}     98% killed (weak)
 
-import FitSpec
+import Test.FitSpec
 import Data.List (sort)
 
 properties sort =

@@ -1,5 +1,5 @@
 import Set
-import FitSpec hiding ((\/))
+import Test.FitSpec hiding ((\/))
 
 
 instance (Ord a, Listable a) => Listable (Set a) where

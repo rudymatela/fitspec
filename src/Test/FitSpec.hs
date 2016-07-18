@@ -49,7 +49,7 @@
 -- > apparent minimal property subsets:  {1,2,3} {1,2,4}
 -- > conjectures:  {3}    =  {4}     96% killed (weak)
 -- >               {1,3} ==> {5}     98% killed (weak)
-module FitSpec
+module Test.FitSpec
   (
   -- * Encoding properties
     Property
@@ -87,20 +87,20 @@ module FitSpec
   , deriveMutableE
 
   -- * Re-export modules
-  , module FitSpec.TestTypes
+  , module Test.FitSpec.TestTypes
   , module Test.LeanCheck
   )
 where
 
-import FitSpec.Engine
-import FitSpec.Report
-import FitSpec.Main
+import Test.FitSpec.Engine
+import Test.FitSpec.Report
+import Test.FitSpec.Main
 
-import FitSpec.Mutable
-import FitSpec.Mutable.Tuples
-import FitSpec.ShowMutable
-import FitSpec.ShowMutable.Tuples
-import FitSpec.Derive
-import FitSpec.TestTypes
+import Test.FitSpec.Mutable
+import Test.FitSpec.Mutable.Tuples
+import Test.FitSpec.ShowMutable
+import Test.FitSpec.ShowMutable.Tuples
+import Test.FitSpec.Derive
+import Test.FitSpec.TestTypes
 
 import Test.LeanCheck

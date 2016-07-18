@@ -42,20 +42,20 @@ source-repository this
 
 
 library
-  exposed-modules: FitSpec
-                 , FitSpec.Engine
-                 , FitSpec.Report
-                 , FitSpec.Mutable
-                 , FitSpec.Mutable.Tuples
-                 , FitSpec.ShowMutable
-                 , FitSpec.ShowMutable.Tuples
-                 , FitSpec.Derive
-                 , FitSpec.Main
-                 , FitSpec.Most
-                 , FitSpec.TestTypes
-  other-modules: FitSpec.Utils
-               , FitSpec.PrettyPrint
-               , FitSpec.Dot
+  exposed-modules: Test.FitSpec
+                 , Test.FitSpec.Engine
+                 , Test.FitSpec.Report
+                 , Test.FitSpec.Mutable
+                 , Test.FitSpec.Mutable.Tuples
+                 , Test.FitSpec.ShowMutable
+                 , Test.FitSpec.ShowMutable.Tuples
+                 , Test.FitSpec.Derive
+                 , Test.FitSpec.Main
+                 , Test.FitSpec.Most
+                 , Test.FitSpec.TestTypes
+  other-modules: Test.FitSpec.Utils
+               , Test.FitSpec.PrettyPrint
+               , Test.FitSpec.Dot
   build-depends: base >= 4 && < 5, leancheck >= 0.4, cmdargs, template-haskell
   hs-source-dirs:    src
   default-language:  Haskell2010

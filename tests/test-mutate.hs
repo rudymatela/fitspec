@@ -2,8 +2,8 @@ import System.Exit (exitFailure)
 import Data.List (elemIndices, sort)
 import Data.Tuple (swap)
 
-import FitSpec
-import FitSpec.Utils (contained)
+import Test.FitSpec
+import Test.FitSpec.Utils (contained)
 import Test.LeanCheck.Error (errorToNothing, errorToFalse)
 import Test.LeanCheck.Function.ListsOfPairs (functionPairs, defaultFunPairsToFunction)
 

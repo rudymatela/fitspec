@@ -4,7 +4,7 @@ import Data.List (elemIndices,sortBy)
 import Data.Function
 
 import Test.LeanCheck
-import FitSpec.Utils
+import Test.FitSpec.Utils
 
 main :: IO ()
 main =

@@ -1,4 +1,4 @@
-module FitSpec.Report
+module Test.FitSpec.Report
   ( report
   , reportWith
   , reportWithExtra
@@ -13,11 +13,11 @@ where
 import Data.List (intercalate, intersperse)
 import Data.Maybe (fromMaybe)
 
-import FitSpec.Engine
-import FitSpec.Mutable
-import FitSpec.ShowMutable
-import FitSpec.Utils
-import FitSpec.PrettyPrint
+import Test.FitSpec.Engine
+import Test.FitSpec.Mutable
+import Test.FitSpec.ShowMutable
+import Test.FitSpec.Utils
+import Test.FitSpec.PrettyPrint
 
 -- | How to show mutants.  Use this to fill 'showMutantAs'.
 data ShowMutantAs = Tuple      | NestedTuple

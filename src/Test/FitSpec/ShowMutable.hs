@@ -1,5 +1,5 @@
 -- | Show mutant variations
-module FitSpec.ShowMutable
+module Test.FitSpec.ShowMutable
   ( ShowMutable (..)
   , mutantSEq
   , showMutantAsTuple
@@ -11,7 +11,7 @@ module FitSpec.ShowMutable
   )
 where
 
-import FitSpec.PrettyPrint
+import Test.FitSpec.PrettyPrint
 import Test.LeanCheck.Error (errorToNothing, Listable(..))
 import Data.Maybe (mapMaybe,isNothing)
 import Control.Monad (join)

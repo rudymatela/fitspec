@@ -1,4 +1,4 @@
-import FitSpec
+import Test.FitSpec
 
 propertiesN :: (Bool -> Bool) -> [Property]
 propertiesN not =

@@ -1,6 +1,6 @@
 -- | General purpose utility functions for FitSpec
 {-# LANGUAGE CPP #-}
-module FitSpec.Utils
+module Test.FitSpec.Utils
   ( (...)
   , uncurry3
   , count

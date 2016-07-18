@@ -1,15 +1,15 @@
--- | FitSpec Test Types:
+-- | FitSpec's Test Types:
 -- 'Nat',
 -- 'Int2', 'Int3', 'Int4',
 -- 'UInt2', 'UInt3', 'UInt4'.
 --
 -- This module basically re-exports LeanCheck's Test.Types module
--- and defines Mutable and ShowMutable instances for the types
+-- and defines 'Mutable' and 'ShowMutable' instances for the types
 -- defined there.
-module FitSpec.TestTypes (module Test.LeanCheck.Utils.Types) where
+module Test.FitSpec.TestTypes (module Test.LeanCheck.Utils.Types) where
 
-import FitSpec.Mutable
-import FitSpec.ShowMutable
+import Test.FitSpec.Mutable
+import Test.FitSpec.ShowMutable
 import Test.LeanCheck.Utils.Types
 
 -- {- Standard implementation:

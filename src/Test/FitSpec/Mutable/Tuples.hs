@@ -2,9 +2,9 @@
 --
 -- This is part of a Hack that allows those instances to be hidden from Haddock.
 -- Otherwise Haddock documentation will look very ugly.
-module FitSpec.Mutable.Tuples () where
+module Test.FitSpec.Mutable.Tuples () where
 
-import FitSpec.Mutable
+import Test.FitSpec.Mutable
 import Test.LeanCheck (productWith)
 
 instance (Mutable a, Mutable b, Mutable c, Mutable d,

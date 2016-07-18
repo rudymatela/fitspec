@@ -1,5 +1,5 @@
 import System.Console.CmdArgs hiding (args)
-import FitSpec
+import Test.FitSpec
 import Data.List
 
 type Add  a = a -> a -> a

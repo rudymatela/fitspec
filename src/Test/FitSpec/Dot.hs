@@ -1,9 +1,9 @@
 -- | Generate dotfiles (graphviz)
-module FitSpec.Dot where
+module Test.FitSpec.Dot where
 
-import FitSpec
-import FitSpec.Engine
-import FitSpec.Utils
+import Test.FitSpec
+import Test.FitSpec.Engine
+import Test.FitSpec.Utils
 import Data.List
 
 -- | Given a list of pairs of property groups and their implications,

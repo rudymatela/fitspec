@@ -1,5 +1,5 @@
 import Data.List
-import FitSpec
+import Test.FitSpec
 
 
 ordered :: Ord a => [a] -> Bool

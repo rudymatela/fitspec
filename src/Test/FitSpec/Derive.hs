@@ -7,17 +7,17 @@
 -- used to derive those.  However, it will not work on all cases: when that
 -- happens, you should write your instances manually.
 {-# LANGUAGE TemplateHaskell, CPP #-}
-module FitSpec.Derive
+module Test.FitSpec.Derive
   ( deriveMutable
   , deriveMutableE
-  , module FitSpec.Mutable
-  , module FitSpec.ShowMutable
+  , module Test.FitSpec.Mutable
+  , module Test.FitSpec.ShowMutable
   , module Test.LeanCheck
   )
 where
 
-import FitSpec.Mutable
-import FitSpec.ShowMutable
+import Test.FitSpec.Mutable
+import Test.FitSpec.ShowMutable
 
 import Test.LeanCheck
 import Language.Haskell.TH

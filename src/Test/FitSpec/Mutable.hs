@@ -1,5 +1,5 @@
 -- | Enumeration of function mutations
-module FitSpec.Mutable
+module Test.FitSpec.Mutable
   ( Mutable (..)
   , mutiersEq
 --, mutantsIntegral
@@ -177,8 +177,8 @@ instance (Mutable a, Mutable b, Mutable c, Mutable d, Mutable e)
                                     (mutiers f) (mutiers (g,h,i,j))
 
 -- | For Mutable tuple instances greater than sixtuples, see
---   'FitSpec.Mutable.Tuples'.  Despite being hidden in this Haddock
---   documentation, 7-tuples up to 12-tuples are exported by 'FitSpec'.
+--   "FitSpec.Mutable.Tuples".  Despite being hidden in this Haddock
+--   documentation, 7-tuples up to 12-tuples are exported by "Test.FitSpec".
 instance (Mutable a, Mutable b, Mutable c, Mutable d, Mutable e, Mutable f)
       => Mutable (a,b,c,d,e,f) where
   mutiers (f,g,h,i,j,k) = productWith (\f' (g',h',i',j',k') ->

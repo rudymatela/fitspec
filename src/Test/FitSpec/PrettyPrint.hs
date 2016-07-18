@@ -2,7 +2,7 @@
 --
 -- This module has somewhat inefficient implementations that could be improved
 -- in the future.  i.e.: heavy use of '(++)'.
-module FitSpec.PrettyPrint
+module Test.FitSpec.PrettyPrint
   ( beside
   , above
   , showTuple

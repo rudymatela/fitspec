@@ -4,9 +4,9 @@ import System.Environment (getArgs)
 import Data.List (elemIndices, sort)
 import Data.Tuple (swap)
 
-import FitSpec
-import FitSpec.ShowMutable
-import FitSpec.PrettyPrint
+import Test.FitSpec
+import Test.FitSpec.ShowMutable
+import Test.FitSpec.PrettyPrint
 import Test.LeanCheck.Error (errorToNothing)
 import Test.LeanCheck.Utils.TypeBinding
 
