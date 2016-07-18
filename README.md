@@ -20,7 +20,7 @@ To install the latest FitSpec version from Hackage, just:
 
     $ cabal install fitspec
 
-Pre-requisites are [cmdargs], [pretty] and [leancheck].
+Pre-requisites are [cmdargs] and [leancheck].
 They should be automatically resolved and installed by [Cabal].
 
 
