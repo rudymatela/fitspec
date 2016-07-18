@@ -10,6 +10,8 @@ misc
 documentation
 -------------
 
+* review haddock (fix links and minor mistakes)
+
 * add second simple/minimal example in eg
   (unbalanced binary search tree?  stack?);
 
