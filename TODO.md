@@ -20,4 +20,6 @@ documentation
 v0.3
 ----
 
+* remove FitSpec.Most module
+
 * (?) rename FitSpec to Test.FitSpec
