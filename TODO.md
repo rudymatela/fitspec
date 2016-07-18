@@ -15,9 +15,3 @@ documentation
 
 * write detailed install instructions on INSTALL.md
   (cabal install, cabal from sandbox, source include)
-
-
-v0.3
-----
-
-* release! (after new LeanCheck)
