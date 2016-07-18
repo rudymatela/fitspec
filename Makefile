@@ -33,6 +33,9 @@ BENCHS = \
   bench/sieve      \
   bench/sorting    \
   bench/spring
+EGS = \
+  eg/sorting \
+  eg/negation
 TESTS = \
   tests/test-derive      \
   tests/test-mutate      \
@@ -43,9 +46,11 @@ all: $(OBJS)
 
 benchs: $(BENCHS) all
 
-ghci: FitSpec.ghci
+egs: $(EGS) all
 
-test: all benchs $(TESTS)
+ghci: Test/FitSpec.ghci
+
+test: all benchs egs $(TESTS)
 	./tests/test-mutate
 	./tests/test-showmutable
 	./tests/test-derive
@@ -92,7 +97,7 @@ prepare-legacy-test-via-cabal:
 	cabal-ghc-7.4 install --only-dependencies
 
 clean: clean-hi-o clean-haddock
-	rm -f $(TESTS) $(BENCHS)
+	rm -f $(TESTS) $(BENCHS) $(EGS) {eg,bench}/*.{hi,o,dyn_hi,dyn_o}
 
 # Debug: just list all source files compiled normally
 list-hs:
