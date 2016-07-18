@@ -14,7 +14,7 @@
 --
 -- Example, refining a @sort@ specification:
 --
--- > import FitSpec
+-- > import Test.FitSpec
 -- > import Data.List (sort)
 -- >
 -- > properties sort =
@@ -34,6 +34,7 @@
 -- >                      , timeout  = 0
 -- >                      }
 -- >                 (sort::[Word2]->[Word2])
+-- >                 properties
 --
 -- The above program reports the following:
 --
