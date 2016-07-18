@@ -51,7 +51,6 @@ library
                  , Test.FitSpec.ShowMutable.Tuples
                  , Test.FitSpec.Derive
                  , Test.FitSpec.Main
-                 , Test.FitSpec.Most
                  , Test.FitSpec.TestTypes
   other-modules: Test.FitSpec.Utils
                , Test.FitSpec.PrettyPrint

@@ -13,7 +13,7 @@
 --   * allows switching between refinements -- 'digraphs ps 0', 'digraphs ps 1', ...;
 --   * uses polymorphism where it could use monomorphism.
 import Digraph as D
-import Test.FitSpec.Most
+import Test.FitSpec
 import Data.List ((\\))
 import qualified Data.List as L (delete)
 import Control.Monad

@@ -20,4 +20,4 @@ documentation
 v0.3
 ----
 
-* remove FitSpec.Most module
+* release! (after new LeanCheck)
