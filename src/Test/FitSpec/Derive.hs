@@ -83,7 +83,8 @@ deriveMutableE cs t = do
       cd <- canDeriveMutable t
       unless cd (fail $ "Unable to derive Mutable " ++ show t)
       liftM2 (++) (deriveListableIfNeeded t) (reallyDeriveMutable cs t)
--- TODO: document the above function with an example
+-- TODO: document deriveMutableE with an example
+-- TODO: create deriveListableE on LeanCheck?
 
 -- | Checks whether it is possible to derive a Mutable instance.
 canDeriveMutable :: Name -> Q Bool
