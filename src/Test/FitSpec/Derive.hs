@@ -1,11 +1,14 @@
--- | Experimental module for deriving Mutable instances
+-- | Experimental module for deriving 'Mutable' and 'ShowMutable' instances
 --
 -- Needs GHC and Template Haskell
 -- (tested on GHC 7.4, 7.6, 7.8, 7.10 and 8.0)
 --
--- Despite Mutable instances being actually very simple, this module can be
--- used to derive those.  However, it will not work on all cases: when that
--- happens, you should write your instances manually.
+-- Despite 'Mutable' instances being actually very simple to write manually,
+-- this module can be used to derive those instances automatically.
+-- However, it will not work on all cases:
+-- when that happens, you should write your instances manually.
+--
+-- If FitSpec does not compile under later GHCs, this module is probably the culprit.
 {-# LANGUAGE TemplateHaskell, CPP #-}
 module Test.FitSpec.Derive
   ( deriveMutable
@@ -36,7 +39,33 @@ deriveListableIfNeeded t = do
     then return []
     else deriveListable t
 
--- | Derives a Mutable instance for a given type 'Name'.
+-- | Derives 'Mutable', 'ShowMutable' and (optionally) 'Listable' instances
+--   for a given type 'Name'.
+--
+-- Consider the following @Stack@ datatype:
+--
+-- > data Stack a = Stack a (Stack a) | Empty
+--
+-- Writing
+--
+-- > deriveMutable ''Stack
+--
+-- will automatically derive the following
+-- 'Listable', 'Mutable' and 'ShowMutable' instances:
+--
+-- > instance Listable a => Listable (Stack a) where
+-- >   tiers = cons2 Stack \/ cons0 Empty
+-- >
+-- > instance (Eq a, Listable a) => Mutable a
+-- >   where mutiers = mutiersEq
+-- >
+-- > instance (Eq a, Show a) => ShowMutable a
+-- >   where mutantS = mutantSEq
+--
+-- If a 'Listable' instance already exists, it is not derived.
+-- (cf.: 'deriveListable')
+--
+-- Needs the @TemplateHaskell@ extension.
 deriveMutable :: Name -> DecsQ
 deriveMutable = deriveMutableE []
 
@@ -54,6 +83,7 @@ deriveMutableE cs t = do
       cd <- canDeriveMutable t
       unless cd (fail $ "Unable to derive Mutable " ++ show t)
       liftM2 (++) (deriveListableIfNeeded t) (reallyDeriveMutable cs t)
+-- TODO: document the above function with an example
 
 -- | Checks whether it is possible to derive a Mutable instance.
 canDeriveMutable :: Name -> Q Bool
