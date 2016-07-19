@@ -6,6 +6,9 @@ misc
 
 * (?) announce on mailing list (wait for Haddock to be ready)
 
+* parameterize number of tests in test programs and add slow-test target
+
+* add diff test for IO functions (diff w/ model output and exit status)
 
 documentation
 -------------
