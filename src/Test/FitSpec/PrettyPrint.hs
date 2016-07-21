@@ -1,7 +1,4 @@
--- | Poor man's pretty printing library
---
--- This module has somewhat inefficient implementations that could be improved
--- in the future.  i.e.: heavy use of '(++)'.
+-- | A very simple pretty printing library used to generate 'Test.FitSpec' reports.
 module Test.FitSpec.PrettyPrint
   ( beside
   , above
@@ -13,6 +10,7 @@ module Test.FitSpec.PrettyPrint
   , headToUpper
   )
 where
+-- TODO: Fix somewhat inefficient implementations, i.e.: heavy use of '(++)'.
 
 import Data.List (intercalate,transpose,isSuffixOf)
 import Data.Char (toUpper)

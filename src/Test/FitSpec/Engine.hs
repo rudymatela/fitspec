@@ -215,7 +215,7 @@ getRawResults' is pmap = sortOn (count id . snd)
                        . transpose
                        . map (compositions . pmap)
 
--- | 'nSurv' @props fs@ returns the number of values that match
+-- | @nSurv props fs@ returns the number of values that match
 --   compositions of properties on the property map.
 --
 -- * @props@ should be a function from a value to a list of properties that
@@ -228,6 +228,8 @@ getRawResults' is pmap = sortOn (count id . snd)
 --
 -- This function is otherwise unused in this file.  It is just a simpler
 -- version of 'pssurv' to serve as documentation.
+--
+-- It is also not exported!
 nSurv :: (a -> [Bool]) -> [a] -> [Int]
 nSurv props = map (count id)
             . transpose

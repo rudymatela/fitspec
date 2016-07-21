@@ -1,4 +1,5 @@
--- | Generate dotfiles (graphviz)
+-- | Experimental module to generate dotfiles (for graphviz) with implications
+--   between property sub-sets.
 module Test.FitSpec.Dot where
 
 import Test.FitSpec

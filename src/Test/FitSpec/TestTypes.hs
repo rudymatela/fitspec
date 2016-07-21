@@ -3,7 +3,7 @@
 -- 'Int2', 'Int3', 'Int4',
 -- 'UInt2', 'UInt3', 'UInt4'.
 --
--- This module basically re-exports LeanCheck's Test.Types module
+-- This module re-exports "Test.LeanCheck.Utils.Types" module
 -- and defines 'Mutable' and 'ShowMutable' instances for the types
 -- defined there.
 module Test.FitSpec.TestTypes (module Test.LeanCheck.Utils.Types) where

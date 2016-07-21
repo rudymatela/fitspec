@@ -1,7 +1,11 @@
 -- | Mutable instances: septuples up to 12-tuples
 --
--- This is part of a Hack that allows those instances to be hidden from Haddock.
+-- This is partly a Hack that allows those instances to be hidden from Haddock.
 -- Otherwise Haddock documentation will look very ugly.
+-- It also makes "Test.FitSpec.ShowMutable" more readable.
+--
+-- This module is already exported by "Test.FitSpec",
+-- so it is not needed to import this explictly.
 module Test.FitSpec.Mutable.Tuples () where
 
 import Test.FitSpec.Mutable

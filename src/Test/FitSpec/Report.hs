@@ -1,3 +1,4 @@
+-- | Generate 'Test.FitSpec' reports.
 module Test.FitSpec.Report
   ( report
   , reportWith

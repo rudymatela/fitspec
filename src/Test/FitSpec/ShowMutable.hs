@@ -161,7 +161,7 @@ isFunction :: MutantS -> Bool
 isFunction (Function _) = True
 isFunction _            = False
 
--- | Flatten a MutantS by merging nested 'Function's.
+-- Flatten a MutantS by merging nested 'Function's.
 flatten :: MutantS -> MutantS
 flatten (Tuple ms) = Tuple $ map flatten ms
 flatten (Function [([],s)])  = flatten s
@@ -191,7 +191,7 @@ showMutantSAsTuple ns (Tuple ms) = showTuple $ zipWith show1 (ns +- defaultFunct
         show1 _  m             = showMutantS m
 showMutantSAsTuple ns m = showMutantSAsTuple ns (Tuple [m])
 
--- | Show top-level (maybe tuple) named 'MutantS' as a bindings.
+-- Show top-level (maybe tuple) named 'MutantS' as a bindings.
 -- In general, you want to 'flatten' the 'MutantS' before applying this
 -- function.
 showMutantSBindings :: Bool -> [String] -> MutantS -> String

@@ -37,7 +37,7 @@ import Test.LeanCheck.Error (errorToNothing)
 --
 -- > tail mutiers
 --
--- Given that the underlying 'Listable' enumeration has no repetitions
+-- Given that the underlying 'Listable' enumeration has no repetitions,
 -- parametric instances defined in this file will have no repeated mutants.
 class Mutable a where
   mutiers :: a -> [[a]]
