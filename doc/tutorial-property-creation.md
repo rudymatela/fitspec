@@ -8,7 +8,7 @@ We can use FitSpec to guide property creation.
 
 We first import what is needed:
 
-	import FitSpec
+	import Test.FitSpec
 	import Data.List (sort)
 
 

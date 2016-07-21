@@ -37,7 +37,7 @@ As an example, consider the following properties describing a `sort` function:
 
 We provide the above properties to FitSpec in the following program:
 
-    import FitSpec
+    import Test.FitSpec
     import Data.List
 
     properties sort =
