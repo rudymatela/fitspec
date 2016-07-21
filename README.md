@@ -139,9 +139,9 @@ documentation on Hackage.
 
 
 [Listable]:    https://hackage.haskell.org/package/leancheck/docs/Test-LeanCheck.html#t:Listable
-[Mutable]:     https://hackage.haskell.org/package/fitspec/docs/FitSpec.html#t:Mutable
-[ShowMutable]: https://hackage.haskell.org/package/fitspec/docs/FitSpec.html#t:ShowMutable
-[FitSpec API]: https://hackage.haskell.org/package/fitspec/docs/FitSpec.html
+[Mutable]:     https://hackage.haskell.org/package/fitspec/docs/Test-FitSpec.html#t:Mutable
+[ShowMutable]: https://hackage.haskell.org/package/fitspec/docs/Test-FitSpec.html#t:ShowMutable
+[FitSpec API]: https://hackage.haskell.org/package/fitspec/docs/Test-FitSpec.html
 
 [leancheck]: https://hackage.haskell.org/package/leancheck
 [cmdargs]:   https://hackage.haskell.org/package/cmdargs
