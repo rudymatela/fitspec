@@ -135,8 +135,8 @@ For more examples, see the [eg](eg) and [bench](bench) folders.
 For further documentation, consult the [doc](doc) folder and [FitSpec API]
 documentation on Hackage.
 
-(TODO: link to a possible future FitSpec paper goes here)
-
+FitSpec has been subject to a paper, see the
+[FitSpec paper on Haskell Symposium 2016](https://matela.com.br/paper/fitspec.pdf)
 
 [Listable]:    https://hackage.haskell.org/package/leancheck/docs/Test-LeanCheck.html#t:Listable
 [Mutable]:     https://hackage.haskell.org/package/fitspec/docs/Test-FitSpec.html#t:Mutable
