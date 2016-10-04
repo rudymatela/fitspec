@@ -18,3 +18,15 @@ documentation
 
 * write detailed install instructions on INSTALL.md
   (cabal install, cabal from sandbox, source include)
+
+v0.3.2
+------
+
+* Fix "thread killed" when first run takes longer than timeout:
+
+	$ ./bench/haskell-src -t5 -m500 -n1000
+	haskell-src: thread killed
+
+  As it takes more than 5 seconds to run this example (at least on my machine),
+  the thread will be killed before concluding.  I *think* this is the source of
+  the bug, but could be something else.
