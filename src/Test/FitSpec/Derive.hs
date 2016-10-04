@@ -80,17 +80,15 @@ deriveMutableE cs t = do
                    ++ " already exists, skipping derivation"
       return []
     else do
-      cd <- canDeriveMutable t
-      unless cd (fail $ "Unable to derive Mutable " ++ show t)
+      isEq   <- t `isInstanceOf` ''Eq
+      isShow <- t `isInstanceOf` ''Show
+      unless isEq   (fail $ "Unable to derive Mutable " ++ show t
+                         ++ " (missing Eq instance)")
+      unless isShow (fail $ "Unable to derive Mutable " ++ show t
+                         ++ " (missing Show instance)")
       liftM2 (++) (deriveListableIfNeeded t) (reallyDeriveMutable cs t)
 -- TODO: document deriveMutableE with an example
 -- TODO: create deriveListableE on LeanCheck?
-
--- | Checks whether it is possible to derive a Mutable instance.
-canDeriveMutable :: Name -> Q Bool
-canDeriveMutable t = (t `isInstanceOf` ''Eq)
-                 &&& (t `isInstanceOf` ''Show)
-  where (&&&) = liftM2 (&&)
 
 reallyDeriveMutable :: [Name] -> Name -> DecsQ
 reallyDeriveMutable cs t = do
