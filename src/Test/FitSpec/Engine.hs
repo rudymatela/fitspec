@@ -41,7 +41,7 @@ import Test.FitSpec.Mutable
 type Property = [([String],Bool)]
 type Properties = [Property]
 
--- | Given a 'Testable' type (as defined by 'Test.LeanCheck'), returns a 'Property'.
+-- | Given a 'Testable' type (as defined by "Test.LeanCheck"), returns a 'Property'.
 --
 -- This function should be used on every property to create a property list to
 -- be passed to 'report', 'reportWith', 'mainDefault' or 'mainWith'.
