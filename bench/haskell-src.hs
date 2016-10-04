@@ -48,6 +48,11 @@ deriveMutable ''ParseResult
 deriveMutable ''Ratio
 deriveMutable ''SrcLoc
 
+-- change ``take 5'' below to ``take n'' where n `elem` [1,2,3,4]
+-- to see surviving mutants for different refinements
+--
+-- All 5 properties should be reported as ``apparently complete''
+-- so no surviving mutants.
 properties :: (HsModule -> String) -> [Property]
 properties prettyPrint = take 5
   [ property $
