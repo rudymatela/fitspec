@@ -28,6 +28,7 @@ do
 	ghc "$@" -dep-suffix=. -dep-makefile=tmp.mk -M "$fn" ||
 	exit 1
 	deps="`cat tmp.mk |
+	       sort |
 	       grep "hs$" |
 	       sed -e "s/.*: //" |
 	       tac |
