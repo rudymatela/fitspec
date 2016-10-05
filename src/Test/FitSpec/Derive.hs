@@ -23,6 +23,7 @@ import Test.FitSpec.Mutable
 import Test.FitSpec.ShowMutable
 
 import Test.LeanCheck
+import Test.LeanCheck.Derive (deriveListableIfNeeded)
 import Language.Haskell.TH
 import Control.Monad (when, unless, liftM, liftM2)
 
@@ -31,13 +32,6 @@ import Control.Monad (when, unless, liftM, liftM2)
 reportWarning :: String -> Q ()
 reportWarning = report False
 #endif
-
-deriveListableIfNeeded :: Name -> DecsQ
-deriveListableIfNeeded t = do
-  is <- t `isInstanceOf` ''Listable
-  if is
-    then return []
-    else deriveListable t
 
 -- | Derives 'Mutable', 'ShowMutable' and (optionally) 'Listable' instances
 --   for a given type 'Name'.
