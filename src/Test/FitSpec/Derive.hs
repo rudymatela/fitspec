@@ -66,7 +66,10 @@ deriveMutable = deriveMutableE []
 -- | Derives a Mutable instance for a given type 'Name'
 --   using a given context for all type variables.
 deriveMutableE :: [Name] -> Name -> DecsQ
-deriveMutableE cs t = do
+deriveMutableE = deriveMutableEX False
+
+deriveMutableEX :: Bool -> [Name] -> Name -> DecsQ
+deriveMutableEX cascade cs t = do
   is <- t `isInstanceOf` ''Mutable
   if is
     then do
@@ -80,7 +83,10 @@ deriveMutableE cs t = do
                          ++ " (missing Eq instance)")
       unless isShow (fail $ "Unable to derive Mutable " ++ show t
                          ++ " (missing Show instance)")
-      liftM2 (++) (deriveListableIfNeeded t) (reallyDeriveMutable cs t)
+      liftM2 (++) (deriveListableIfNeeded t)
+                  (if cascade
+                     then reallyDeriveMutableCascade cs t
+                     else reallyDeriveMutable cs t)
 -- TODO: document deriveMutableE with an example
 -- TODO: create deriveListableE on LeanCheck?
 
@@ -110,6 +116,8 @@ reallyDeriveMutable cs t = do
          ]
 #endif
 
+reallyDeriveMutableCascade :: [Name] -> Name -> DecsQ
+reallyDeriveMutableCascade cs t = undefined
 
 -- * Template haskell utilities
 
