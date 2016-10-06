@@ -8,45 +8,10 @@ import Data.List (intercalate)
 import Data.Function (on)
 import Data.Char
 
--- We need those two for Mutable:
-deriving instance Eq HsModule
-deriving instance Eq a => Eq (ParseResult a)
+deriving instance Eq HsModule -- needed for Mutable
 
--- TODO: make deriveMutable cascade
--- so we just need to write deriveMutable for the outernmost type.
-deriveMutable ''HsAlt
-deriveMutable ''HsAssoc
-deriveMutable ''HsBangType
-deriveMutable ''HsCName
-deriveMutable ''HsConDecl
-deriveMutable ''HsDecl
-deriveMutable ''HsExp
-deriveMutable ''HsExportSpec
-deriveMutable ''HsFieldUpdate
-deriveMutable ''HsGuardedAlt
-deriveMutable ''HsGuardedAlts
-deriveMutable ''HsGuardedRhs
-deriveMutable ''HsImportDecl
-deriveMutable ''HsImportSpec
-deriveMutable ''HsLiteral
-deriveMutable ''HsMatch
-deriveMutable ''HsModule
-deriveMutable ''HsName
-deriveMutable ''HsOp
-deriveMutable ''HsPat
-deriveMutable ''HsPatField
-deriveMutable ''HsQName
-deriveMutable ''HsQOp
-deriveMutable ''HsQualType
-deriveMutable ''HsRhs
-deriveMutable ''HsSafety
-deriveMutable ''HsSpecialCon
-deriveMutable ''HsStmt
-deriveMutable ''HsType
-deriveMutable ''Module
-deriveMutable ''ParseResult
 deriveMutable ''Ratio
-deriveMutable ''SrcLoc
+deriveMutableCascade ''HsModule
 
 -- change ``take 5'' below to ``take n'' where n `elem` [1,2,3,4]
 -- to see surviving mutants for different refinements

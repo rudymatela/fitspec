@@ -13,6 +13,8 @@
 module Test.FitSpec.Derive
   ( deriveMutable
   , deriveMutableE
+  , deriveMutableCascade
+  , deriveMutableCascadeE
   , module Test.FitSpec.Mutable
   , module Test.FitSpec.ShowMutable
   , module Test.LeanCheck
@@ -26,6 +28,7 @@ import Test.LeanCheck
 import Test.LeanCheck.Derive (deriveListableIfNeeded)
 import Language.Haskell.TH
 import Control.Monad (when, unless, liftM, liftM2)
+import Data.List (delete)
 
 #if __GLASGOW_HASKELL__ < 706
 -- reportWarning was only introduced in GHC 7.6 / TH 2.8
@@ -63,10 +66,16 @@ reportWarning = report False
 deriveMutable :: Name -> DecsQ
 deriveMutable = deriveMutableE []
 
+deriveMutableCascade :: Name -> DecsQ
+deriveMutableCascade = deriveMutableCascadeE []
+
 -- | Derives a Mutable instance for a given type 'Name'
 --   using a given context for all type variables.
 deriveMutableE :: [Name] -> Name -> DecsQ
 deriveMutableE = deriveMutableEX False
+
+deriveMutableCascadeE :: [Name] -> Name -> DecsQ
+deriveMutableCascadeE = deriveMutableEX True
 
 deriveMutableEX :: Bool -> [Name] -> Name -> DecsQ
 deriveMutableEX cascade cs t = do
@@ -83,10 +92,9 @@ deriveMutableEX cascade cs t = do
                          ++ " (missing Eq instance)")
       unless isShow (fail $ "Unable to derive Mutable " ++ show t
                          ++ " (missing Show instance)")
-      liftM2 (++) (deriveListableIfNeeded t)
-                  (if cascade
-                     then reallyDeriveMutableCascade cs t
-                     else reallyDeriveMutable cs t)
+      if cascade
+        then liftM2 (++) (deriveListableCascade t) (reallyDeriveMutableCascade cs t)
+        else liftM2 (++) (deriveListableIfNeeded t) (reallyDeriveMutable cs t)
 -- TODO: document deriveMutableE with an example
 -- TODO: create deriveListableE on LeanCheck?
 
@@ -117,9 +125,42 @@ reallyDeriveMutable cs t = do
 #endif
 
 reallyDeriveMutableCascade :: [Name] -> Name -> DecsQ
-reallyDeriveMutableCascade cs t = undefined
+reallyDeriveMutableCascade cs t = do
+  targs <- t `typeConCascadingArgsThat` (`isntInstanceOf` ''Mutable)
+  mutableArgs <- mapM (reallyDeriveMutable cs) (delete t targs)
+  mutableT    <- reallyDeriveMutable cs t
+  return . concat $ mutableT:mutableArgs
 
 -- * Template haskell utilities
+
+typeConArgs :: Name -> Q [Name]
+typeConArgs = liftM (nubMerges . map typeConTs . concat . map snd) . typeCons'
+  where
+  typeConTs :: Type -> [Name]
+  typeConTs (AppT t1 t2) = typeConTs t1 `nubMerge` typeConTs t2
+  typeConTs (SigT t _) = typeConTs t
+  typeConTs (VarT _) = []
+  typeConTs (ConT n) = [n]
+#if __GLASGOW_HASKELL__ >= 800
+  -- typeConTs (PromotedT n) = [n] ?
+  typeConTs (InfixT  t1 n t2) = typeConTs t1 `nubMerge` typeConTs t2
+  typeConTs (UInfixT t1 n t2) = typeConTs t1 `nubMerge` typeConTs t2
+  typeConTs (ParensT t) = typeConTs t
+#endif
+  typeConTs _ = []
+
+typeConArgsThat :: Name -> (Name -> Q Bool) -> Q [Name]
+typeConArgsThat t p = do
+  targs <- typeConArgs t
+  tbs   <- mapM (\t' -> do is <- p t'; return (t',is)) targs
+  return [t' | (t',p) <- tbs, p]
+
+typeConCascadingArgsThat :: Name -> (Name -> Q Bool) -> Q [Name]
+t `typeConCascadingArgsThat` p = do
+  ts <- t `typeConArgsThat` p
+  let p' t' = do is <- p t'; return $ t' `notElem` (t:ts) && is
+  tss <- mapM (`typeConCascadingArgsThat` p') ts
+  return $ nubMerges (ts:tss)
 
 -- Normalizes a type by applying it to necessary type variables, making it
 -- accept "zero" parameters.  The normalized type is tupled with a list of
@@ -161,6 +202,9 @@ isInstanceOf tn cl = do
   ty <- normalizeTypeUnits tn
   isInstance cl [ty]
 
+isntInstanceOf :: Name -> Name -> Q Bool
+isntInstanceOf tn cl = liftM not (isInstanceOf tn cl)
+
 -- | Given a type name, return the number of arguments taken by that type.
 -- Examples in partially broken TH:
 --
@@ -189,6 +233,40 @@ typeArity t = do
                                          ++ show t
                                          ++ " is not a newtype, data or type synonym"
 
+-- Given a type name, returns a list of its type constructor names paired with
+-- the type arguments they take.
+--
+-- > typeCons' ''()    === Q [('(),[])]
+--
+-- > typeCons' ''(,)   === Q [('(,),[VarT a, VarT b])]
+--
+-- > typeCons' ''[]    === Q [('[],[]),('(:),[VarT a,AppT ListT (VarT a)])]
+--
+-- > data Pair a = P a a
+-- > typeCons' ''Pair  === Q [('P,[VarT a, VarT a])]
+--
+-- > data Point = Pt Int Int
+-- > typeCons' ''Point === Q [('Pt,[ConT Int, ConT Int])]
+typeCons' :: Name -> Q [(Name,[Type])]
+typeCons' t = do
+  ti <- reify t
+  return . map simplify $ case ti of
+#if __GLASGOW_HASKELL__ < 800
+    TyConI (DataD    _ _ _ cs _) -> cs
+    TyConI (NewtypeD _ _ _ c  _) -> [c]
+#else
+    TyConI (DataD    _ _ _ _ cs _) -> cs
+    TyConI (NewtypeD _ _ _ _ c  _) -> [c]
+#endif
+    _ -> error $ "error (typeConstructors): symbol "
+              ++ show t
+              ++ " is neither newtype nor data"
+  where
+  simplify (NormalC n ts)  = (n,map snd ts)
+  simplify (RecC    n ts)  = (n,map trd ts)
+  simplify (InfixC  t1 n t2) = (n,[snd t1,snd t2])
+  trd (x,y,z) = z
+
 -- Append to instance contexts in a declaration.
 --
 -- > sequence [[|Eq b|],[|Eq c|]] |=>| [t|instance Eq a => Cl (Ty a) where f=g|]
@@ -203,3 +281,15 @@ c |=>| qds = do ds <- qds
   where ac (InstanceD o c ts ds) c' = InstanceD o (c++c') ts ds
         ac d                     _  = d
 #endif
+
+-- > nubMerge xs ys == nub (merge xs ys)
+-- > nubMerge xs ys == nub (sort (xs ++ ys))
+nubMerge :: Ord a => [a] -> [a] -> [a]
+nubMerge [] ys = ys
+nubMerge xs [] = xs
+nubMerge (x:xs) (y:ys) | x < y     = x :    xs  `nubMerge` (y:ys)
+                       | x > y     = y : (x:xs) `nubMerge`    ys
+                       | otherwise = x :    xs  `nubMerge`    ys
+
+nubMerges :: Ord a => [[a]] -> [a]
+nubMerges = foldr nubMerge []
