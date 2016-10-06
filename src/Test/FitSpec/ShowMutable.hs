@@ -114,6 +114,7 @@ mutantSEq x x' = if x == x'
 
 instance ShowMutable ()   where mutantS = mutantSEq
 instance ShowMutable Int  where mutantS = mutantSEq
+instance ShowMutable Integer where mutantS = mutantSEq
 instance ShowMutable Char where mutantS = mutantSEq
 instance ShowMutable Bool where mutantS = mutantSEq
 instance (Eq a, Show a) => ShowMutable [a]       where mutantS = mutantSEq
