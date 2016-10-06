@@ -10,6 +10,7 @@ import Test.LeanCheck
 import Data.List (intercalate, delete)
 import Data.Maybe
 import Test.LeanCheck.Error (errorToNothing)
+import Data.Ratio (Ratio)
 
 -- | This typeclass is similar to 'Listable'.
 --
@@ -86,6 +87,9 @@ instance (Eq a, Listable a) => Mutable [a]       where mutiers = mutiersEq
 
 -- | > mutants (Just 0) = [Just 0, Nothing, ...
 instance (Eq a, Listable a) => Mutable (Maybe a) where mutiers = mutiersEq
+
+instance (Eq a, Listable a, Integral a) => Mutable (Ratio a)
+  where mutiers = mutiersEq
 
 {- Alternative implementations for Mutable Ints and Lists.
 -- These do not improve results significantly.
