@@ -120,7 +120,8 @@ instance ShowMutable Char where mutantS = mutantSEq
 instance ShowMutable Bool where mutantS = mutantSEq
 instance (Eq a, Show a) => ShowMutable [a]       where mutantS = mutantSEq
 instance (Eq a, Show a) => ShowMutable (Maybe a) where mutantS = mutantSEq
-instance (Eq a, Show a) => ShowMutable (Ratio a) where mutantS = mutantSEq
+instance (Eq a, Show a, Integral a) => ShowMutable (Ratio a)
+  where mutantS = mutantSEq
 
 instance (Listable a, Show a, ShowMutable b) => ShowMutable (a->b) where
   -- TODO: let the user provide how many values should be tried when printing
