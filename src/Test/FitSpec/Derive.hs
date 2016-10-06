@@ -13,8 +13,8 @@
 module Test.FitSpec.Derive
   ( deriveMutable
   , deriveMutableE
-  , deriveMutableCascade
-  , deriveMutableCascadeE
+  , deriveMutableCascading
+  , deriveMutableCascadingE
   , module Test.FitSpec.Mutable
   , module Test.FitSpec.ShowMutable
   , module Test.LeanCheck
@@ -66,16 +66,16 @@ reportWarning = report False
 deriveMutable :: Name -> DecsQ
 deriveMutable = deriveMutableE []
 
-deriveMutableCascade :: Name -> DecsQ
-deriveMutableCascade = deriveMutableCascadeE []
+deriveMutableCascading :: Name -> DecsQ
+deriveMutableCascading = deriveMutableCascadingE []
 
 -- | Derives a Mutable instance for a given type 'Name'
 --   using a given context for all type variables.
 deriveMutableE :: [Name] -> Name -> DecsQ
 deriveMutableE = deriveMutableEX False
 
-deriveMutableCascadeE :: [Name] -> Name -> DecsQ
-deriveMutableCascadeE = deriveMutableEX True
+deriveMutableCascadingE :: [Name] -> Name -> DecsQ
+deriveMutableCascadingE = deriveMutableEX True
 
 deriveMutableEX :: Bool -> [Name] -> Name -> DecsQ
 deriveMutableEX cascade cs t = do
@@ -93,7 +93,7 @@ deriveMutableEX cascade cs t = do
       unless isShow (fail $ "Unable to derive Mutable " ++ show t
                          ++ " (missing Show instance)")
       if cascade
-        then liftM2 (++) (deriveListableCascade t) (reallyDeriveMutableCascade cs t)
+        then liftM2 (++) (deriveListableCascading t) (reallyDeriveMutableCascading cs t)
         else liftM2 (++) (deriveListableIfNeeded t) (reallyDeriveMutable cs t)
 -- TODO: document deriveMutableE with an example
 -- TODO: create deriveListableE on LeanCheck?
@@ -124,8 +124,8 @@ reallyDeriveMutable cs t = do
          ]
 #endif
 
-reallyDeriveMutableCascade :: [Name] -> Name -> DecsQ
-reallyDeriveMutableCascade cs t = do
+reallyDeriveMutableCascading :: [Name] -> Name -> DecsQ
+reallyDeriveMutableCascading cs t = do
   targs <- t `typeConCascadingArgsThat` (`isntInstanceOf` ''Mutable)
   mutableArgs <- mapM (reallyDeriveMutable cs) (delete t targs)
   mutableT    <- reallyDeriveMutable cs t

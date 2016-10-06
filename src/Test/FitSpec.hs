@@ -86,8 +86,8 @@ module Test.FitSpec
   -- * Automatic derivation
   , deriveMutable
   , deriveMutableE
-  , deriveMutableCascade
-  , deriveMutableCascadeE
+  , deriveMutableCascading
+  , deriveMutableCascadingE
 
   -- * Re-export modules
   , module Test.FitSpec.TestTypes
