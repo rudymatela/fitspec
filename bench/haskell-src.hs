@@ -10,7 +10,7 @@ import Data.Char
 
 deriving instance Eq HsModule -- needed for Mutable
 
-deriveMutable ''Ratio
+deriveMutableE [''Integral] ''Ratio -- type context needed for GHC <= 7.10
 deriveMutableCascading ''HsModule
 
 -- change ``take 5'' below to ``take n'' where n `elem` [1,2,3,4]
