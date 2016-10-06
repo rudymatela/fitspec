@@ -33,4 +33,4 @@ v0.3.2
   the thread will be killed before concluding.  I *think* this is the source of
   the bug, but could be something else.
 
-* Make `deriveMutable` cascade.  See `bench/haskell-src.hs`.
+* Release: a few things have been added (check `git log`).
