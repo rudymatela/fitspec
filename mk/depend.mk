@@ -144,6 +144,52 @@ bench/digraphs: \
   ../leancheck/src/Test/LeanCheck/Basic.hs \
   bench/digraphs.hs \
   bench/Digraph.hs
+bench/haskell-src-exts.o: \
+  src/Test/FitSpec/Utils.hs \
+  src/Test/FitSpec/TestTypes.hs \
+  src/Test/FitSpec/ShowMutable/Tuples.hs \
+  src/Test/FitSpec/ShowMutable.hs \
+  src/Test/FitSpec/Report.hs \
+  src/Test/FitSpec/PrettyPrint.hs \
+  src/Test/FitSpec.hs \
+  src/Test/FitSpec/Mutable/Tuples.hs \
+  src/Test/FitSpec/Mutable.hs \
+  src/Test/FitSpec/Main.hs \
+  src/Test/FitSpec/Engine.hs \
+  src/Test/FitSpec/Derive.hs \
+  ../leancheck/src/Test/LeanCheck/Utils/Types.hs \
+  ../leancheck/src/Test/LeanCheck/Tiers.hs \
+  ../leancheck/src/Test/LeanCheck/Ratio.hs \
+  ../leancheck/src/Test/LeanCheck.hs \
+  ../leancheck/src/Test/LeanCheck/IO.hs \
+  ../leancheck/src/Test/LeanCheck/Error.hs \
+  ../leancheck/src/Test/LeanCheck/Derive.hs \
+  ../leancheck/src/Test/LeanCheck/Core.hs \
+  ../leancheck/src/Test/LeanCheck/Basic.hs \
+  bench/haskell-src-exts.hs
+bench/haskell-src-exts: \
+  src/Test/FitSpec/Utils.hs \
+  src/Test/FitSpec/TestTypes.hs \
+  src/Test/FitSpec/ShowMutable/Tuples.hs \
+  src/Test/FitSpec/ShowMutable.hs \
+  src/Test/FitSpec/Report.hs \
+  src/Test/FitSpec/PrettyPrint.hs \
+  src/Test/FitSpec.hs \
+  src/Test/FitSpec/Mutable/Tuples.hs \
+  src/Test/FitSpec/Mutable.hs \
+  src/Test/FitSpec/Main.hs \
+  src/Test/FitSpec/Engine.hs \
+  src/Test/FitSpec/Derive.hs \
+  ../leancheck/src/Test/LeanCheck/Utils/Types.hs \
+  ../leancheck/src/Test/LeanCheck/Tiers.hs \
+  ../leancheck/src/Test/LeanCheck/Ratio.hs \
+  ../leancheck/src/Test/LeanCheck.hs \
+  ../leancheck/src/Test/LeanCheck/IO.hs \
+  ../leancheck/src/Test/LeanCheck/Error.hs \
+  ../leancheck/src/Test/LeanCheck/Derive.hs \
+  ../leancheck/src/Test/LeanCheck/Core.hs \
+  ../leancheck/src/Test/LeanCheck/Basic.hs \
+  bench/haskell-src-exts.hs
 bench/haskell-src.o: \
   src/Test/FitSpec/Utils.hs \
   src/Test/FitSpec/TestTypes.hs \

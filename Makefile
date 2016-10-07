@@ -33,6 +33,7 @@ BENCHS = \
   bench/sieve      \
   bench/sorting    \
   bench/haskell-src \
+  bench/haskell-src-exts \
   bench/spring
 EGS = \
   eg/sorting \

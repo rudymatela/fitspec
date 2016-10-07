@@ -32,6 +32,7 @@ bench/sorting
 bench/spring
 bench/digraphs
 bench/haskell-src
+bench/haskell-src-exts
 eg/sorting
 eg/negation
 
