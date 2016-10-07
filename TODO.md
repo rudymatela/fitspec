@@ -42,17 +42,4 @@ v0.3.2
   the advantage of, by adding a *third* boolean IORef we can also exit earlier
   when test cases and mutants are exhausted.
 
-* Fix legacy-test:
-
-	$ ghc-7.10 -isrc:../leancheck/src:bench -Werror -dynamic bench/haskell-src-exts.hs && touch bench/haskell-src-exts
-	[22 of 22] Compiling Main             ( bench/haskell-src-exts.hs, bench/haskell-src-exts.o )
-
-	bench/haskell-src-exts.hs:13:24:
-		Not in scope: type constructor or class ‘SrcSpanInfo’
-		In the Template Haskell quotation ''SrcSpanInfo
-	make[1]: *** [mk/haskell.mk:41: bench/haskell-src-exts] Error 1
-	make[1]: Leaving directory '/path/to/fitspec'
-	make: *** [Makefile:62: legacy-test] Error 2
-
-
 * Release: a few things have been added (check `git log`).
