@@ -27,7 +27,7 @@ import Test.FitSpec.ShowMutable
 import Test.LeanCheck
 import Test.LeanCheck.Derive (deriveListableIfNeeded)
 import Language.Haskell.TH
-import Control.Monad (when, unless, liftM, liftM2)
+import Control.Monad (when, unless, liftM, liftM2, filterM)
 import Data.List (delete)
 
 #if __GLASGOW_HASKELL__ < 706
@@ -126,10 +126,11 @@ reallyDeriveMutable cs t = do
 
 reallyDeriveMutableCascading :: [Name] -> Name -> DecsQ
 reallyDeriveMutableCascading cs t = do
-  targs <- t `typeConCascadingArgsThat` (`isntInstanceOf` ''Mutable)
-  mutableArgs <- mapM (reallyDeriveMutable cs) (delete t targs)
-  mutableT    <- reallyDeriveMutable cs t
-  return . concat $ mutableT:mutableArgs
+      return . concat
+  =<< mapM (reallyDeriveMutable cs)
+  =<< filterM (liftM not . isTypeSynonym)
+  =<< return . (t:) . delete t
+  =<< t `typeConCascadingArgsThat` (`isntInstanceOf` ''Mutable)
 
 
 -- * Template haskell utilities
