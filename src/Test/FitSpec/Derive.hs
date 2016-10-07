@@ -131,10 +131,15 @@ reallyDeriveMutableCascading cs t = do
   mutableT    <- reallyDeriveMutable cs t
   return . concat $ mutableT:mutableArgs
 
+
 -- * Template haskell utilities
 
 typeConArgs :: Name -> Q [Name]
-typeConArgs = liftM (nubMerges . map typeConTs . concat . map snd) . typeCons'
+typeConArgs t = do
+  is <- isTypeSynonym t
+  if is
+    then liftM typeConTs $ typeSynonymType t
+    else liftM (nubMerges . map typeConTs . concat . map snd) $ typeConstructors t
   where
   typeConTs :: Type -> [Name]
   typeConTs (AppT t1 t2) = typeConTs t1 `nubMerge` typeConTs t2
@@ -223,32 +228,30 @@ typeArity t = do
 #if __GLASGOW_HASKELL__ < 800
     TyConI (DataD    _ _ ks _ _) -> ks
     TyConI (NewtypeD _ _ ks _ _) -> ks
-    TyConI (TySynD   _   ks   _) -> ks
 #else
     TyConI (DataD    _ _ ks _ _ _) -> ks
     TyConI (NewtypeD _ _ ks _ _ _) -> ks
-    TyConI (TySynD   _   ks     _) -> ks
 #endif
-    _                            -> error $ "error (arity): symbol "
-                                         ++ show t
-                                         ++ " is not a newtype, data or type synonym"
+    TyConI (TySynD _ ks _) -> ks
+    _ -> error $ "error (typeArity): symbol " ++ show t
+              ++ " is not a newtype, data or type synonym"
 
 -- Given a type name, returns a list of its type constructor names paired with
 -- the type arguments they take.
 --
--- > typeCons' ''()    === Q [('(),[])]
+-- > typeConstructors ''()    === Q [('(),[])]
 --
--- > typeCons' ''(,)   === Q [('(,),[VarT a, VarT b])]
+-- > typeConstructors ''(,)   === Q [('(,),[VarT a, VarT b])]
 --
--- > typeCons' ''[]    === Q [('[],[]),('(:),[VarT a,AppT ListT (VarT a)])]
+-- > typeConstructors ''[]    === Q [('[],[]),('(:),[VarT a,AppT ListT (VarT a)])]
 --
 -- > data Pair a = P a a
--- > typeCons' ''Pair  === Q [('P,[VarT a, VarT a])]
+-- > typeConstructors ''Pair  === Q [('P,[VarT a, VarT a])]
 --
 -- > data Point = Pt Int Int
--- > typeCons' ''Point === Q [('Pt,[ConT Int, ConT Int])]
-typeCons' :: Name -> Q [(Name,[Type])]
-typeCons' t = do
+-- > typeConstructors ''Point === Q [('Pt,[ConT Int, ConT Int])]
+typeConstructors :: Name -> Q [(Name,[Type])]
+typeConstructors t = do
   ti <- reify t
   return . map simplify $ case ti of
 #if __GLASGOW_HASKELL__ < 800
@@ -258,14 +261,28 @@ typeCons' t = do
     TyConI (DataD    _ _ _ _ cs _) -> cs
     TyConI (NewtypeD _ _ _ _ c  _) -> [c]
 #endif
-    _ -> error $ "error (typeConstructors): symbol "
-              ++ show t
+    _ -> error $ "error (typeConstructors): symbol " ++ show t
               ++ " is neither newtype nor data"
   where
   simplify (NormalC n ts)  = (n,map snd ts)
   simplify (RecC    n ts)  = (n,map trd ts)
   simplify (InfixC  t1 n t2) = (n,[snd t1,snd t2])
   trd (x,y,z) = z
+
+isTypeSynonym :: Name -> Q Bool
+isTypeSynonym t = do
+  ti <- reify t
+  return $ case ti of
+    TyConI (TySynD _ _ _) -> True
+    _                     -> False
+
+typeSynonymType :: Name -> Q Type
+typeSynonymType t = do
+  ti <- reify t
+  return $ case ti of
+    TyConI (TySynD _ _ t') -> t'
+    _ -> error $ "error (typeSynonymType): symbol " ++ show t
+              ++ " is not a type synonym"
 
 -- Append to instance contexts in a declaration.
 --
