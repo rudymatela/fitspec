@@ -20,20 +20,20 @@ HSS=$(shell $(LISTHS))
 LISTLIBS=find src -name \*.hs
 OBJS = $(shell $(LISTLIBS) | sed -e 's/hs$$/o/')
 BENCHS = \
-  bench/avltrees   \
-  bench/bools      \
-  bench/digraphs   \
-  bench/heaps      \
-  bench/id         \
-  bench/list       \
-  bench/mergeheaps \
-  bench/pretty     \
-  bench/sets       \
-  bench/setsofsets \
-  bench/sieve      \
-  bench/sorting    \
-  bench/haskell-src \
+  bench/avltrees         \
+  bench/bools            \
+  bench/digraphs         \
+  bench/haskell-src      \
   bench/haskell-src-exts \
+  bench/heaps            \
+  bench/id               \
+  bench/list             \
+  bench/mergeheaps       \
+  bench/pretty           \
+  bench/sets             \
+  bench/setsofsets       \
+  bench/sieve            \
+  bench/sorting          \
   bench/spring
 EGS = \
   eg/sorting \
