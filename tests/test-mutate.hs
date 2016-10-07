@@ -64,7 +64,7 @@ tests = map errorToFalse
   , allUnique $ concat $ showNewMutants2 ((,) :: Int -> Bool -> (Int,Bool)) 7
   , allUnique $ concat $ showNewMutants2 ((,) :: Bool -> Int -> (Bool,Int)) 7
 
-  , allUnique $ concat $ showNewMutants2 (polyAppend :: [String] -> [Int] -> [Either String Int])
+  , allUnique $ concat $ showNewMutants2 (polyAppend :: [String] -> [Int] -> [Either String Int]) 7
 
   {-
   , checkBindingsOfLength 7 2 ((,) :: Bool -> Bool -> (Bool,Bool))
