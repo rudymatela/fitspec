@@ -7,7 +7,8 @@ import Test.FitSpec.Utils (contained)
 import Test.LeanCheck.Error (errorToNothing, errorToFalse)
 import Test.LeanCheck.Function.ListsOfPairs (functionPairs, defaultFunPairsToFunction)
 
-
+polyAppend :: [a] -> [b] -> [Either a b]
+polyAppend xs ys = map Left xs ++ map Right ys
 
 main :: IO ()
 main =
@@ -15,10 +16,6 @@ main =
     [] -> putStrLn "Tests passed!"
     is -> do putStrLn ("Failed tests:" ++ show is)
              exitFailure
-
--- NOTE:
--- the lsMutantsEqOld property only *actually* hold for functions returning
--- lists when using mutiersEq as the implementation of mutiers for [a]
 
 tests = map errorToFalse
   [ True
@@ -66,6 +63,8 @@ tests = map errorToFalse
   , allUnique $ concat $ showOldMutants2 ((,) :: Int -> Bool -> (Int,Bool)) 7
   , allUnique $ concat $ showNewMutants2 ((,) :: Int -> Bool -> (Int,Bool)) 7
   , allUnique $ concat $ showNewMutants2 ((,) :: Bool -> Int -> (Bool,Int)) 7
+
+  , allUnique $ concat $ showNewMutants2 (polyAppend :: [String] -> [Int] -> [Either String Int])
 
   {-
   , checkBindingsOfLength 7 2 ((,) :: Bool -> Bool -> (Bool,Bool))
@@ -119,6 +118,9 @@ checkBindingsOfLength n len f = (all . all) (bindingsOfLength len)
 bindingsOfLength :: Int -> [([String],String)] -> Bool
 bindingsOfLength n = all ((== n) . length . fst)
 
+-- NOTE:
+-- mutiersEqOld only *actually* hold for functions returning
+-- lists when using mutiersEq as the implementation of mutiers for [a]
 mutiersEqOld :: ( Show a, Show b
                   , Eq a, Eq b
                   , Listable a, Listable b

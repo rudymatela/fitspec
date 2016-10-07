@@ -88,8 +88,13 @@ instance (Eq a, Listable a) => Mutable [a]       where mutiers = mutiersEq
 -- | > mutants (Just 0) = [Just 0, Nothing, ...
 instance (Eq a, Listable a) => Mutable (Maybe a) where mutiers = mutiersEq
 
+instance (Eq a, Listable a, Eq b, Listable b) => Mutable (Either a b)
+  where mutiers = mutiersEq
+
 instance (Eq a, Listable a, Integral a) => Mutable (Ratio a)
   where mutiers = mutiersEq
+
+-- TODO: Mutable Ordering, Word, Float and Double
 
 {- Alternative implementations for Mutable Ints and Lists.
 -- These do not improve results significantly.

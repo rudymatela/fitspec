@@ -120,6 +120,8 @@ instance ShowMutable Char where mutantS = mutantSEq
 instance ShowMutable Bool where mutantS = mutantSEq
 instance (Eq a, Show a) => ShowMutable [a]       where mutantS = mutantSEq
 instance (Eq a, Show a) => ShowMutable (Maybe a) where mutantS = mutantSEq
+instance (Eq a, Show a, Eq b, Show b) => ShowMutable (Either a b)
+  where mutantS = mutantSEq
 instance (Eq a, Show a, Integral a) => ShowMutable (Ratio a)
   where mutantS = mutantSEq
 
