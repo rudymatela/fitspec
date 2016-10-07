@@ -15,7 +15,7 @@ LEANCHECKPATH = ../leancheck
 # Misc variables
 GHCIMPORTDIRS = src:$(LEANCHECKPATH)/src:bench
 GHCFLAGS = -dynamic -O2
-LISTHS=find eg src tests -name \*.hs
+LISTHS=find eg src tests bench -name \*.hs
 HSS=$(shell $(LISTHS))
 LISTLIBS=find src -name \*.hs
 OBJS = $(shell $(LISTLIBS) | sed -e 's/hs$$/o/')
