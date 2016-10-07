@@ -124,6 +124,10 @@ instance (Eq a, Show a, Eq b, Show b) => ShowMutable (Either a b)
   where mutantS = mutantSEq
 instance (Eq a, Show a, Integral a) => ShowMutable (Ratio a)
   where mutantS = mutantSEq
+instance ShowMutable Float    where mutantS = mutantSEq
+instance ShowMutable Double   where mutantS = mutantSEq
+instance ShowMutable Ordering where mutantS = mutantSEq
+instance ShowMutable Word     where mutantS = mutantSEq
 
 instance (Listable a, Show a, ShowMutable b) => ShowMutable (a->b) where
   -- TODO: let the user provide how many values should be tried when printing

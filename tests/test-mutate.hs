@@ -7,6 +7,8 @@ import Test.FitSpec.Utils (contained)
 import Test.LeanCheck.Error (errorToNothing, errorToFalse)
 import Test.LeanCheck.Function.ListsOfPairs (functionPairs, defaultFunPairsToFunction)
 
+import Data.Monoid ((<>))
+
 polyAppend :: [a] -> [b] -> [Either a b]
 polyAppend xs ys = map Left xs ++ map Right ys
 
@@ -65,6 +67,10 @@ tests = map errorToFalse
   , allUnique $ concat $ showNewMutants2 ((,) :: Bool -> Int -> (Bool,Int)) 7
 
   , allUnique $ concat $ showNewMutants2 (polyAppend :: [String] -> [Int] -> [Either String Int]) 7
+  , allUnique $ concat $ showNewMutants2 ((+) :: Float -> Float -> Float) 7
+  , allUnique $ concat $ showNewMutants2 ((+) :: Double -> Double -> Double) 7
+  , allUnique $ concat $ showNewMutants2 ((<>) :: Ordering -> Ordering -> Ordering) 7
+  , allUnique $ concat $ showNewMutants2 ((+) :: Word -> Word -> Word) 7
 
   {-
   , checkBindingsOfLength 7 2 ((,) :: Bool -> Bool -> (Bool,Bool))
