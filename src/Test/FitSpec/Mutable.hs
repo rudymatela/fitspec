@@ -80,7 +80,7 @@ instance Mutable Integer where mutiers = mutiersEq
 instance Mutable Char where mutiers = mutiersEq
 
 -- | > mutants True = [True,False]
-instance Mutable Bool where mutiers = mutiersEq -- > mutants True=[True,False]
+instance Mutable Bool where mutiers = mutiersEq
 
 -- | > mutants [0] = [ [0], [], [0,0], [1], ...
 instance (Eq a, Listable a) => Mutable [a]       where mutiers = mutiersEq
