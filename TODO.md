@@ -21,7 +21,13 @@ documentation
   (cabal install, cabal from sandbox, source include)
 
 
-v0.3.2
+v0.4.0
+------
+
+* release!
+
+
+v0.4.1
 ------
 
 * Fix `thread killed` when first run takes longer than timeout:
@@ -41,5 +47,3 @@ v0.3.2
   was ever written to --- for that I will need a second boolean IORef.  This has
   the advantage of, by adding a *third* boolean IORef we can also exit earlier
   when test cases and mutants are exhausted.
-
-* Release: a few things have been added (check `git log`).
