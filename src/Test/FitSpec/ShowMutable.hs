@@ -26,10 +26,10 @@ import Data.Ratio (Ratio)
 -- > ( \p q -> case (p,q) of
 -- >            (False,False) -> True
 -- >            _ -> p && q
--- >, \p -> case p of
--- >          False -> False
--- >          True -> True
--- >          _ -> not p )
+-- > , \p -> case p of
+-- >           False -> False
+-- >           True -> True
+-- >           _ -> not p )
 --
 -- Can be easily copy pasted into an interactive session for manipulation.
 -- On GHCi, use @:{@ and @:}@ to allow multi-line expressions and definitions.
