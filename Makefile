@@ -90,13 +90,15 @@ prepare-legacy-test-via-cabal:
 	rm -rf .cabal-sandbox cabal.sandbox.config
 	cabal sandbox init
 	cabal sandbox add-source $(LEANCHECKPATH)
-	cabal         install --only-dependencies
+	cabal          install --only-dependencies --enable-tests --enable-benchmarks
 	cd $(LEANCHECKPATH) && cabal clean && cd -
-	cabal-ghc-7.8 install --only-dependencies
+	cabal-ghc-7.10 install --only-dependencies --enable-tests --enable-benchmarks
 	cd $(LEANCHECKPATH) && cabal clean && cd -
-	cabal-ghc-7.6 install --only-dependencies
+	cabal-ghc-7.8  install --only-dependencies --enable-tests --enable-benchmarks
 	cd $(LEANCHECKPATH) && cabal clean && cd -
-	cabal-ghc-7.4 install --only-dependencies
+	cabal-ghc-7.6  install --only-dependencies --enable-tests --enable-benchmarks
+	cd $(LEANCHECKPATH) && cabal clean && cd -
+	cabal-ghc-7.4  install --only-dependencies --enable-tests --enable-benchmarks
 
 clean: clean-hi-o clean-haddock
 	rm -f $(TESTS) $(BENCHS) $(EGS) {eg,bench}/*.{hi,o,dyn_hi,dyn_o}
