@@ -18,6 +18,7 @@ import Control.Monad (join)
 import Data.List (intercalate,tails)
 import Data.Char (isLetter)
 import Data.Ratio (Ratio)
+import Data.Word (Word) -- for GHC <= 7.10
 
 
 -- | Show a Mutant as a tuple of lambdas.

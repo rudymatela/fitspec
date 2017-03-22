@@ -8,6 +8,7 @@ import Test.LeanCheck.Error (errorToNothing, errorToFalse)
 import Test.LeanCheck.Function.ListsOfPairs (functionPairs, defaultFunPairsToFunction)
 
 import Data.Monoid ((<>))
+import Data.Word (Word) -- for GHC <= 7.10
 
 polyAppend :: [a] -> [b] -> [Either a b]
 polyAppend xs ys = map Left xs ++ map Right ys
