@@ -24,6 +24,12 @@ documentation
 v0.4.1
 ------
 
+* release!
+
+
+v0.4.2
+------
+
 * Fix `thread killed` when first run takes longer than timeout:
 
 		$ ./bench/haskell-src -t5 -m500 -n1000
