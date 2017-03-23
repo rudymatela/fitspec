@@ -33,3 +33,7 @@ script:
     make                     GHCIMPORTDIRS=src:eg:tests &&
     make test-without-hs-src GHCIMPORTDIRS=src:eg:tests
   - cabal configure --enable-tests --enable-benchmarks && cabal build && cabal test
+
+notifications:
+  email:
+    on_failure: change
