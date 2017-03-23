@@ -19,7 +19,8 @@ matrix:
         make test GHCFLAGS="-fno-warn-unrecognised-pragmas"
 
 install:
-  - cabal install template-haskell cmdargs haskell-src haskell-src-exts pretty
+  - cabal install --only-dependencies
+  - cabal install haskell-src haskell-src-exts # <-- commented-out in cabal
 
 script:
   - make && make test
