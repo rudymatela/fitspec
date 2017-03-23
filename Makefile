@@ -19,12 +19,10 @@ LISTHS=find eg src tests bench -name \*.hs
 HSS=$(shell $(LISTHS))
 LISTLIBS=find src -name \*.hs
 OBJS = $(shell $(LISTLIBS) | sed -e 's/hs$$/o/')
-BENCHS = \
+MOSTBENCHS = \
   bench/avltrees         \
   bench/bools            \
   bench/digraphs         \
-  bench/haskell-src      \
-  bench/haskell-src-exts \
   bench/heaps            \
   bench/id               \
   bench/list             \
@@ -35,6 +33,9 @@ BENCHS = \
   bench/sieve            \
   bench/sorting          \
   bench/spring
+BENCHS = $(MOSTBENCHS) \
+  bench/haskell-src      \
+  bench/haskell-src-exts
 EGS = \
   eg/sorting \
   eg/negation
@@ -53,6 +54,12 @@ egs: $(EGS) all
 ghci: Test/FitSpec.ghci
 
 test: all benchs egs $(TESTS)
+	./tests/test-mutate
+	./tests/test-showmutable
+	./tests/test-derive
+	./tests/test-utils
+
+test-without-hs-src: all $(MOSTBENCHS) egs $(TESTS)
 	./tests/test-mutate
 	./tests/test-showmutable
 	./tests/test-derive
