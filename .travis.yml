@@ -29,9 +29,9 @@ install:
 # stages of development, but does not anymore.
 script:
   - >
-    make depend              GHCIMPORTDIRS=src:eg:tests &&
-    make                     GHCIMPORTDIRS=src:eg:tests &&
-    make test-without-hs-src GHCIMPORTDIRS=src:eg:tests
+    make depend              GHCIMPORTDIRS=src:bench &&
+    make                     GHCIMPORTDIRS=src:bench &&
+    make test-without-hs-src GHCIMPORTDIRS=src:bench
   - cabal configure --enable-tests --enable-benchmarks && cabal build && cabal test
 
 notifications:
