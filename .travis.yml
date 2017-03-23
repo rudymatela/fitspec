@@ -20,7 +20,7 @@ matrix:
 
 install:
   - cabal install --only-dependencies
-  - cabal install haskell-src haskell-src-exts # <-- commented-out in cabal
+  - cabal install haskell-src haskell-src-exts-1.16.0.1 # <-- commented-out in cabal
 
 script:
   - make && make test
