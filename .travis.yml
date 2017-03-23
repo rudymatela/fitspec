@@ -11,17 +11,25 @@ matrix:
   include:
     - ghc: '7.6'
       script: >
-        make      GHCFLAGS="-fno-warn-unrecognised-pragmas" &&
-        make test GHCFLAGS="-fno-warn-unrecognised-pragmas"
+        make depend              GHCIMPORTDIRS=src:eg:tests GHCFLAGS="-fno-warn-unrecognised-pragmas" &&
+        make                     GHCIMPORTDIRS=src:eg:tests GHCFLAGS="-fno-warn-unrecognised-pragmas" &&
+        make test-without-hs-src GHCIMPORTDIRS=src:eg:tests GHCFLAGS="-fno-warn-unrecognised-pragmas"
     - ghc: '7.4'
       script: >
-        make      GHCFLAGS="-fno-warn-unrecognised-pragmas" &&
-        make test GHCFLAGS="-fno-warn-unrecognised-pragmas"
+        make depend              GHCIMPORTDIRS=src:eg:tests GHCFLAGS="-fno-warn-unrecognised-pragmas" &&
+        make                     GHCIMPORTDIRS=src:eg:tests GHCFLAGS="-fno-warn-unrecognised-pragmas" &&
+        make test-without-hs-src GHCIMPORTDIRS=src:eg:tests GHCFLAGS="-fno-warn-unrecognised-pragmas"
 
 install:
   - cabal install --only-dependencies
-  - cabal install haskell-src haskell-src-exts-1.16.0.1 # <-- commented-out in cabal
 
+# TODO: as a definitive solution in place of overriding GHCIMPORTDIRS, we
+# should not reference the leancheck folder directly and instead use a
+# installed package.  This made sense when FitSpec/LeanCheck were in early
+# stages of development, but does not anymore.
 script:
-  - make && make test
+  - >
+    make depend              GHCIMPORTDIRS=src:eg:tests &&
+    make                     GHCIMPORTDIRS=src:eg:tests &&
+    make test-without-hs-src GHCIMPORTDIRS=src:eg:tests
   - cabal configure --enable-tests --enable-benchmarks && cabal build && cabal test
