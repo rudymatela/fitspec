@@ -1,0 +1,25 @@
+sudo: false
+
+language: haskell
+
+ghc:
+  - "8.0"
+  - "7.10"
+  - "7.8"
+
+matrix:
+  include:
+    - ghc: '7.6'
+      script: >
+        make      GHCFLAGS="-fno-warn-unrecognised-pragmas" &&
+        make test GHCFLAGS="-fno-warn-unrecognised-pragmas"
+    - ghc: '7.4'
+      script: >
+        make      GHCFLAGS="-fno-warn-unrecognised-pragmas" &&
+        make test GHCFLAGS="-fno-warn-unrecognised-pragmas"
+
+install:
+  - cabal install template-haskell cmdargs haskell-src haskell-src-exts pretty
+
+script:
+  - make && make test
