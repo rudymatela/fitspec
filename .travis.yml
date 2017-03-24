@@ -11,7 +11,7 @@ matrix:
   include:
     - ghc: '7.6'
       install: >
-        cabal install cabal cabal-install &&
+        cabal install Cabal cabal-install &&
         cabal install --only-dependencies
       script: >
         make depend              GHCIMPORTDIRS=src:bench GHCFLAGS="-fno-warn-unrecognised-pragmas" &&
@@ -19,7 +19,7 @@ matrix:
         make test-without-hs-src GHCIMPORTDIRS=src:bench GHCFLAGS="-fno-warn-unrecognised-pragmas"
     - ghc: '7.4'
       install: >
-        cabal install cabal cabal-install &&
+        cabal install Cabal cabal-install &&
         cabal install --only-dependencies
       script: >
         make depend              GHCIMPORTDIRS=src:bench GHCFLAGS="-fno-warn-unrecognised-pragmas" &&
