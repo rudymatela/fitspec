@@ -10,11 +10,17 @@ ghc:
 matrix:
   include:
     - ghc: '7.6'
+      install: >
+        cabal install cabal cabal-install &&
+        cabal install --only-dependencies
       script: >
         make depend              GHCIMPORTDIRS=src:bench GHCFLAGS="-fno-warn-unrecognised-pragmas" &&
         make                     GHCIMPORTDIRS=src:bench GHCFLAGS="-fno-warn-unrecognised-pragmas" &&
         make test-without-hs-src GHCIMPORTDIRS=src:bench GHCFLAGS="-fno-warn-unrecognised-pragmas"
     - ghc: '7.4'
+      install: >
+        cabal install cabal cabal-install &&
+        cabal install --only-dependencies
       script: >
         make depend              GHCIMPORTDIRS=src:bench GHCFLAGS="-fno-warn-unrecognised-pragmas" &&
         make                     GHCIMPORTDIRS=src:bench GHCFLAGS="-fno-warn-unrecognised-pragmas" &&
@@ -37,3 +43,5 @@ script:
 notifications:
   email:
     on_failure: change
+
+# TODO: remove duplication in this script somehow
