@@ -5,20 +5,20 @@ language: haskell
 ghc:
   - "8.0"
   - "7.10"
-#  - "7.8"
+  - "7.8"
 
-#matrix:
-#  include:
-#    - ghc: '7.6'
-#      script: >
-#        make depend              GHCIMPORTDIRS=src:eg:tests GHCFLAGS="-fno-warn-unrecognised-pragmas" &&
-#        make                     GHCIMPORTDIRS=src:eg:tests GHCFLAGS="-fno-warn-unrecognised-pragmas" &&
-#        make test-without-hs-src GHCIMPORTDIRS=src:eg:tests GHCFLAGS="-fno-warn-unrecognised-pragmas"
-#    - ghc: '7.4'
-#      script: >
-#        make depend              GHCIMPORTDIRS=src:eg:tests GHCFLAGS="-fno-warn-unrecognised-pragmas" &&
-#        make                     GHCIMPORTDIRS=src:eg:tests GHCFLAGS="-fno-warn-unrecognised-pragmas" &&
-#        make test-without-hs-src GHCIMPORTDIRS=src:eg:tests GHCFLAGS="-fno-warn-unrecognised-pragmas"
+matrix:
+  include:
+    - ghc: '7.6'
+      script: >
+        make depend              GHCIMPORTDIRS=src:bench GHCFLAGS="-fno-warn-unrecognised-pragmas" &&
+        make                     GHCIMPORTDIRS=src:bench GHCFLAGS="-fno-warn-unrecognised-pragmas" &&
+        make test-without-hs-src GHCIMPORTDIRS=src:bench GHCFLAGS="-fno-warn-unrecognised-pragmas"
+    - ghc: '7.4'
+      script: >
+        make depend              GHCIMPORTDIRS=src:bench GHCFLAGS="-fno-warn-unrecognised-pragmas" &&
+        make                     GHCIMPORTDIRS=src:bench GHCFLAGS="-fno-warn-unrecognised-pragmas" &&
+        make test-without-hs-src GHCIMPORTDIRS=src:bench GHCFLAGS="-fno-warn-unrecognised-pragmas"
 
 install:
   - cabal install --only-dependencies
