@@ -1,6 +1,9 @@
 FitSpec
 =======
 
+[![FitSpec Build Status][build-status]][build-log]
+[![FitSpec on Hackage][hackage-version]][fitspec-on-hackage]
+
 FitSpec provides automated assistance in the task of refining test properties
 for Haskell functions.  FitSpec tests mutant variations of functions under test
 against a given property set, recording any surviving mutants that pass all
@@ -149,3 +152,8 @@ FitSpec has been subject to a paper, see the
 
 [TH]:    https://wiki.haskell.org/Template_Haskell
 [Cabal]: https://www.haskell.org/cabal
+
+[build-status]: https://travis-ci.org/rudymatela/fitspec.svg?branch=master
+[build-log]:    https://travis-ci.org/rudymatela/fitspec
+[hackage-version]: https://img.shields.io/hackage/v/fitspec.svg
+[fitspec-on-hackage]: https://hackage.haskell.org/package/fitspec
