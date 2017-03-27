@@ -1,5 +1,11 @@
--- | Experimental module to generate dotfiles (for graphviz) with implications
---   between property sub-sets.
+-- |
+-- Module      : Test.FitSpec.Dot
+-- Copyright   : (c) 2015-2017 Rudy Matela
+-- License     : 3-Clause BSD  (see the file LICENSE)
+-- Maintainer  : Rudy Matela <rudy@matela.com.br>
+--
+-- Experimental module to generate dotfiles (for graphviz) with implications
+-- between property sub-sets.
 module Test.FitSpec.Dot where
 
 import Test.FitSpec

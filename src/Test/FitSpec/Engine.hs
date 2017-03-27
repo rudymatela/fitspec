@@ -1,4 +1,10 @@
--- | FitSpec: refining property-sets for functional testing
+-- |
+-- Module      : Test.FitSpec.Engine
+-- Copyright   : (c) 2015-2017 Rudy Matela
+-- License     : 3-Clause BSD  (see the file LICENSE)
+-- Maintainer  : Rudy Matela <rudy@matela.com.br>
+--
+-- FitSpec: refining property-sets for functional testing
 --
 -- This is the main engine, besides "Test.FitSpec.Mutable".
 module Test.FitSpec.Engine

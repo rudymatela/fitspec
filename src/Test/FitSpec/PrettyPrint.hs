@@ -1,4 +1,10 @@
--- | A very simple pretty printing library used to generate 'Test.FitSpec' reports.
+-- |
+-- Module      : Test.FitSpec.PrettyPrint
+-- Copyright   : (c) 2015-2017 Rudy Matela
+-- License     : 3-Clause BSD  (see the file LICENSE)
+-- Maintainer  : Rudy Matela <rudy@matela.com.br>
+--
+-- A very simple pretty printing library used to generate 'Test.FitSpec' reports.
 module Test.FitSpec.PrettyPrint
   ( beside
   , above

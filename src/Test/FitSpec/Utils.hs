@@ -1,4 +1,10 @@
--- | General purpose utility functions for FitSpec
+-- |
+-- Module      : Test.FitSpec.Utils
+-- Copyright   : (c) 2015-2017 Rudy Matela
+-- License     : 3-Clause BSD  (see the file LICENSE)
+-- Maintainer  : Rudy Matela <rudy@matela.com.br>
+--
+-- General purpose utility functions for FitSpec
 {-# LANGUAGE CPP #-}
 module Test.FitSpec.Utils
   ( (...)

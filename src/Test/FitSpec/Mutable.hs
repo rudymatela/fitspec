@@ -1,4 +1,10 @@
--- | Enumeration of function mutations
+-- |
+-- Module      : Test.FitSpec.Mutable
+-- Copyright   : (c) 2015-2017 Rudy Matela
+-- License     : 3-Clause BSD  (see the file LICENSE)
+-- Maintainer  : Rudy Matela <rudy@matela.com.br>
+--
+-- Enumeration of function mutations
 module Test.FitSpec.Mutable
   ( Mutable (..)
   , mutiersEq

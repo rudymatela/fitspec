@@ -1,4 +1,10 @@
--- | Exports "main" functions for FitSpec.
+-- |
+-- Module      : Test.FitSpec.Main
+-- Copyright   : (c) 2015-2017 Rudy Matela
+-- License     : 3-Clause BSD  (see the file LICENSE)
+-- Maintainer  : Rudy Matela <rudy@matela.com.br>
+--
+-- Exports "main" functions for FitSpec.
 -- They work exactly by 'report' and 'reportWith' but can be customized by
 -- command line arguments.
 --

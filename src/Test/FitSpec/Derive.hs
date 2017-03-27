@@ -1,4 +1,10 @@
--- | Experimental module for deriving 'Mutable' and 'ShowMutable' instances
+-- |
+-- Module      : Test.FitSpec.Derive
+-- Copyright   : (c) 2015-2017 Rudy Matela
+-- License     : 3-Clause BSD  (see the file LICENSE)
+-- Maintainer  : Rudy Matela <rudy@matela.com.br>
+--
+-- Experimental module for deriving 'Mutable' and 'ShowMutable' instances
 --
 -- Needs GHC and Template Haskell
 -- (tested on GHC 7.4, 7.6, 7.8, 7.10 and 8.0)

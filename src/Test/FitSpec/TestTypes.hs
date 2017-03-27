@@ -1,4 +1,10 @@
--- | FitSpec's Test Types:
+-- |
+-- Module      : Test.FitSpec.TestTypes
+-- Copyright   : (c) 2015-2017 Rudy Matela
+-- License     : 3-Clause BSD  (see the file LICENSE)
+-- Maintainer  : Rudy Matela <rudy@matela.com.br>
+--
+-- FitSpec's Test Types:
 -- 'Nat',
 -- 'Int2', 'Int3', 'Int4',
 -- 'UInt2', 'UInt3', 'UInt4'.

@@ -1,5 +1,10 @@
 #!/bin/bash
 #
+# haddock-i: list haddock's -i parameters.
+#
+# Copyright (c) 2015-2017 Rudy Matela.
+# Distributed under the 3-Clause BSD licence.
+#
 # $ haddock-i <package1> <package2> ... <packageN>
 #
 # will print -i parameters necessary for haddock to link to Haddock

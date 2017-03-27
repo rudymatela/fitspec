@@ -1,4 +1,10 @@
--- | Generate 'Test.FitSpec' reports.
+-- |
+-- Module      : Test.FitSpec.Report
+-- Copyright   : (c) 2015-2017 Rudy Matela
+-- License     : 3-Clause BSD  (see the file LICENSE)
+-- Maintainer  : Rudy Matela <rudy@matela.com.br>
+--
+-- Generate 'Test.FitSpec' reports.
 module Test.FitSpec.Report
   ( report
   , reportWith

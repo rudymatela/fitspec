@@ -1,4 +1,10 @@
--- | Show mutant variations
+-- |
+-- Module      : Test.FitSpec.ShowMutable
+-- Copyright   : (c) 2015-2017 Rudy Matela
+-- License     : 3-Clause BSD  (see the file LICENSE)
+-- Maintainer  : Rudy Matela <rudy@matela.com.br>
+--
+-- Exports a typeclass to show mutant variations.
 module Test.FitSpec.ShowMutable
   ( ShowMutable (..)
   , mutantSEq

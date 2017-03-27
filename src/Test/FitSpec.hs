@@ -1,4 +1,10 @@
--- | __ FitSpec: refining property-sets for functional testing __
+-- |
+-- Module      : Test.FitSpec
+-- Copyright   : (c) 2015-2017 Rudy Matela
+-- License     : 3-Clause BSD  (see the file LICENSE)
+-- Maintainer  : Rudy Matela <rudy@matela.com.br>
+--
+-- __ FitSpec: refining property-sets for functional testing __
 --
 -- FitSpec provides automated assistance in the task of refining test properties
 -- for Haskell functions.  FitSpec tests mutant variations of functions under test
