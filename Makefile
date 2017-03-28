@@ -134,6 +134,9 @@ haddock: doc/index.html
 clean-haddock:
 	rm -f doc/*.{html,css,js,png,gif}
 
+upload-haddock:
+	./mk/upload-haddock-to-hackage
+
 doc/index.html: $(shell $(LISTLIBS))
 	./mk/haddock-i base template-haskell | xargs \
 	haddock --html --no-print-missing-docs --title=fitspec \
