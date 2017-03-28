@@ -24,6 +24,10 @@ documentation
 v0.4.1
 ------
 
-* implement `toplibs` hack (from LeanCheck and Speculate);
-
 * release!
+
+
+v0.4.2
+------
+
+* implement `toplibs` hack (from LeanCheck and Speculate);
