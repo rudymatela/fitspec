@@ -44,7 +44,7 @@ import Control.Exception ( Exception
 import Data.Function (on)
 import Data.Ord (comparing)
 import Data.List (groupBy,sortBy)
-import Data.IORef (newIORef, readIORef, writeIORef)
+import Data.IORef (IORef, newIORef, readIORef, writeIORef)
 import Control.Concurrent (forkIO, threadDelay, killThread)
 import Control.Monad (liftM)
 
@@ -117,22 +117,30 @@ takeWhileIncreasing cmp (x:y:xs) = x : case x `cmp` y of
 takeWhileIncreasingOn :: Ord b => (a -> b) -> [a] -> [a]
 takeWhileIncreasingOn f = takeWhileIncreasing (compare `on` f)
 
+readIORefUntil :: (a -> Bool) -> IORef a -> IO a
+readIORefUntil p r = do
+  x <- readIORef r
+  if p x
+    then return x
+    else threadDelay 100000 -- 100ms
+      >> readIORefUntil p r
 
 -- | @lastTimeout s xs@ will take the last value of @xs@ it is able evaluate
 --   before @s@ seconds elapse.
 lastTimeout :: Int -> [a] -> IO a
 lastTimeout _ []     = error "lastTimeout: empty list"
 lastTimeout 0 (x:_)  = return x  -- no time to lose
-lastTimeout s (x:xs) = do
-  r <- newIORef x
+lastTimeout s xs = do
+  r <- newIORef (undefined,False)
   tid <- forkIO $ keepImproving r xs
   threadDelay (s*1000000) -- TODO: change to waitForThread!!!
+  (x,_) <- readIORefUntil snd r
   killThread tid
-  readIORef r
+  return x
   where keepImproving _ []     = return ()
         keepImproving r (x:xs) = do
           evaluate x
-          writeIORef r x
+          writeIORef r (x,True)
           keepImproving r xs
 
 (***) :: (a -> b) -> (c -> d) -> (a,c) -> (b,d)
