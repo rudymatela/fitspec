@@ -15,6 +15,7 @@ ver=`cat  *.cabal | grep -iE "(^| )version:" | sed -e "s/.*: *//;s/ *//"`
 [ -n "$name" ] || errxit "error: could not find package name"
 [ -n "$ver"  ] || errxit "error: could not find package version"
 echo Generating docs for $name-$ver
+cabal install --only-dependencies
 cabal configure
 cabal build
 cabal haddock --hyperlink-source --html-location='/package/$pkg/docs' --contents-location='/package/$pkg'
