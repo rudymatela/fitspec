@@ -1,9 +1,8 @@
 # Makefile for FitSpec
 
 # Configuration variables
-FITSPECPATH   = ..
-LEANCHECKPATH = ../../leancheck
-GHCFLAGS = -O2 -i$(LEANCHECKPATH):$(FITSPECPATH)
+FITSPECPATH = ../src
+GHCFLAGS = -O2 -i$(FITSPECPATH) -dynamic
 
 # Misc variables
 

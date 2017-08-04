@@ -13,11 +13,8 @@
 # Cabal tries to "sandbox" the build of every benchmark program
 # rebuilding everything for each of those.
 
-# Configuration variables
-LEANCHECKPATH = ../leancheck
-
 # Misc variables
-GHCIMPORTDIRS = src:$(LEANCHECKPATH)/src:bench
+GHCIMPORTDIRS = src:bench
 GHCFLAGS = -dynamic -O2
 LISTHS=find eg src tests bench -name \*.hs
 HSS=$(shell $(LISTHS))
@@ -70,8 +67,8 @@ test-without-hs-src: all $(MOSTBENCHS) egs $(TESTS)
 	./tests/test-utils
 
 legacy-test:
-	make clean && make -C $(LEANCHECKPATH) clean && make test GHC=ghc-7.10 GHCFLAGS="-Werror -dynamic"
-	make clean && make -C $(LEANCHECKPATH) clean && make test GHC=ghc-7.8 GHCFLAGS="-Werror -dynamic"
+	make clean && make test GHC=ghc-7.10 GHCFLAGS="-Werror -dynamic"
+	make clean && make test GHC=ghc-7.8 GHCFLAGS="-Werror -dynamic"
 	make clean
 
 prepare-legacy-test:
@@ -86,25 +83,21 @@ test-via-cabal:
 prepare-test-via-cabal:
 	rm -rf .cabal-sandbox cabal.sandbox.config
 	cabal sandbox init
-	cabal sandbox add-source $(LEANCHECKPATH)
-	cabal install --only-dependencies
+	cabal install --only-dependencies --enable-documentation
 	cabal configure --enable-tests --enable-benchmarks
 
 legacy-test-via-cabal:
-	cabal clean && cd $(LEANCHECKPATH) && cabal clean && cd -
+	cabal clean && cabal clean && cd -
 	cabal-ghc-7.10 configure --enable-tests --enable-benchmarks --ghc-option=-dynamic && cabal-ghc-7.10 build && cabal-ghc-7.10 test
-	cabal clean && cd $(LEANCHECKPATH) && cabal clean && cd -
+	cabal clean && cabal clean && cd -
 	cabal-ghc-7.8  configure --enable-tests --enable-benchmarks --ghc-option=-dynamic && cabal-ghc-7.8  build && cabal-ghc-7.8  test
 	cabal clean
 
 prepare-legacy-test-via-cabal:
 	rm -rf .cabal-sandbox cabal.sandbox.config
 	cabal sandbox init
-	cabal sandbox add-source $(LEANCHECKPATH)
-	cabal          install --only-dependencies --enable-tests --enable-benchmarks
-	cd $(LEANCHECKPATH) && cabal clean && cd -
+	cabal          install --only-dependencies --enable-tests --enable-benchmarks --enable-documentation
 	cabal-ghc-7.10 install --only-dependencies --enable-tests --enable-benchmarks
-	cd $(LEANCHECKPATH) && cabal clean && cd -
 	cabal-ghc-7.8  install --only-dependencies --enable-tests --enable-benchmarks
 
 clean: clean-hi-o clean-haddock
