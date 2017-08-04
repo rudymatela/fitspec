@@ -131,7 +131,9 @@ clean-haddock:
 	rm -f doc/*.{html,css,js,png,gif}
 
 upload-haddock:
-	./mk/upload-haddock-to-hackage
+	@echo "use \`cabal upload -d' instead"
+	@echo "(but 1st: cabal install --only-dependencies --enable-documentation)"
+	@echo "(to just compile docs: cabal haddock --for-hackage)"
 
 doc/index.html: $(shell $(LISTLIBS))
 	./mk/haddock-i base template-haskell | xargs \
