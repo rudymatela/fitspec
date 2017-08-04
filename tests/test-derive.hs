@@ -4,7 +4,7 @@
 import System.Exit (exitFailure)
 import Data.List (elemIndices,sort)
 
-import Test.FitSpec
+import Test.FitSpec hiding (Set)
 
 data D0       = D0                    deriving (Show,Eq,Ord)
 data D1 a     = D1 a                  deriving (Show,Eq,Ord)

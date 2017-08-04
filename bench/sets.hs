@@ -1,14 +1,14 @@
-import Set
-import Test.FitSpec hiding ((\/))
+import Set as S
+import Test.FitSpec hiding ((\/),Set)
 
 
-instance (Ord a, Listable a) => Listable (Set a) where
+instance (Ord a, Listable a) => Listable (S.Set a) where
   tiers = setCons set
 
-instance (Ord a, Listable a) => Mutable (Set a) where
+instance (Ord a, Listable a) => Mutable (S.Set a) where
   mutiers = mutiersEq
 
-instance (Ord a, Show a, Listable a) => ShowMutable (Set a) where
+instance (Ord a, Show a, Listable a) => ShowMutable (S.Set a) where
   mutantS = mutantSEq
 
 
