@@ -33,6 +33,9 @@ script:
 - stack --no-terminal --skip-ghc-check test
 
 matrix:
+  allow_failures:
+  - ghc: 'head'
+  - ghc: '8.2' # stack build fails because of version mismatch (cmdargs?)
   include:
   - ghc: 'head'
     env:                                     GHCVER=head         CABALVER=head
