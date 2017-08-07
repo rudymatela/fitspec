@@ -61,7 +61,7 @@ test: all benchs egs $(TESTS)
 	./tests/test-derive
 	./tests/test-utils
 
-test-without-hs-src: all $(MOSTBENCHS) egs $(TESTS)
+test-without-extra-deps: all $(MOSTBENCHS) egs $(TESTS)
 	./tests/test-mutate
 	./tests/test-showmutable
 	./tests/test-derive
