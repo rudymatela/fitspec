@@ -60,7 +60,7 @@ matrix:
     - rm -f ~/.cabal/config && cabal update
     - cabal install Cabal==1.18.*
     script:
-    - make && make test-without-hs-src && make haddock HADDOCKFLAGS=
+    - make GHCFLAGS=-O2 && make test-without-hs-src GHCFLAGS=-O2 && make haddock HADDOCKFLAGS=
     - cabal test
   - ghc: '7.4'
     env:                                     GHCVER=7.4.2        CABALVER=1.18
@@ -72,5 +72,5 @@ matrix:
     - rm -f ~/.cabal/config && cabal update
     - cabal install Cabal==1.18.*
     script:
-    - make && make test-without-hs-src && make haddock HADDOCKFLAGS=
+    - make GHCFLAGS=-O2 && make test-without-hs-src GHCFLAGS=-O2 && make haddock HADDOCKFLAGS=
     - cabal test
