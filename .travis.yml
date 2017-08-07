@@ -29,7 +29,7 @@ before_install:
 - stack --version
 
 script:
-- make && make test && make haddock HADDOCKFLAGS=
+- make && make test-without-hs-src && make haddock HADDOCKFLAGS=
 - cabal test
 - stack --no-terminal --skip-ghc-check test
 
@@ -62,7 +62,7 @@ matrix:
     - cabal install Cabal==1.18.*
     - cabal install haskell-src haskell-src-exts
     script:
-    - make && make test && make haddock HADDOCKFLAGS=
+    - make && make test-without-hs-src && make haddock HADDOCKFLAGS=
     - cabal test
   - ghc: '7.4'
     env:                                     GHCVER=7.4.2        CABALVER=1.18
@@ -75,5 +75,5 @@ matrix:
     - cabal install Cabal==1.18.*
     - cabal install haskell-src haskell-src-exts
     script:
-    - make && make test && make haddock HADDOCKFLAGS=
+    - make && make test-without-hs-src && make haddock HADDOCKFLAGS=
     - cabal test
