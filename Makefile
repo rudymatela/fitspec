@@ -16,6 +16,7 @@
 # Misc variables
 GHCIMPORTDIRS = src:bench
 GHCFLAGS = -dynamic -O2
+HADDOCKFLAGS = --no-print-missing-docs
 LISTHS=find eg src tests bench -name \*.hs
 HSS=$(shell $(LISTHS))
 LISTLIBS=find src -name \*.hs
@@ -130,7 +131,7 @@ upload-haddock:
 
 doc/index.html: $(shell $(LISTLIBS))
 	./mk/haddock-i base template-haskell | xargs \
-	haddock --html --no-print-missing-docs --title=fitspec \
+	haddock --html $(HADDOCKFLAGS) --title=fitspec \
 	  --optghc=-i$(GHCIMPORTDIRS) \
 	  -odoc $(shell $(LISTLIBS))
 
