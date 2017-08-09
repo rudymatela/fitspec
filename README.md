@@ -5,9 +5,9 @@ FitSpec
 [![FitSpec on Hackage][hackage-version]][fitspec-on-hackage]
 
 FitSpec provides automated assistance in the task of refining test properties
-for Haskell functions.  FitSpec tests mutant variations of functions under test
-against a given property set, recording any surviving mutants that pass all
-tests.  FitSpec then reports:
+for [Haskell] functions.  FitSpec tests mutant variations of functions under
+test against a given property set, recording any surviving mutants that pass
+all tests.  FitSpec then reports:
 
 * *surviving mutants:*
   indicating incompleteness of properties,
@@ -19,7 +19,7 @@ tests.  FitSpec then reports:
 Installing FitSpec
 ------------------
 
-To install the latest FitSpec version from Hackage, just:
+To install the [latest FitSpec version from Hackage], just:
 
     $ cabal install fitspec
 
@@ -150,10 +150,12 @@ FitSpec has been subject to a paper, see the
 [cmdargs]:   https://hackage.haskell.org/package/cmdargs
 [pretty]:    https://hackage.haskell.org/package/pretty
 
-[TH]:    https://wiki.haskell.org/Template_Haskell
-[Cabal]: https://www.haskell.org/cabal
+[TH]:      https://wiki.haskell.org/Template_Haskell
+[Cabal]:   https://www.haskell.org/cabal
+[Haskell]: https://www.haskell.org/
 
 [build-status]: https://travis-ci.org/rudymatela/fitspec.svg?branch=master
 [build-log]:    https://travis-ci.org/rudymatela/fitspec
 [hackage-version]: https://img.shields.io/hackage/v/fitspec.svg
-[fitspec-on-hackage]: https://hackage.haskell.org/package/fitspec
+[fitspec-on-hackage]:                  https://hackage.haskell.org/package/fitspec
+[latest FitSpec version from Hackage]: https://hackage.haskell.org/package/fitspec
