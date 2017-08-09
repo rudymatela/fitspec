@@ -38,10 +38,10 @@ matrix:
   - ghc: '8.2' # stack build fails because of version mismatch (cmdargs?)
   include:
   - ghc: 'head'
-    env:                                     GHCVER=head         CABALVER=head
+    env:                                     GHCVER=head         CABALVER=head    STACK=nightly-2017-08-09
     addons: {apt: {sources: hvr-ghc, packages: [ghc-head,   cabal-install-head]}}
   - ghc: '8.2'
-    env:                                     GHCVER=8.2.1        CABALVER=2.0
+    env:                                     GHCVER=8.2.1        CABALVER=2.0     STACK=nightly-2017-08-09
     addons: {apt: {sources: hvr-ghc, packages: [ghc-8.2.1,  cabal-install-2.0]}}
   - ghc: '8.0'
     env:                                     GHCVER=8.0.2        CABALVER=1.24
