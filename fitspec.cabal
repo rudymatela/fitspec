@@ -22,7 +22,7 @@ author:              Rudy Matela,  Colin Runciman
 maintainer:          Rudy Matela <rudy@matela.com.br>
 category:            Testing
 build-type:          Simple
-cabal-version:       >=1.10
+cabal-version:       >=1.18
 
 extra-doc-files: README.md
                , CREDITS.md
