@@ -28,7 +28,8 @@ before_install:
 - stack --version
 
 script:
-- make && make test-without-extra-deps && make haddock HADDOCKFLAGS=
+- make && make test-without-extra-deps
+- make haddock HADDOCKFLAGS=
 - cabal test
 - stack $STACKR --no-terminal --skip-ghc-check test
 
@@ -62,7 +63,8 @@ matrix:
     - rm -f ~/.cabal/config && cabal update
     - cabal install Cabal==1.18.*
     script:
-    - make GHCFLAGS=-O2 && make test-without-extra-deps GHCFLAGS=-O2 && make haddock HADDOCKFLAGS=
+    - make GHCFLAGS=-O2 && make test-without-extra-deps GHCFLAGS=-O2
+    - make haddock HADDOCKFLAGS=
     - cabal test
   - ghc: '7.4'
     env:                   GHCVER=7.4.2        CABALVER=1.18
@@ -74,5 +76,6 @@ matrix:
     - rm -f ~/.cabal/config && cabal update
     - cabal install Cabal==1.18.*
     script:
-    - make GHCFLAGS=-O2 && make test-without-extra-deps GHCFLAGS=-O2 && make haddock HADDOCKFLAGS=
+    - make GHCFLAGS=-O2 && make test-without-extra-deps GHCFLAGS=-O2
+    - make haddock HADDOCKFLAGS=
     - cabal test
