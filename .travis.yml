@@ -37,24 +37,24 @@ matrix:
   - ghc: 'head'
   include:
   - ghc: 'head'
-    env:                                     GHCVER=head         CABALVER=head    STACKR=--resolver=nightly-2017-08-09
-    addons: {apt: {sources: hvr-ghc, packages: [ghc-head,   cabal-install-head]}}
+    env:                   GHCVER=head         CABALVER=head    STACKR=--resolver=nightly-2017-08-09
+    addons: {apt: {packages: [ghc-head,   cabal-install-head]}, sources: hvr-ghc}
   - ghc: '8.2'
-    env:                                     GHCVER=8.2.1        CABALVER=2.0     STACKR=--resolver=nightly-2017-08-09
-    addons: {apt: {sources: hvr-ghc, packages: [ghc-8.2.1,  cabal-install-2.0]}}
+    env:                   GHCVER=8.2.1        CABALVER=2.0     STACKR=--resolver=nightly-2017-08-09
+    addons: {apt: {packages: [ghc-8.2.1,  cabal-install-2.0]},  sources: hvr-ghc}
   - ghc: '8.0'
-    env:                                     GHCVER=8.0.2        CABALVER=1.24
-    addons: {apt: {sources: hvr-ghc, packages: [ghc-8.0.2,  cabal-install-1.24]}}
+    env:                   GHCVER=8.0.2        CABALVER=1.24
+    addons: {apt: {packages: [ghc-8.0.2,  cabal-install-1.24]}, sources: hvr-ghc}
   - ghc: '7.10'
-    env:                                     GHCVER=7.10.3       CABALVER=1.22
-    addons: {apt: {sources: hvr-ghc, packages: [ghc-7.10.3, cabal-install-1.22]}}
+    env:                   GHCVER=7.10.3       CABALVER=1.22
+    addons: {apt: {packages: [ghc-7.10.3, cabal-install-1.22]}, sources: hvr-ghc}
   - ghc: '7.8'
-    env:                                     GHCVER=7.8.4        CABALVER=1.18
-    addons: {apt: {sources: hvr-ghc, packages: [ghc-7.8.4,  cabal-install-1.18]}}
+    env:                   GHCVER=7.8.4        CABALVER=1.18
+    addons: {apt: {packages: [ghc-7.8.4,  cabal-install-1.18]}, sources: hvr-ghc}
   # stack is only supported on GHC >= 7.8
   - ghc: '7.6'
-    env:                                     GHCVER=7.6.3        CABALVER=1.18
-    addons: {apt: {sources: hvr-ghc, packages: [ghc-7.6.3,  cabal-install-1.18]}}
+    env:                   GHCVER=7.6.3        CABALVER=1.18
+    addons: {apt: {packages: [ghc-7.6.3,  cabal-install-1.18]}, sources: hvr-ghc}
     before_install:
     - export PATH=/opt/ghc/$GHCVER/bin:/opt/cabal/$CABALVER/bin:$PATH
     - ghc --version
@@ -65,8 +65,8 @@ matrix:
     - make GHCFLAGS=-O2 && make test-without-extra-deps GHCFLAGS=-O2 && make haddock HADDOCKFLAGS=
     - cabal test
   - ghc: '7.4'
-    env:                                     GHCVER=7.4.2        CABALVER=1.18
-    addons: {apt: {sources: hvr-ghc, packages: [ghc-7.4.2,  cabal-install-1.18]}}
+    env:                   GHCVER=7.4.2        CABALVER=1.18
+    addons: {apt: {packages: [ghc-7.4.2,  cabal-install-1.18]}, sources: hvr-ghc}
     before_install:
     - export PATH=/opt/ghc/$GHCVER/bin:/opt/cabal/$CABALVER/bin:$PATH
     - ghc --version
