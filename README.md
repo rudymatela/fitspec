@@ -3,6 +3,8 @@ FitSpec
 
 [![FitSpec Build Status][build-status]][build-log]
 [![FitSpec on Hackage][hackage-version]][fitspec-on-hackage]
+[![FitSpec on Stackage LTS][stackage-lts-badge]][fitspec-on-stackage-lts]
+[![FitSpec on Stackage Nightly][stackage-nightly-badge]][fitspec-on-stackage-nightly]
 
 FitSpec provides automated assistance in the task of refining test properties
 for [Haskell] functions.  FitSpec tests mutant variations of functions under
@@ -159,3 +161,8 @@ FitSpec has been subject to a paper, see the
 [hackage-version]: https://img.shields.io/hackage/v/fitspec.svg
 [fitspec-on-hackage]:                  https://hackage.haskell.org/package/fitspec
 [latest FitSpec version from Hackage]: https://hackage.haskell.org/package/fitspec
+[stackage-lts-badge]:            http://stackage.org/package/fitspec/badge/lts
+[stackage-nightly-badge]:        http://stackage.org/package/fitspec/badge/nightly
+[fitspec-on-stackage]:         http://stackage.org/package/fitspec
+[fitspec-on-stackage-lts]:     http://stackage.org/lts/package/fitspec
+[fitspec-on-stackage-nightly]: http://stackage.org/nightly/package/fitspec
