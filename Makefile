@@ -81,6 +81,9 @@ prepare-legacy-test:
 test-via-cabal:
 	cabal test
 
+test-sdist:
+	tests/test-sdist
+
 prepare-test-via-cabal:
 	rm -rf .cabal-sandbox cabal.sandbox.config
 	cabal sandbox init
