@@ -1,5 +1,4 @@
 -- Example benchmark that mutation tests properties over an infinite list of primes
-import System.Console.CmdArgs hiding (args)
 import Test.FitSpec
 import Data.Maybe
 

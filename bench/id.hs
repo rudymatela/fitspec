@@ -1,5 +1,4 @@
 -- Example benchmark that mutation tests properties over the function id
-import System.Console.CmdArgs hiding (args)
 import Test.FitSpec
 
 type Ty a = a -> a

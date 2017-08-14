@@ -1,5 +1,4 @@
 {-# Language DeriveDataTypeable, NoMonomorphismRestriction #-}
-import System.Console.CmdArgs hiding (args)
 import Test.FitSpec
 import Prelude hiding (null)
 import qualified Data.List as L

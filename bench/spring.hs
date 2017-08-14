@@ -1,4 +1,3 @@
-import System.Console.CmdArgs hiding (args)
 import Test.FitSpec
 import Data.List
 
