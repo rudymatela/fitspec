@@ -40,6 +40,7 @@ BENCHS = $(MOSTBENCHS) \
   bench/haskell-src-exts
 EGS = \
   eg/sorting \
+  eg/alga \
   eg/negation
 TESTS = \
   tests/test-derive      \

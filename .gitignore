@@ -36,6 +36,7 @@ bench/haskell-src
 bench/haskell-src-exts
 eg/sorting
 eg/negation
+eg/alga
 
 # test binaries
 tests/test-mutate

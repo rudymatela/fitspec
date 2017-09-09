@@ -438,6 +438,34 @@ bench/spring: \
   src/Test/FitSpec/Engine.hs \
   src/Test/FitSpec/Derive.hs \
   bench/spring.hs
+eg/alga.o: \
+  src/Test/FitSpec/Utils.hs \
+  src/Test/FitSpec/TestTypes.hs \
+  src/Test/FitSpec/ShowMutable/Tuples.hs \
+  src/Test/FitSpec/ShowMutable.hs \
+  src/Test/FitSpec/Report.hs \
+  src/Test/FitSpec/PrettyPrint.hs \
+  src/Test/FitSpec.hs \
+  src/Test/FitSpec/Mutable/Tuples.hs \
+  src/Test/FitSpec/Mutable.hs \
+  src/Test/FitSpec/Main.hs \
+  src/Test/FitSpec/Engine.hs \
+  src/Test/FitSpec/Derive.hs \
+  eg/alga.hs
+eg/alga: \
+  src/Test/FitSpec/Utils.hs \
+  src/Test/FitSpec/TestTypes.hs \
+  src/Test/FitSpec/ShowMutable/Tuples.hs \
+  src/Test/FitSpec/ShowMutable.hs \
+  src/Test/FitSpec/Report.hs \
+  src/Test/FitSpec/PrettyPrint.hs \
+  src/Test/FitSpec.hs \
+  src/Test/FitSpec/Mutable/Tuples.hs \
+  src/Test/FitSpec/Mutable.hs \
+  src/Test/FitSpec/Main.hs \
+  src/Test/FitSpec/Engine.hs \
+  src/Test/FitSpec/Derive.hs \
+  eg/alga.hs
 eg/negation.o: \
   src/Test/FitSpec/Utils.hs \
   src/Test/FitSpec/TestTypes.hs \
