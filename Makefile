@@ -38,10 +38,11 @@ MOSTBENCHS = \
 BENCHS = $(MOSTBENCHS) \
   bench/haskell-src      \
   bench/haskell-src-exts
-EGS = \
+MOSTEGS = \
   eg/sorting \
-  eg/alga \
   eg/negation
+EGS = $(MOSTEGS) \
+  eg/alga
 TESTS = \
   tests/test-derive      \
   tests/test-mutate      \
@@ -62,22 +63,16 @@ test: all benchs egs $(TESTS)
 	./tests/test-derive
 	./tests/test-utils
 
-test-without-extra-deps: all $(MOSTBENCHS) egs $(TESTS)
+test-without-extra-deps: all $(MOSTBENCHS) $(MOSTEGS) $(TESTS)
 	./tests/test-mutate
 	./tests/test-showmutable
 	./tests/test-derive
 	./tests/test-utils
 
 legacy-test:
-	make clean && make test GHC=ghc-7.10 GHCFLAGS="-Werror -dynamic"
-	make clean && make test GHC=ghc-7.8 GHCFLAGS="-Werror -dynamic"
-	make clean
-
-prepare-legacy-test:
-	cabal-ghc-7.10 --ignore-sandbox install --ghc-option=-dynamic cpphs haskell-src-exts
-	cabal-ghc-7.8  --ignore-sandbox install --ghc-option=-dynamic cpphs haskell-src-exts
-	cabal-ghc-7.10 --ignore-sandbox install haskell-src
-	cabal-ghc-7.8  --ignore-sandbox install haskell-src
+	make clean && make test-without-extra-deps -j8 GHC=ghc-7.10 GHCFLAGS="-Werror -dynamic"
+	make clean && make test-without-extra-deps -j8 GHC=ghc-7.8  GHCFLAGS="-Werror -dynamic"
+	make clean && make test                    -j8
 
 test-via-cabal:
 	cabal test
