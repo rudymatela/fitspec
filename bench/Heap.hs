@@ -10,6 +10,9 @@ data Heap a = Nil | Branch Int a (Heap a) (Heap a) deriving Show
 instance Ord a => Eq (Heap a) where
   h1 == h2 = toList h1 == toList h2
 
+instance Ord a => Ord (Heap a) where
+  h1 `compare` h2 = toList h1 `compare` toList h2
+
 toList :: Ord a => Heap a -> [a]
 toList Nil = []
 toList h   = findMin h : toList (deleteMin h)
