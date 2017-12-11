@@ -3,20 +3,6 @@ import Test.FitSpec
 import Test.LeanCheck.Tiers
 import Algebra.Graph
 
--- TODO: The three following functions should be ported to LeanCheck soon.
---       So, we'll not need to declare them here.
-discardLaterT :: (a -> a -> Bool) -> [[a]] -> [[a]]
-discardLaterT d []           = []
-discardLaterT d ([]:xss)     = [] : discardLaterT d xss
-discardLaterT d ((x:xs):xss) = [[x]]
-                            \/ discardLaterT d (discardT (`d` x) (xs:xss))
-
-discardT :: (a -> Bool) -> [[a]] -> [[a]]
-discardT p = filterT (not . p)
-
-nubT :: Ord a => [[a]] -> [[a]]
-nubT = discardLaterT (==)
-
 instance (Listable a, Ord a) => Listable (Graph a) where
   tiers = nubT
         $ cons0 Empty
