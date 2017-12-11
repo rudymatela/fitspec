@@ -8,7 +8,8 @@ resolver: lts-9.0
 packages:
 - .
 
-extra-deps: []
+extra-deps:
+- leancheck-0.7.0
 
 flags: {}
 
