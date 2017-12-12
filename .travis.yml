@@ -51,10 +51,21 @@ matrix:
   - ghc: '7.10'
     env:                   GHCVER=7.10.3       CABALVER=1.22
     addons: {apt: {packages: [ghc-7.10.3, cabal-install-1.22], sources: hvr-ghc}}
+  # we only support stack with GHC >= 7.10
   - ghc: '7.8'
     env:                   GHCVER=7.8.4        CABALVER=1.18
     addons: {apt: {packages: [ghc-7.8.4,  cabal-install-1.18], sources: hvr-ghc}}
-  # stack is only supported on GHC >= 7.8
+    before_install:
+    - export PATH=/opt/ghc/$GHCVER/bin:/opt/cabal/$CABALVER/bin:$PATH
+    - ghc --version
+    - cabal --version
+    - rm -f ~/.cabal/config && cabal update
+    - cabal install Cabal==1.18.*
+    - cabal install leancheck cmdargs
+    script:
+    - make GHCFLAGS=-O2 && make test-without-extra-deps GHCFLAGS=-O2
+    - make haddock HADDOCKFLAGS=
+    - cabal test
   - ghc: '7.6'
     env:                   GHCVER=7.6.3        CABALVER=1.18
     addons: {apt: {packages: [ghc-7.6.3,  cabal-install-1.18], sources: hvr-ghc}}
