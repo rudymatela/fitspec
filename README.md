@@ -141,7 +141,8 @@ For further documentation, consult the [doc](doc) folder and [FitSpec API]
 documentation on Hackage.
 
 FitSpec has been subject to a paper, see the
-[FitSpec paper on Haskell Symposium 2016](https://matela.com.br/paper/fitspec.pdf)
+[FitSpec paper on Haskell Symposium 2016](https://matela.com.br/paper/fitspec.pdf).
+FitSpec is also subject to a chapter in a [PhD Thesis (2017)].
 
 [Listable]:    https://hackage.haskell.org/package/leancheck/docs/Test-LeanCheck.html#t:Listable
 [Mutable]:     https://hackage.haskell.org/package/fitspec/docs/Test-FitSpec.html#t:Mutable
@@ -155,6 +156,7 @@ FitSpec has been subject to a paper, see the
 [TH]:      https://wiki.haskell.org/Template_Haskell
 [Cabal]:   https://www.haskell.org/cabal
 [Haskell]: https://www.haskell.org/
+[PhD Thesis (2017)]: https://matela.com.br/paper/rudy-phd-thesis-2017.pdf
 
 [build-status]: https://travis-ci.org/rudymatela/fitspec.svg?branch=master
 [build-log]:    https://travis-ci.org/rudymatela/fitspec
