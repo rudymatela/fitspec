@@ -49,7 +49,7 @@ TESTS = \
   tests/test-showmutable \
   tests/test-utils
 
-all: $(OBJS)
+all: mk/toplibs
 
 benchs: $(BENCHS) all
 
@@ -136,7 +136,7 @@ doc/index.html: $(shell $(LISTLIBS))
 	  --optghc=-i$(GHCIMPORTDIRS) \
 	  -odoc $(shell $(LISTLIBS))
 
-mk/toplibs: mk/Toplibs.o
+mk/toplibs: src/Test/FitSpec.o bench/Set.o
 	touch mk/toplibs
 
 bench/avltrees: bench/AVLTree.o
