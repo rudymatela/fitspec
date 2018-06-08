@@ -87,9 +87,7 @@ prepare-test-via-cabal:
 	cabal configure --enable-tests --enable-benchmarks
 
 legacy-test-via-cabal:
-	cabal clean && cabal clean && cd -
 	cabal-ghc-7.10 configure --enable-tests --enable-benchmarks --ghc-option=-dynamic && cabal-ghc-7.10 build && cabal-ghc-7.10 test
-	cabal clean && cabal clean && cd -
 	cabal-ghc-7.8  configure --enable-tests --enable-benchmarks --ghc-option=-dynamic && cabal-ghc-7.8  build && cabal-ghc-7.8  test
 	cabal clean
 
