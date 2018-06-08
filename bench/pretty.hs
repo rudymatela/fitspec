@@ -1,6 +1,6 @@
 {-# LANGUAGE CPP #-}
 import Test.FitSpec
-import Text.PrettyPrint
+import Text.PrettyPrint as P
 
 #if __GLASGOW_HASKELL__ < 710
 -- pretty <= 1.1.1.1 (bundled with GHC <= 7.8)  does not provide this instance
@@ -46,7 +46,7 @@ propertiesQS (<>) ($$) nest =
 
 main = do
   as <- getArgs
-  let run ps = reportWith as ((<>),($$),nest) (uncurry3 ps)
+  let run ps = reportWith as ((P.<>),($$),nest) (uncurry3 ps)
   case concat (extra as) of
     "qs"    -> run propertiesQS
     ""      -> run properties
