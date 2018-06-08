@@ -134,6 +134,9 @@ doc/index.html: $(shell $(LISTLIBS))
 	  --optghc=-i$(GHCIMPORTDIRS) \
 	  -odoc $(shell $(LISTLIBS))
 
+mk/toplibs: mk/Toplibs.o
+	touch mk/toplibs
+
 bench/avltrees: bench/AVLTree.o
 
 bench/heaps: bench/Heap.o

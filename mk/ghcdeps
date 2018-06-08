@@ -2,7 +2,7 @@
 #
 # ghcdeps: generate Haskell make dependencies for compiling with GHC.
 #
-# Copyright (c) 2015-2017 Rudy Matela.
+# Copyright (c) 2015-2018 Rudy Matela.
 # Distributed under the 3-Clause BSD licence.
 #
 # From a list of files provided on standard input,
@@ -42,8 +42,8 @@ do
 	obj=`echo $fn | sed -e 's,^\./,,;s/\.hs$/.o/'`
 	bin=`echo $fn | sed -e 's,^\./,,;s/\.hs$//'`
 	echo "$obj: $deps"
-	grep -q "main" "$fn" && echo "$bin: $deps"
+	grep -q "main" "$fn" && echo "$bin: `echo $deps | sed -e 's|[^ ]*src[^ ]*||g'` mk/toplibs"
 	rm -f tmp.mk
 done |
 sort |
-sed -e 's, , \\\n  ,g'
+sed -e 's,  *, \\\n  ,g'
