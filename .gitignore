@@ -3,6 +3,7 @@
 **/cabal.sandbox.config
 **/.cabal-sandbox
 .stack-work
+mk/toplibs
 
 # vim stuff
 **.swp
