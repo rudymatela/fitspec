@@ -87,6 +87,8 @@ prepare-test-via-cabal:
 	cabal configure --enable-tests --enable-benchmarks
 
 legacy-test-via-cabal:
+	cabal-ghc-8.2  configure --enable-tests --enable-benchmarks --ghc-option=-dynamic && cabal-ghc-7.10 build && cabal-ghc-7.10 test
+	cabal-ghc-8.0  configure --enable-tests --enable-benchmarks --ghc-option=-dynamic && cabal-ghc-7.8  build && cabal-ghc-7.8  test
 	cabal-ghc-7.10 configure --enable-tests --enable-benchmarks --ghc-option=-dynamic && cabal-ghc-7.10 build && cabal-ghc-7.10 test
 	cabal-ghc-7.8  configure --enable-tests --enable-benchmarks --ghc-option=-dynamic && cabal-ghc-7.8  build && cabal-ghc-7.8  test
 	cabal clean
@@ -95,6 +97,8 @@ prepare-legacy-test-via-cabal:
 	rm -rf .cabal-sandbox cabal.sandbox.config
 	cabal sandbox init
 	cabal          install --only-dependencies --enable-tests --enable-benchmarks --enable-documentation
+	cabal-ghc-8.2  install --only-dependencies --enable-tests --enable-benchmarks
+	cabal-ghc-8.0  install --only-dependencies --enable-tests --enable-benchmarks
 	cabal-ghc-7.10 install --only-dependencies --enable-tests --enable-benchmarks
 	cabal-ghc-7.8  install --only-dependencies --enable-tests --enable-benchmarks
 
