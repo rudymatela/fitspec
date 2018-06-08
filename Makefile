@@ -70,6 +70,8 @@ test-without-extra-deps: all $(MOSTBENCHS) $(MOSTEGS) $(TESTS)
 	./tests/test-utils
 
 legacy-test:
+	make clean && make test-without-extra-deps -j8 GHC=ghc-8.2  GHCFLAGS="-Werror -dynamic"
+	make clean && make test-without-extra-deps -j8 GHC=ghc-8.0  GHCFLAGS="-Werror -dynamic"
 	make clean && make test-without-extra-deps -j8 GHC=ghc-7.10 GHCFLAGS="-Werror -dynamic"
 	make clean && make test-without-extra-deps -j8 GHC=ghc-7.8  GHCFLAGS="-Werror -dynamic"
 	make clean && make test                    -j8
