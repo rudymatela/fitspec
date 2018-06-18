@@ -16,11 +16,8 @@
 # Misc variables
 GHCIMPORTDIRS = src:bench
 GHCFLAGS = -dynamic -O2
-HADDOCKFLAGS = --no-print-missing-docs
-LISTHS=find eg src tests bench -name \*.hs
-HSS=$(shell $(LISTHS))
-LISTLIBS=find src -name \*.hs
-OBJS = $(shell $(LISTLIBS) | sed -e 's/hs$$/o/')
+HADDOCKFLAGS = --no-print-missing-docs \
+  $(shell grep -q "Arch Linux" /etc/lsb-release && echo --optghc=-dynamic)
 MOSTBENCHS = \
   bench/avltrees         \
   bench/bools            \
@@ -121,22 +118,6 @@ hlint:
 	  --ignore "Use second" \
 	  --ignore "Use ***" \
 	  FitSpec.hs FitSpec bench tests
-
-haddock: doc/index.html
-
-clean-haddock:
-	rm -f doc/*.{html,css,js,png,gif}
-
-upload-haddock:
-	@echo "use \`cabal upload -d' instead"
-	@echo "(but 1st: cabal install --only-dependencies --enable-documentation)"
-	@echo "(to just compile docs: cabal haddock --for-hackage)"
-
-doc/index.html: $(shell $(LISTLIBS))
-	./mk/haddock-i base template-haskell | xargs \
-	haddock --html $(HADDOCKFLAGS) --title=fitspec \
-	  --optghc=-i$(GHCIMPORTDIRS) \
-	  -odoc $(shell $(LISTLIBS))
 
 mk/toplibs: src/Test/FitSpec.o bench/Set.o
 	touch mk/toplibs
