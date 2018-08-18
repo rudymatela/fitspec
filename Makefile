@@ -74,7 +74,7 @@ legacy-test:
 	make clean && make test                    -j8
 
 test-via-cabal:
-	cabal test
+	cabal configure --enable-tests --enable-benchmarks --ghc-options="-dynamic -Werror" && cabal build && cabal test
 
 test-sdist:
 	tests/test-sdist
