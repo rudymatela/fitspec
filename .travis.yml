@@ -36,7 +36,7 @@ before_install:
 script:
 - make && make test-without-extra-deps
 - make haddock HADDOCKFLAGS=
-- cabal test
+- make test-via-cabal
 - stack $STACKR --no-terminal --skip-ghc-check test
 
 matrix:
