@@ -8,8 +8,8 @@ resolver: lts-11.11
 packages:
 - .
 
-extra-deps: []
-#- leancheck-0.7.0
+extra-deps:
+- leancheck-0.7.1
 
 flags: {}
 
