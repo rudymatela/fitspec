@@ -42,7 +42,7 @@ script:
 matrix:
   allow_failures:
   - ghc: 'head'
-  - ghc: 7.10  # Failing due to a bug in cabal?  Deactivating for now...
+  - ghc: '7.10'  # Failing due to a bug in cabal?  Deactivating for now...
   include:
   - ghc: 'head'
     env:                   GHCVER=head         CABALVER=head
