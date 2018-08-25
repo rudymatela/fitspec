@@ -15,9 +15,8 @@
 
 # Misc variables
 GHCIMPORTDIRS = src:bench
-GHCFLAGS = -dynamic -O2
-HADDOCKFLAGS = --no-print-missing-docs \
-  $(shell grep -q "Arch Linux" /etc/lsb-release && echo --optghc=-dynamic)
+GHCFLAGS = -O2 $(shell grep -q "Arch Linux" /etc/lsb-release && echo -dynamic)
+HADDOCKFLAGS = --no-print-missing-docs
 MOSTBENCHS = \
   bench/avltrees         \
   bench/bools            \
