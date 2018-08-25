@@ -36,6 +36,7 @@ before_install:
 script:
 - make && make test-without-extra-deps
 - make haddock
+- make test-sdist
 - make test-via-cabal
 - stack $STACKR --no-terminal --skip-ghc-check test
 
@@ -73,6 +74,7 @@ matrix:
     script:
     - make GHCFLAGS=-O2 && make test-without-extra-deps GHCFLAGS=-O2
     - make haddock HADDOCKFLAGS=
+    - make test-sdist
     - cabal test
   - ghc: '7.6'
     env:                   GHCVER=7.6.3        CABALVER=1.18
@@ -87,6 +89,7 @@ matrix:
     script:
     - make GHCFLAGS=-O2 && make test-without-extra-deps GHCFLAGS=-O2
     - make haddock HADDOCKFLAGS=
+    - make test-sdist
     - cabal test
   - ghc: '7.4'
     env:                   GHCVER=7.4.2        CABALVER=1.18
@@ -101,4 +104,5 @@ matrix:
     script:
     - make GHCFLAGS=-O2 && make test-without-extra-deps GHCFLAGS=-O2
     - make haddock HADDOCKFLAGS=
+    - make test-sdist
     - cabal test
