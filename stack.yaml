@@ -3,7 +3,7 @@
 
 # resolver: nightly-2015-09-21
 # resolver: ghc-7.10.2
-resolver: lts-11.11
+resolver: lts-12.7
 
 packages:
 - .
