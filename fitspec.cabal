@@ -30,19 +30,19 @@ extra-doc-files: README.md
                , doc/modules.md
                , doc/tutorial-property-creation.md
 extra-source-files: .gitignore
+                  , .travis.yml
                   , Makefile
+                  , bench/haskell-src-exts.hs
+                  , bench/haskell-src.hs
+                  , eg/Makefile
+                  , eg/alga.hs
+                  , eg/negation.hs
+                  , eg/sorting.hs
                   , mk/depend.mk
                   , mk/ghcdeps
                   , mk/haddock-i
                   , mk/haskell.mk
                   , stack.yaml
-                  , .travis.yml
-                  , eg/Makefile
-                  , eg/alga.hs
-                  , eg/negation.hs
-                  , eg/sorting.hs
-                  , bench/haskell-src.hs
-                  , bench/haskell-src-exts.hs
                   , tests/test-sdist
 tested-with: GHC==8.2, GHC==8.0, GHC==7.10, GHC==7.8, GHC==7.6, GHC==7.4
 
