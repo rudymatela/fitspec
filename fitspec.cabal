@@ -1,5 +1,5 @@
 name:                fitspec
-version:             0.4.6
+version:             0.4.7
 synopsis:            refining property sets for testing Haskell programs
 description:
   FitSpec provides automated assistance in the task of refining test properties
@@ -53,7 +53,7 @@ source-repository head
 source-repository this
   type:            git
   location:        https://github.com/rudymatela/fitspec
-  tag:             v0.4.6
+  tag:             v0.4.7
 
 
 library
