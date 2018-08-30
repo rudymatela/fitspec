@@ -16,6 +16,7 @@
 # Misc variables
 GHCIMPORTDIRS = src:bench
 GHCFLAGS = -O2 $(shell grep -q "Arch Linux" /etc/lsb-release && echo -dynamic)
+CABALOPTS=
 HADDOCKFLAGS = --no-print-missing-docs
 MOSTBENCHS = \
   bench/avltrees         \
@@ -73,7 +74,7 @@ legacy-test:
 	make clean && make test                    -j8
 
 test-via-cabal:
-	cabal configure --enable-tests --enable-benchmarks --ghc-options="-dynamic -Werror" && cabal build && cabal test
+	cabal configure --enable-tests --enable-benchmarks --ghc-options="-dynamic -Werror" $(CABALOPTS) && cabal build && cabal test
 
 test-sdist:
 	tests/test-sdist
