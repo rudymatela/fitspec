@@ -57,7 +57,7 @@ matrix:
     env:                   GHCVER=8.0.2        CABALVER=1.24
     addons: {apt: {packages: [ghc-8.0.2,  cabal-install-1.24], sources: hvr-ghc}}
   - ghc: '7.10'
-    env:                   GHCVER=7.10.3       CABALVER=1.22
+    env:                   GHCVER=7.10.3       CABALVER=1.22   STACKR=--resolver=lts-11.11
     addons: {apt: {packages: [ghc-7.10.3, cabal-install-1.22], sources: hvr-ghc}}
   # we only support stack with GHC >= 7.10
   - ghc: '7.8'
