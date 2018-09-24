@@ -4,12 +4,17 @@
 #
 # Copyright (c) 2015-2018 Rudy Matela.
 # Distributed under the 3-Clause BSD licence.
+export LC_ALL=C  # consistent sort
 pkgver=` cat *.cabal | grep "^version:" | sed -e "s/version: *//"`
 pkgname=`cat *.cabal | grep "^name:"    | sed -e "s/name: *//"`
 pkg=$pkgname-$pkgver
 set -x
 cabal sdist &&
 cd dist &&
+tar -tf $pkg.tar.gz | sort --ignore-case          > ls-cabal-i  &&
+tar -tf $pkg.tar.gz | sort --ignore-case --unique > ls-cabal-iu &&
+diff -rud ls-cabal-i ls-cabal-iu &&
+rm -f ls-cabal ls-cabal-ignore-case &&
 if [ -d ../.git ]
 then
 	# on git repo, test if files are the same
