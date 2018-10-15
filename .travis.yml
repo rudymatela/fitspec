@@ -52,8 +52,8 @@ matrix:
     env:                   GHCVER=8.6.1        CABALVER=2.4
     addons: {apt: {packages: [ghc-8.6.1,  cabal-install-2.4],  sources: hvr-ghc}}
   - ghc: '8.4'
-    env:                   GHCVER=8.4.2        CABALVER=2.2
-    addons: {apt: {packages: [ghc-8.4.2,  cabal-install-2.2],  sources: hvr-ghc}}
+    env:                   GHCVER=8.4.4        CABALVER=2.2
+    addons: {apt: {packages: [ghc-8.4.4,  cabal-install-2.2],  sources: hvr-ghc}}
   - ghc: '8.2'
     env:                   GHCVER=8.2.1        CABALVER=2.0
     addons: {apt: {packages: [ghc-8.2.1,  cabal-install-2.0],  sources: hvr-ghc}}
