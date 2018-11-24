@@ -6,6 +6,8 @@ FitSpec
 [![FitSpec on Stackage LTS][stackage-lts-badge]][fitspec-on-stackage-lts]
 [![FitSpec on Stackage Nightly][stackage-nightly-badge]][fitspec-on-stackage-nightly]
 
+![FitSpec logo][fitspec-logo]
+
 FitSpec provides automated assistance in the task of refining test properties
 for [Haskell] functions.  FitSpec tests mutant variations of functions under
 test against a given property set, recording any surviving mutants that pass
@@ -157,6 +159,8 @@ FitSpec is also subject to a chapter in a [PhD Thesis (2017)].
 [Cabal]:   https://www.haskell.org/cabal
 [Haskell]: https://www.haskell.org/
 [PhD Thesis (2017)]: https://matela.com.br/paper/rudy-phd-thesis-2017.pdf
+
+[fitspec-logo]: https://github.com/rudymatela/fitspec/raw/master/doc/fitspec.svg?sanitize=true
 
 [build-status]: https://travis-ci.org/rudymatela/fitspec.svg?branch=master
 [build-log]:    https://travis-ci.org/rudymatela/fitspec

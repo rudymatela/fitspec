@@ -29,6 +29,7 @@ extra-doc-files: README.md
                , TODO.md
                , doc/modules.md
                , doc/tutorial-property-creation.md
+               , doc/fitspec.svg
 extra-source-files: .gitignore
                   , .travis.yml
                   , Makefile
