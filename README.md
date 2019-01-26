@@ -167,8 +167,8 @@ FitSpec is also subject to a chapter in a [PhD Thesis (2017)].
 [hackage-version]: https://img.shields.io/hackage/v/fitspec.svg
 [fitspec-on-hackage]:                  https://hackage.haskell.org/package/fitspec
 [latest FitSpec version from Hackage]: https://hackage.haskell.org/package/fitspec
-[stackage-lts-badge]:            http://stackage.org/package/fitspec/badge/lts
-[stackage-nightly-badge]:        http://stackage.org/package/fitspec/badge/nightly
-[fitspec-on-stackage]:         http://stackage.org/package/fitspec
-[fitspec-on-stackage-lts]:     http://stackage.org/lts/package/fitspec
-[fitspec-on-stackage-nightly]: http://stackage.org/nightly/package/fitspec
+[stackage-lts-badge]:          https://stackage.org/package/fitspec/badge/lts
+[stackage-nightly-badge]:      https://stackage.org/package/fitspec/badge/nightly
+[fitspec-on-stackage]:         https://stackage.org/package/fitspec
+[fitspec-on-stackage-lts]:     https://stackage.org/lts/package/fitspec
+[fitspec-on-stackage-nightly]: https://stackage.org/nightly/package/fitspec
