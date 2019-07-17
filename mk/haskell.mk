@@ -1,6 +1,6 @@
 # Implicit rules for compiling Haskell code.
 #
-# Copyright (c) 2015-2018 Rudy Matela.
+# Copyright (c) 2015-2019 Rudy Matela.
 # Distributed under the 3-Clause BSD licence.
 #
 # You can optionally configure the "Configuration variables" below in your main
@@ -43,7 +43,16 @@ LIST_ALL_HSS ?= find \( -path "./dist" -o -path "./.stack-work" \) -prune \
 LIB_HSS ?= $(shell $(LIST_LIB_HSS))
 ALL_HSS ?= $(shell $(LIST_ALL_HSS))
 
+LIB_DEPS ?= base
+ALL_DEPS ?= $(LIB_DEPS)
+
 PKGNAME = $(shell cat *.cabal | grep "^name:"    | sed -e "s/name: *//")
+HADDOCK_VERSION = $(shell haddock --version | grep version | sed -e 's/.*version //;s/,.*//')
+HADDOCK_MAJOR = $(shell echo $(HADDOCK_VERSION) | sed -e 's/\..*//')
+HADDOCK_MINOR = $(shell echo $(HADDOCK_VERSION) | sed -e 's/[0-9]*\.\([0-9]*\).[0-9]*/\1/')
+HADDOCK_PKG_NAME = $(shell [ $(HADDOCK_MAJOR) -gt 2 ] \
+                        || [ $(HADDOCK_MAJOR) -eq 2 -a $(HADDOCK_MINOR) -ge 20 ] \
+                        && echo "--package-name=$(PKGNAME)")
 
 
 # Implicit rules
@@ -93,8 +102,8 @@ upload-haddock:
 	@echo "(on Arch Linux, use: cabal haddock --for-hackage --haddock-options=--optghc=-dynamic)"
 
 doc/index.html: $(LIB_HSS)
-	./mk/haddock-i base template-haskell | xargs \
-	haddock --html -odoc $(LIB_HSS) $(HADDOCKFLAGS) --title=$(PKGNAME)
+	./mk/haddock-i $(LIB_DEPS) | xargs \
+	haddock --html --hyperlinked-source -odoc $(LIB_HSS) $(HADDOCKFLAGS) --title=$(PKGNAME) $(HADDOCK_PKG_NAME)
 
 # lists all Haskell source files
 list-all-hss:
@@ -103,6 +112,12 @@ list-all-hss:
 # lists library Haskell source files
 list-lib-hss:
 	@find $(LIB_HSS)
+
+bootstrap-haskell-mk:
+	@[ -d "$(DEST)" ] || (echo -e "error: no destination found\nusage: \`make bootstrap-haskell-mk DEST=path/to/prj'"; exit 1)
+	mkdir -p mk
+	cp mk/{haskell.mk,ghcdeps,haddock-i} $(DEST)/mk
+	touch $(DEST)/mk/depend.mk
 
 show-pkgname:
 	@echo $(PKGNAME)

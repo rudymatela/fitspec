@@ -1,6 +1,6 @@
 # Makefile for FitSpec
 #
-# Copyright:   (c) 2015-2018 Rudy Matela
+# Copyright:   (c) 2015-2019 Rudy Matela
 # License:     3-Clause BSD  (see the file LICENSE)
 # Maintainer:  Rudy Matela <rudy@matela.com.br>
 #
@@ -45,6 +45,8 @@ TESTS = \
   tests/test-mutate      \
   tests/test-showmutable \
   tests/test-utils
+HADDOCKFLAGS = $(shell grep -q "Arch Linux" /etc/lsb-release && echo --optghc=-dynamic)
+LIB_DEPS = base template-haskell leancheck cmdargs
 
 all: mk/toplibs
 
