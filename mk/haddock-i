@@ -21,11 +21,11 @@ errxit() {
 }
 
 iface-for() {
-	ghc-pkg field $1 haddock-interfaces | sed "s/.*: //"
+	ghc-pkg field $1 haddock-interfaces | sort -rV | head -1 | sed "s/.*: //"
 }
 
 html-for() {
-	ghc-pkg field $1 haddock-html       | sed "s/.*: //"
+	ghc-pkg field $1 haddock-html       | sort -rV | head -1 | sed "s/.*: //"
 }
 
 for pkg in "$@"
