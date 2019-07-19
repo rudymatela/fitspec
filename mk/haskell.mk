@@ -20,6 +20,7 @@ GHCIMPORTDIRS ?=
 GHCFLAGS ?=
 GHC ?= ghc
 GHCCMD = $(GHC) -i$(GHCIMPORTDIRS) $(GHCFLAGS)
+HADDOCK ?= haddock
 
 # Hugs Parameters
 HUGSIMPORTDIRS ?= "/usr/lib/hugs/packages/*"
@@ -47,12 +48,15 @@ LIB_DEPS ?= base
 ALL_DEPS ?= $(LIB_DEPS)
 
 PKGNAME = $(shell cat *.cabal | grep "^name:"    | sed -e "s/name: *//")
-HADDOCK_VERSION = $(shell haddock --version | grep version | sed -e 's/.*version //;s/,.*//')
+HADDOCK_VERSION = $(shell $(HADDOCK) --version | grep version | sed -e 's/.*version //;s/,.*//')
 HADDOCK_MAJOR = $(shell echo $(HADDOCK_VERSION) | sed -e 's/\..*//')
 HADDOCK_MINOR = $(shell echo $(HADDOCK_VERSION) | sed -e 's/[0-9]*\.\([0-9]*\).[0-9]*/\1/')
 HADDOCK_PKG_NAME = $(shell [ $(HADDOCK_MAJOR) -gt 2 ] \
                         || [ $(HADDOCK_MAJOR) -eq 2 -a $(HADDOCK_MINOR) -ge 20 ] \
                         && echo "--package-name=$(PKGNAME)")
+HADDOCK_HLNK_SRC = $(shell [ $(HADDOCK_MAJOR) -gt 2 ] \
+                        || [ $(HADDOCK_MAJOR) -eq 2 -a $(HADDOCK_MINOR) -ge 17 ] \
+                        && echo "--hyperlinked-source")
 
 
 # Implicit rules
@@ -103,7 +107,12 @@ upload-haddock:
 
 doc/index.html: $(LIB_HSS)
 	./mk/haddock-i $(LIB_DEPS) | xargs \
-	haddock --html --hyperlinked-source -odoc $(LIB_HSS) $(HADDOCKFLAGS) --title=$(PKGNAME) $(HADDOCK_PKG_NAME)
+	$(HADDOCK) --html -odoc $(LIB_HSS) \
+	  --title=$(PKGNAME) \
+	  $(HADDOCK_PKG_NAME) \
+	  $(HADDOCK_HLNK_SRC) \
+	  $(HADDOCKFLAGS)
+
 
 # lists all Haskell source files
 list-all-hss:
