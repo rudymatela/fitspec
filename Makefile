@@ -1,6 +1,6 @@
 # Makefile for FitSpec
 #
-# Copyright:   (c) 2015-2019 Rudy Matela
+# Copyright:   (c) 2015-2020 Rudy Matela
 # License:     3-Clause BSD  (see the file LICENSE)
 # Maintainer:  Rudy Matela <rudy@matela.com.br>
 #
@@ -18,7 +18,7 @@ GHCIMPORTDIRS = src:bench
 GHCFLAGS = -O2 $(shell grep -q "Arch Linux" /etc/lsb-release && echo -dynamic)
 CABALOPTS=
 HADDOCKFLAGS = --no-print-missing-docs
-MOSTBENCHS = \
+BENCHS = \
   bench/avltrees         \
   bench/bools            \
   bench/digraphs         \
@@ -32,13 +32,13 @@ MOSTBENCHS = \
   bench/sieve            \
   bench/sorting          \
   bench/spring
-BENCHS = $(MOSTBENCHS) \
+EXTRA_BENCHS = $(BENCHS) \
   bench/haskell-src      \
   bench/haskell-src-exts
-MOSTEGS = \
+EGS = \
   eg/sorting \
   eg/negation
-EGS = $(MOSTEGS) \
+EXTRA_EGS = $(EGS) \
   eg/alga
 TESTS = \
   tests/test-derive      \
@@ -62,17 +62,17 @@ test: all benchs egs $(TESTS)
 	./tests/test-derive
 	./tests/test-utils
 
-test-without-extra-deps: all $(MOSTBENCHS) $(MOSTEGS) $(TESTS)
+test-with-extra-deps: all $(EXTRA_BENCHS) $(EXTRA_EGS) $(TESTS)
 	./tests/test-mutate
 	./tests/test-showmutable
 	./tests/test-derive
 	./tests/test-utils
 
 legacy-test:
-	make clean && make test-without-extra-deps -j8 GHC=ghc-8.2  GHCFLAGS="-Werror -dynamic"
-	make clean && make test-without-extra-deps -j8 GHC=ghc-8.0  GHCFLAGS="-Werror -dynamic"
-	make clean && make test-without-extra-deps -j8 GHC=ghc-7.10 GHCFLAGS="-Werror -dynamic"
-	make clean && make test-without-extra-deps -j8 GHC=ghc-7.8  GHCFLAGS="-Werror -dynamic"
+	make clean && make test -j8 GHC=ghc-8.2  GHCFLAGS="-Werror -dynamic"
+	make clean && make test -j8 GHC=ghc-8.0  GHCFLAGS="-Werror -dynamic"
+	make clean && make test -j8 GHC=ghc-7.10 GHCFLAGS="-Werror -dynamic"
+	make clean && make test -j8 GHC=ghc-7.8  GHCFLAGS="-Werror -dynamic"
 	make clean && make test                    -j8
 
 test-via-cabal:

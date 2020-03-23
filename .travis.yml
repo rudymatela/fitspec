@@ -1,6 +1,6 @@
 # .travis.yml file for FitSpec
 #
-# Copyright:   (c) 2017-2018 Rudy Matela
+# Copyright:   (c) 2017-2020 Rudy Matela
 # License:     3-Clause BSD  (see the file LICENSE)
 # Maintainer:  Rudy Matela <rudy@matela.com.br>
 
@@ -34,7 +34,7 @@ before_install:
 - cabal install leancheck cmdargs
 
 script:
-- make && make test-without-extra-deps
+- make && make test
 - make haddock
 - make test-sdist
 - make test-via-cabal CABALOPTS=--ghc-option=-O0
@@ -75,7 +75,7 @@ matrix:
     - cabal install Cabal==1.18.*
     - cabal install leancheck cmdargs
     script:
-    - make && make test-without-extra-deps
+    - make && make test
     - make haddock HADDOCKFLAGS=
     - make test-sdist
     - cabal test
@@ -90,7 +90,7 @@ matrix:
     - cabal install Cabal==1.18.*
     - cabal install leancheck cmdargs
     script:
-    - make && make test-without-extra-deps
+    - make && make test
     - make haddock HADDOCKFLAGS=
     - make test-sdist
     - cabal test
@@ -105,7 +105,7 @@ matrix:
     - cabal install Cabal==1.18.*
     - cabal install leancheck cmdargs
     script:
-    - make && make test-without-extra-deps
+    - make && make test
     - make haddock HADDOCKFLAGS=
     - make test-sdist
     - cabal test
