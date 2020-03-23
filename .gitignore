@@ -1,5 +1,6 @@
 # cabal stuff
 **/dist
+dist-newstyle
 **/cabal.sandbox.config
 **/.cabal-sandbox
 .stack-work
