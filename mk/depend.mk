@@ -322,6 +322,11 @@ eg/sorting.o: \
   src/Test/FitSpec/Engine.hs \
   src/Test/FitSpec/Derive.hs \
   eg/sorting.hs
+Setup.o: \
+  Setup.hs
+Setup: \
+  Setup.hs \
+  mk/toplibs
 src/Test/FitSpec/Derive.o: \
   src/Test/FitSpec/ShowMutable.hs \
   src/Test/FitSpec/PrettyPrint.hs \
