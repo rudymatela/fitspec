@@ -37,7 +37,7 @@ script:
 - make && make test
 - make haddock
 - make test-sdist
-- make test-via-cabal CABALOPTS=--ghc-option=-O0
+- cabal test --ghc-option=-O0
 - stack $STACKR --no-terminal --skip-ghc-check test --ghc-options=-O0
 
 matrix:
