@@ -30,6 +30,11 @@ To install the [latest FitSpec version from Hackage], just:
 Pre-requisites are [cmdargs] and [leancheck].
 They should be automatically resolved and installed by [Cabal].
 
+Starting from Cabal v3.0, you need to pass `--lib` as an argument to
+`cabal install`:
+
+	$ cabal install fitspec --lib
+
 
 Using FitSpec
 -------------
