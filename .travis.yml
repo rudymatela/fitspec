@@ -39,32 +39,32 @@ script:
 - make haddock
 - make test-sdist
 - cabal test --ghc-option=-O0
-- stack $STACKR --no-terminal --skip-ghc-check test --ghc-options=-O0
+- stack --resolver $STACKVER --no-terminal --skip-ghc-check test --ghc-options=-O0
 
 matrix:
   allow_failures:
   - ghc: 'head'
   include:
   - ghc: 'head'
-    env:                   GHCVER=head         CABALVER=head
+    env:                   GHCVER=head         CABALVER=head   STACKVER=nightly-2020-03-28
     addons: {apt: {packages: [ghc-head,   cabal-install-head], sources: hvr-ghc}}
   - ghc: '8.8'
-    env:                   GHCVER=8.8.3        CABALVER=3.0
+    env:                   GHCVER=8.8.3        CABALVER=3.0    STACKVER=lts-15.5
     addons: {apt: {packages: [ghc-8.8.3,  cabal-install-3.0],  sources: hvr-ghc}}
   - ghc: '8.6'
-    env:                   GHCVER=8.6.5        CABALVER=2.4
+    env:                   GHCVER=8.6.5        CABALVER=2.4    STACKVER=lts-14.27
     addons: {apt: {packages: [ghc-8.6.5,  cabal-install-2.4],  sources: hvr-ghc}}
   - ghc: '8.4'
-    env:                   GHCVER=8.4.4        CABALVER=2.2
+    env:                   GHCVER=8.4.4        CABALVER=2.2    STACKVER=lts-12.26
     addons: {apt: {packages: [ghc-8.4.4,  cabal-install-2.2],  sources: hvr-ghc}}
   - ghc: '8.2'
-    env:                   GHCVER=8.2.2        CABALVER=2.0
+    env:                   GHCVER=8.2.2        CABALVER=2.0    STACKVER=lts-11.22
     addons: {apt: {packages: [ghc-8.2.2,  cabal-install-2.0],  sources: hvr-ghc}}
   - ghc: '8.0'
-    env:                   GHCVER=8.0.2        CABALVER=1.24
+    env:                   GHCVER=8.0.2        CABALVER=1.24   STACKVER=lts-9.21
     addons: {apt: {packages: [ghc-8.0.2,  cabal-install-1.24], sources: hvr-ghc}}
   - ghc: '7.10'
-    env:                   GHCVER=7.10.3       CABALVER=1.22   STACKR=--resolver=lts-11.11
+    env:                   GHCVER=7.10.3       CABALVER=1.22   STACKVER=lts-6.35
     addons: {apt: {packages: [ghc-7.10.3, cabal-install-1.22], sources: hvr-ghc}}
   # we only support stack with GHC >= 7.10
   - ghc: '7.8'
