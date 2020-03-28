@@ -4,6 +4,7 @@ dist-newstyle
 **/cabal.sandbox.config
 **/.cabal-sandbox
 .stack-work
+stack.yaml.lock
 mk/toplibs
 
 # vim stuff
