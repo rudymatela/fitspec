@@ -42,10 +42,10 @@ eg/negation
 eg/alga
 
 # test binaries
-tests/test-mutate
-tests/test-showmutable
-tests/test-derive
-tests/test-utils
+test/mutate
+test/showmutable
+test/derive
+test/utils
 
 # Haddock
 doc/**/*.html

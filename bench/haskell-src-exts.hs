@@ -1,7 +1,6 @@
 {-# LANGUAGE TemplateHaskell #-}
 import Test.FitSpec
 import Language.Haskell.Exts
-import Language.Haskell.Exts.Pretty
 
 instance Eq a => Eq (ParseResult a) where
   ParseOk x == ParseOk y = x == y

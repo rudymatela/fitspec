@@ -41,10 +41,10 @@ EGS = \
 EXTRA_EGS = $(EGS) \
   eg/alga
 TESTS = \
-  tests/test-derive      \
-  tests/test-mutate      \
-  tests/test-showmutable \
-  tests/test-utils
+  test/derive      \
+  test/mutate      \
+  test/showmutable \
+  test/utils
 HADDOCKFLAGS = $(shell grep -q "Arch Linux" /etc/lsb-release && echo --optghc=-dynamic)
 LIB_DEPS = base template-haskell leancheck cmdargs
 
@@ -57,16 +57,16 @@ egs: $(EGS) all
 ghci: Test/FitSpec.ghci
 
 test: all benchs egs $(TESTS)
-	./tests/test-mutate
-	./tests/test-showmutable
-	./tests/test-derive
-	./tests/test-utils
+	./test/mutate
+	./test/showmutable
+	./test/derive
+	./test/utils
 
 test-with-extra-deps: all $(EXTRA_BENCHS) $(EXTRA_EGS) $(TESTS)
-	./tests/test-mutate
-	./tests/test-showmutable
-	./tests/test-derive
-	./tests/test-utils
+	./test/mutate
+	./test/showmutable
+	./test/derive
+	./test/utils
 
 legacy-test:
 	make clean && make test -j8 GHC=ghc-8.2  GHCFLAGS="-Werror -dynamic"
@@ -79,7 +79,7 @@ test-via-cabal:
 	cabal configure --enable-tests --enable-benchmarks --ghc-options="-dynamic -Werror" $(CABALOPTS) && cabal build && cabal test
 
 test-sdist:
-	tests/test-sdist
+	./test/sdist
 
 prepare-test-via-cabal:
 	rm -rf .cabal-sandbox cabal.sandbox.config
@@ -131,3 +131,8 @@ bench/heaps: bench/Heap.o
 bench/digraphs: bench/Digraph.o
 
 include mk/haskell.mk
+# NOTE:
+#
+# To run make depend, you may need to pass -package now to expose a package:
+#
+# make depend GHCFLAGS="-package haskell-src-exts"

@@ -322,11 +322,6 @@ eg/sorting.o: \
   src/Test/FitSpec/Engine.hs \
   src/Test/FitSpec/Derive.hs \
   eg/sorting.hs
-Setup.o: \
-  Setup.hs
-Setup: \
-  Setup.hs \
-  mk/toplibs
 src/Test/FitSpec/Derive.o: \
   src/Test/FitSpec/ShowMutable.hs \
   src/Test/FitSpec/PrettyPrint.hs \
@@ -407,8 +402,8 @@ src/Test/FitSpec/TestTypes.o: \
   src/Test/FitSpec/Mutable.hs
 src/Test/FitSpec/Utils.o: \
   src/Test/FitSpec/Utils.hs
-tests/test-derive.o: \
-  tests/test-derive.hs \
+test/derive.o: \
+  test/derive.hs \
   src/Test/FitSpec/Utils.hs \
   src/Test/FitSpec/TestTypes.hs \
   src/Test/FitSpec/ShowMutable/Tuples.hs \
@@ -421,11 +416,11 @@ tests/test-derive.o: \
   src/Test/FitSpec/Main.hs \
   src/Test/FitSpec/Engine.hs \
   src/Test/FitSpec/Derive.hs
-tests/test-derive: \
-  tests/test-derive.hs \
+test/derive: \
+  test/derive.hs \
   mk/toplibs
-tests/test-mutate.o: \
-  tests/test-mutate.hs \
+test/mutate.o: \
+  test/mutate.hs \
   src/Test/FitSpec/Utils.hs \
   src/Test/FitSpec/TestTypes.hs \
   src/Test/FitSpec/ShowMutable/Tuples.hs \
@@ -438,11 +433,11 @@ tests/test-mutate.o: \
   src/Test/FitSpec/Main.hs \
   src/Test/FitSpec/Engine.hs \
   src/Test/FitSpec/Derive.hs
-tests/test-mutate: \
-  tests/test-mutate.hs \
+test/mutate: \
+  test/mutate.hs \
   mk/toplibs
-tests/test-showmutable.o: \
-  tests/test-showmutable.hs \
+test/showmutable.o: \
+  test/showmutable.hs \
   src/Test/FitSpec/Utils.hs \
   src/Test/FitSpec/TestTypes.hs \
   src/Test/FitSpec/ShowMutable/Tuples.hs \
@@ -455,12 +450,12 @@ tests/test-showmutable.o: \
   src/Test/FitSpec/Main.hs \
   src/Test/FitSpec/Engine.hs \
   src/Test/FitSpec/Derive.hs
-tests/test-showmutable: \
-  tests/test-showmutable.hs \
+test/showmutable: \
+  test/showmutable.hs \
   mk/toplibs
-tests/test-utils.o: \
-  tests/test-utils.hs \
+test/utils.o: \
+  test/utils.hs \
   src/Test/FitSpec/Utils.hs
-tests/test-utils: \
-  tests/test-utils.hs \
+test/utils: \
+  test/utils.hs \
   mk/toplibs
