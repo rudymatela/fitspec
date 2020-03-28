@@ -1,0 +1,30 @@
+#!/bin/bash
+#
+# mk/install-on: install or updates the mk folder on a Haskell project
+#
+# usage: ./mk/install-on path/to/project
+#
+# This assumes a few things:
+#
+# * tests are stored in a "test/" folder
+# * sources are stored in a "src/" folder
+set -e
+
+errxit() {
+	echo "$@" > /dev/stderr
+	exit 1
+}
+
+src=`dirname $0`/..
+dst="$1"
+
+[ -n "$dst" ] || errxit "destination folder not provided"
+
+mkdir -p $dst/mk
+mkdir -p $dst/test
+
+cp $src/mk/ghcdeps    $dst/mk/ghcdeps
+cp $src/mk/haddock-i  $dst/mk/haddock-i
+cp $src/mk/haskell.mk $dst/mk/haskell.mk
+cp $src/mk/install-on $dst/mk/install-on
+cp $src/test/sdist    $dst/test/sdist

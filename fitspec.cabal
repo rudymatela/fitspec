@@ -43,6 +43,7 @@ extra-source-files: .gitignore
                   , mk/ghcdeps
                   , mk/haddock-i
                   , mk/haskell.mk
+                  , mk/install-on
                   , stack.yaml
                   , test/sdist
 tested-with: GHC==8.8
