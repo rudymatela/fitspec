@@ -2,7 +2,7 @@
 #
 # ghcdeps: generate Haskell make dependencies for compiling with GHC.
 #
-# Copyright (c) 2015-2020 Rudy Matela.
+# Copyright (c) 2015-2021 Rudy Matela.
 # Distributed under the 3-Clause BSD licence.
 #
 # From a list of files provided on standard input,
@@ -46,4 +46,5 @@ do
 	rm -f tmp.mk
 done |
 sort |
+grep -v "^Loaded package environment from " |
 sed -e 's,  *, \\\n  ,g'

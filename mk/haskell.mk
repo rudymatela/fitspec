@@ -1,6 +1,6 @@
 # Implicit rules for compiling Haskell code.
 #
-# Copyright (c) 2015-2020 Rudy Matela.
+# Copyright (c) 2015-2021 Rudy Matela.
 # Distributed under the 3-Clause BSD licence.
 #
 # You can optionally configure the "Configuration variables" below in your main
@@ -80,7 +80,8 @@ HADDOCK_HLNK_SRC = $(shell [ $(HADDOCK_MAJOR) -gt 2 ] \
 
 
 # Cleaning rule (add as a clean dependency)
-.PHONY: clean-hi-o
+clean-hs: clean-hi-o clean-haddock clean-cabal clean-stack
+
 clean-hi-o:
 	find $(ALL_HSS) | sed -e 's/hs$$/o/'      | xargs rm -f
 	find $(ALL_HSS) | sed -e 's/hs$$/hi/'     | xargs rm -f
@@ -113,6 +114,11 @@ doc/index.html: $(LIB_HSS)
 	  $(HADDOCK_HLNK_SRC) \
 	  $(HADDOCKFLAGS)
 
+clean-cabal:
+	rm -rf dist/ dist-newstyle/ cabal.project.local cabal.project.local~
+
+clean-stack:
+	rm -rf .stack-work/ stack.yaml.lock
 
 # lists all Haskell source files
 list-all-hss:
