@@ -45,14 +45,21 @@ script:
 
 matrix:
   allow_failures:
-  - ghc: 'head'
+  - env:                   GHCVER=head        CABALVER=head    STACKVER=nightly-2021-04-06
+  - env:                   GHCVER=9.0.1       CABALVER=head    STACKVER=nightly-2021-04-06
   include:
   - ghc: 'head'
-    env:                   GHCVER=head         CABALVER=head   STACKVER=nightly-2020-03-28
-    addons: {apt: {packages: [ghc-head,   cabal-install-head], sources: hvr-ghc}}
+    env:                   GHCVER=head        CABALVER=head    STACKVER=nightly-2021-04-06
+    addons: {apt: {packages: [ghc-head,  cabal-install-head],  sources: hvr-ghc}}
+  - ghc: '9.0'
+    env:                   GHCVER=9.0.1       CABALVER=head    STACKVER=nightly-2021-04-06
+    addons: {apt: {packages: [ghc-9.0.1, cabal-install-head],  sources: hvr-ghc}}
+  - ghc: '8.10'
+    env:                   GHCVER=8.10.4       CABALVER=3.2    STACKVER=lts-17.9
+    addons: {apt: {packages: [ghc-8.10.4, cabal-install-3.2],  sources: hvr-ghc}}
   - ghc: '8.8'
-    env:                   GHCVER=8.8.3        CABALVER=3.0    STACKVER=lts-15.5
-    addons: {apt: {packages: [ghc-8.8.3,  cabal-install-3.0],  sources: hvr-ghc}}
+    env:                   GHCVER=8.8.4        CABALVER=3.0    STACKVER=lts-16.31
+    addons: {apt: {packages: [ghc-8.8.4,  cabal-install-3.0],  sources: hvr-ghc}}
   - ghc: '8.6'
     env:                   GHCVER=8.6.5        CABALVER=2.4    STACKVER=lts-14.27
     addons: {apt: {packages: [ghc-8.6.5,  cabal-install-2.4],  sources: hvr-ghc}}
