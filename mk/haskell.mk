@@ -47,6 +47,7 @@ ALL_HSS ?= $(shell $(LIST_ALL_HSS))
 
 LIB_DEPS ?= base
 ALL_DEPS ?= $(LIB_DEPS)
+INSTALL_DEPS ?=
 
 PKGNAME = $(shell cat *.cabal | grep "^name:"    | sed -e "s/name: *//")
 
@@ -89,7 +90,7 @@ depend:
 	find $(ALL_HSS) | ./mk/ghcdeps -i$(GHCIMPORTDIRS) $(GHCFLAGS) > $(DEPMK)
 
 install-dependencies:
-	$(CABAL_INSTALL) $(ALL_DEPS)
+	$(CABAL_INSTALL) $(INSTALL_DEPS)
 
 # haddock rules
 haddock: doc/index.html
