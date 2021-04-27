@@ -48,6 +48,7 @@ LIST_ALL_HSS = find \( -path "./dist*" -o -path "./.stack-work" -o -path "./Setu
                     -o -name "*.*hs" -print
 HADDOCKFLAGS = $(shell grep -q "Arch Linux" /etc/lsb-release && echo --optghc=-dynamic)
 LIB_DEPS = base template-haskell leancheck cmdargs
+CABAL_INSTALL = $(shell cabal --version | grep -q "version [0-2]\." && echo 'cabal install' || echo 'cabal v1-install')
 
 all: mk/toplibs
 
@@ -69,24 +70,26 @@ test-with-extra-deps: all $(EXTRA_BENCHS) $(EXTRA_EGS) $(TESTS)
 	./test/derive
 	./test/utils
 
+install-dependencies:
+	$(CABAL_INSTALL) leancheck cmdargs
+
+test-via-cabal:
+	cabal configure --enable-tests --enable-benchmarks --ghc-options="$(GHCFLAGS) -O0"
+	cabal build
+	cabal test test
+
+test-via-stack:
+	stack test hello:test:test --ghc-options="$(GHCFLAGS) -O0" --system-ghc --no-install-ghc --no-terminal
+
+test-sdist:
+	./test/sdist
+
 legacy-test:
 	make clean && make test -j8 GHC=ghc-8.2  GHCFLAGS="-Werror -dynamic"
 	make clean && make test -j8 GHC=ghc-8.0  GHCFLAGS="-Werror -dynamic"
 	make clean && make test -j8 GHC=ghc-7.10 GHCFLAGS="-Werror -dynamic"
 	make clean && make test -j8 GHC=ghc-7.8  GHCFLAGS="-Werror -dynamic"
 	make clean && make test                    -j8
-
-test-via-cabal:
-	cabal configure --enable-tests --enable-benchmarks --ghc-options="-dynamic -Werror" $(CABALOPTS) && cabal build && cabal test
-
-test-sdist:
-	./test/sdist
-
-prepare-test-via-cabal:
-	rm -rf .cabal-sandbox cabal.sandbox.config
-	cabal sandbox init
-	cabal install --only-dependencies --enable-documentation
-	cabal configure --enable-tests --enable-benchmarks
 
 legacy-test-via-cabal:
 	cabal-ghc-8.2  configure --enable-tests --enable-benchmarks --ghc-option=-dynamic && cabal-ghc-8.2  build && cabal-ghc-8.2  test

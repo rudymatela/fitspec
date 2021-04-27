@@ -1,0 +1,131 @@
+# Builds and tests this Haskell project on "GitHub Actions"
+#
+# 2021  Rudy Matela
+#
+# some docs: https://github.com/haskell/actions/tree/main/setup
+name: build
+on: [push]
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Cache ~/.cabal/packages
+        uses: actions/cache@v2
+        with:
+          path: ~/.cabal/packages
+          key:          v1-${{ runner.os }}-cabal-packages-${{ hashFiles('hello.cabal') }}
+          restore-keys: v1-${{ runner.os }}-cabal-packages-
+
+      - name: Cache ~/.cabal and ~/.ghc
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.cabal
+            !~/.cabal/packages
+            ~/.ghc
+          key:          v1-${{ runner.os }}-cabal-ghc-latest-${{ hashFiles('hello.cabal') }}
+          restore-keys: v1-${{ runner.os }}-cabal-ghc-latest-
+
+      - run: du -hd3 ~/.cabal ~/.ghc || true
+
+      - run: haddock --version || sudo apt-get install ghc-haddock
+      - run: ghc   --version
+      - run: cabal --version
+
+      - name: Check out repository
+        uses: actions/checkout@v2
+
+      - run: cabal update
+      - run: make install-dependencies
+
+      - run: make
+      - run: make test
+      - run: make haddock
+      - run: make test-sdist
+      - run: make test-via-cabal
+
+
+  test-with-ghc:
+    strategy:
+      matrix:
+        ghc:
+          - '9.0'
+          - '8.10'
+          - '8.8'
+          - '8.6'
+          - '8.4'
+          - '8.2'
+          - '8.0'
+          - '7.10'
+          - '7.8'
+    runs-on: ubuntu-latest
+    needs: build-and-test
+    container: haskell:${{ matrix.ghc }}
+    steps:
+      - name: Cache ~/.cabal/packages
+        uses: actions/cache@v2
+        with:
+          path: ~/.cabal/packages
+          key:          v1-${{ runner.os }}-cabal-packages-${{ hashFiles('hello.cabal') }}
+          restore-keys: v1-${{ runner.os }}-cabal-packages-
+
+      - name: Cache ~/.cabal and ~/.ghc
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.cabal
+            !~/.cabal/packages
+            ~/.ghc
+          key:          v1-${{ runner.os }}-cabal-ghc-${{ matrix.ghc }}-${{ hashFiles('hello.cabal') }}
+          restore-keys: v1-${{ runner.os }}-cabal-ghc-${{ matrix.ghc }}-
+
+      - run: du -hd3 ~/.cabal ~/.ghc || true
+
+      - run: make --version || rm /etc/apt/sources.list.d/*.list # faster update
+      - run: make --version || apt-get update
+      - run: make --version || apt-get install make
+
+      - run: ghc   --version
+      - run: cabal --version
+
+      - name: Check out repository
+        uses: actions/checkout@v2
+
+      - run: cabal update
+      - run: make install-dependencies
+
+      - run: make
+      - run: make test
+      - run: make haddock
+      - run: make test-sdist
+      - run: make test-via-cabal
+
+  test-with-stack:
+    runs-on: ubuntu-latest
+    needs: build-and-test
+    steps:
+      - name: Setup Haskell's GHC and Cabal as required by current Stackage LTS
+        uses: haskell/actions/setup@v1
+        with: # lts-17.9
+          ghc-version: '8.10.4'
+          cabal-version: '3.2'
+
+      - uses: actions/cache@v2
+        with:
+          path: ~/.stack
+          key:          v1-${{ runner.os }}-stack-${{ hashFiles('stack.yaml') }}
+          restore-keys: v1-${{ runner.os }}-stack-
+
+      - name: Check out repository
+        uses: actions/checkout@v2
+      - run: make test-via-stack
+
+  test-with-hugs:
+    runs-on: ubuntu-latest
+    needs: build-and-test
+    steps:
+      - run: sudo apt-get install hugs
+      - name: Check out repository
+        uses: actions/checkout@v2
+      - run: make hugs-test
