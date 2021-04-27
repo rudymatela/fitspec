@@ -81,6 +81,9 @@ test-via-stack:
 test-sdist:
 	./test/sdist
 
+hugs-test:
+	echo 'TBA'
+
 legacy-test:
 	make clean && make test -j8 GHC=ghc-8.2  GHCFLAGS="-Werror -dynamic"
 	make clean && make test -j8 GHC=ghc-8.0  GHCFLAGS="-Werror -dynamic"
