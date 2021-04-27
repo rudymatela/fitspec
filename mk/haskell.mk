@@ -48,15 +48,8 @@ LIB_DEPS ?= base
 ALL_DEPS ?= $(LIB_DEPS)
 
 PKGNAME = $(shell cat *.cabal | grep "^name:"    | sed -e "s/name: *//")
-HADDOCK_VERSION = $(shell $(HADDOCK) --version | grep version | sed -e 's/.*version //;s/,.*//')
-HADDOCK_MAJOR = $(shell echo $(HADDOCK_VERSION) | sed -e 's/\..*//')
-HADDOCK_MINOR = $(shell echo $(HADDOCK_VERSION) | sed -e 's/[0-9]*\.\([0-9]*\).[0-9]*/\1/')
-HADDOCK_PKG_NAME = $(shell [ $(HADDOCK_MAJOR) -gt 2 ] \
-                        || [ $(HADDOCK_MAJOR) -eq 2 -a $(HADDOCK_MINOR) -ge 20 ] \
-                        && echo "--package-name=$(PKGNAME)")
-HADDOCK_HLNK_SRC = $(shell [ $(HADDOCK_MAJOR) -gt 2 ] \
-                        || [ $(HADDOCK_MAJOR) -eq 2 -a $(HADDOCK_MINOR) -ge 17 ] \
-                        && echo "--hyperlinked-source")
+
+HADDOCK_HAS = haddock --help | grep -q --
 
 
 # Implicit rules
@@ -110,8 +103,9 @@ doc/index.html: $(LIB_HSS)
 	./mk/haddock-i $(LIB_DEPS) | xargs \
 	$(HADDOCK) --html -odoc $(LIB_HSS) \
 	  --title=$(PKGNAME) \
-	  $(HADDOCK_PKG_NAME) \
-	  $(HADDOCK_HLNK_SRC) \
+	  $(shell $(HADDOCK_HAS) --package-name          && echo "--package-name=$(PKGNAME)" ) \
+	  $(shell $(HADDOCK_HAS) --hyperlinked-source    && echo "--hyperlinked-source"      ) \
+	  $(shell $(HADDOCK_HAS) --no-print-missing-docs && echo --no-print-missing-docs     ) \
 	  $(HADDOCKFLAGS)
 
 clean-cabal:

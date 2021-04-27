@@ -17,7 +17,6 @@
 GHCIMPORTDIRS = src:bench
 GHCFLAGS = -O2 $(shell grep -q "Arch Linux" /etc/lsb-release && echo -dynamic)
 CABALOPTS=
-HADDOCKFLAGS = --no-print-missing-docs
 BENCHS = \
   bench/avltrees         \
   bench/bools            \
