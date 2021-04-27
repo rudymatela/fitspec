@@ -48,7 +48,6 @@ LIST_ALL_HSS = find \( -path "./dist*" -o -path "./.stack-work" -o -path "./Setu
                     -o -name "*.*hs" -print
 HADDOCKFLAGS = $(shell grep -q "Arch Linux" /etc/lsb-release && echo --optghc=-dynamic)
 LIB_DEPS = base template-haskell leancheck cmdargs
-CABAL_INSTALL = $(shell cabal --version | grep -q "version [0-2]\." && echo 'cabal install' || echo 'cabal v1-install')
 
 all: mk/toplibs
 
@@ -70,16 +69,13 @@ test-with-extra-deps: all $(EXTRA_BENCHS) $(EXTRA_EGS) $(TESTS)
 	./test/derive
 	./test/utils
 
-install-dependencies:
-	$(CABAL_INSTALL) leancheck cmdargs
-
 test-via-cabal:
 	cabal configure --enable-tests --enable-benchmarks --ghc-options="$(GHCFLAGS) -O0"
 	cabal build
-	cabal test test
+	cabal test mutate
 
 test-via-stack:
-	stack test hello:test:test --ghc-options="$(GHCFLAGS) -O0" --system-ghc --no-install-ghc --no-terminal
+	stack test fitspec:test:mutate --ghc-options="$(GHCFLAGS) -O0" --system-ghc --no-install-ghc --no-terminal
 
 test-sdist:
 	./test/sdist
