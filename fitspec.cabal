@@ -31,7 +31,6 @@ extra-doc-files: README.md
                , doc/tutorial-property-creation.md
                , doc/fitspec.svg
 extra-source-files: .gitignore
-                  , .travis.yml
                   , .github/workflows/build.yml
                   , Makefile
                   , bench/haskell-src-exts.hs

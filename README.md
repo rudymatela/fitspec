@@ -167,8 +167,8 @@ FitSpec is also subject to a chapter in a [PhD Thesis (2017)].
 
 [fitspec-logo]: https://github.com/rudymatela/fitspec/raw/master/doc/fitspec.svg?sanitize=true
 
-[build-status]: https://travis-ci.org/rudymatela/fitspec.svg?branch=master
-[build-log]:    https://travis-ci.org/rudymatela/fitspec
+[build-log]:    https://github.com/rudymatela/fitspec/actions/workflows/build.yml
+[build-status]: https://github.com/rudymatela/fitspec/actions/workflows/build.yml/badge.svg
 [hackage-version]: https://img.shields.io/hackage/v/fitspec.svg
 [fitspec-on-hackage]:                  https://hackage.haskell.org/package/fitspec
 [latest FitSpec version from Hackage]: https://hackage.haskell.org/package/fitspec
