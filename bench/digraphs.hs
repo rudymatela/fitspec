@@ -123,9 +123,7 @@ extraMutantsPS = drop 1
   , (isPath, \ns d -> D [])
   ]
 
--- Choosen node-label test type.
-type A = Nat
-
+main :: IO ()
 main = do
   unless listableOK
     $ putStrLn "WARNING: Listable Digraph is broken!  (read my source.)"
