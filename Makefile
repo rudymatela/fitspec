@@ -108,7 +108,7 @@ prepare-legacy-test-via-cabal:
 	cabal-ghc-7.8  install --only-dependencies --enable-tests --enable-benchmarks
 
 clean: clean-hi-o clean-haddock
-	rm -f $(TESTS) $(BENCHS) $(EGS) {eg,bench}/*.{hi,o,dyn_hi,dyn_o}
+	rm -f $(TESTS) $(BENCHS) $(EGS) {eg,bench}/*.{hi,o,dyn_hi,dyn_o} TAGS tags mk/toplibs
 
 # Debug: just list all source files compiled normally
 list-hs:
