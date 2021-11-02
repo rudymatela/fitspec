@@ -111,8 +111,8 @@ jobs:
     steps:
       - name: Setup Haskell's GHC and Cabal as required by current Stackage LTS
         uses: haskell/actions/setup@v1
-        with: # lts-17.9
-          ghc-version: '8.10.4'
+        with: # lts-18.14
+          ghc-version: '8.10.7'
           cabal-version: '3.2'
 
       - uses: actions/cache@v2
