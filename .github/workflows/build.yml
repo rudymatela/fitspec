@@ -52,6 +52,8 @@ jobs:
     strategy:
       matrix:
         ghc:
+          - '9.4'
+          - '9.2'
           - '9.0'
           - '8.10'
           - '8.8'
@@ -111,9 +113,9 @@ jobs:
     steps:
       - name: Setup Haskell's GHC and Cabal as required by current Stackage LTS
         uses: haskell/actions/setup@v1
-        with: # lts-18.14
-          ghc-version: '8.10.7'
-          cabal-version: '3.2'
+        with: # lts-19.19
+          ghc-version: '9.0.2'
+          cabal-version: '3.4'
 
       - uses: actions/cache@v2
         with:
