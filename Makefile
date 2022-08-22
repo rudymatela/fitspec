@@ -15,7 +15,8 @@
 
 # Misc variables
 GHCIMPORTDIRS = src:bench
-GHCFLAGS = -O2 $(shell grep -q "Arch Linux" /etc/lsb-release && echo -dynamic)
+GHCFLAGS = -v0 -O2 \
+  $(shell grep -q "Arch Linux" /etc/lsb-release && echo -dynamic -package leancheck -package cmdargs)
 CABALOPTS=
 BENCHS = \
   bench/avltrees         \
