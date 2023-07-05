@@ -1,6 +1,6 @@
 # Implicit rules for compiling Haskell code.
 #
-# Copyright (c) 2015-2021 Rudy Matela.
+# Copyright (c) 2015-2023 Rudy Matela.
 # Distributed under the 3-Clause BSD licence.
 #
 # You can optionally configure the "Configuration variables" below in your main
@@ -21,7 +21,7 @@ GHCFLAGS ?=
 GHC ?= ghc
 GHCCMD = $(GHC) -i$(GHCIMPORTDIRS) $(GHCFLAGS)
 HADDOCK ?= haddock
-CABAL_INSTALL = $(shell cabal --version | grep -q "version [0-2]\." && echo 'cabal install' || echo 'cabal v1-install')
+CABAL_INSTALL = $(shell cabal --version | grep -q "version [0-2]\." && echo 'cabal install' || echo 'cabal install --lib base')
 
 # Hugs Parameters
 HUGSIMPORTDIRS ?= "/usr/lib/hugs/packages/*"
