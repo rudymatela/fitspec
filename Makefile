@@ -49,7 +49,7 @@ LIST_ALL_HSS = find \( -path "./dist*" -o -path "./.stack-work" -o -path "./Setu
                     -o -name "*.*hs" -print
 HADDOCKFLAGS = $(shell grep -q "Arch Linux" /etc/lsb-release && echo --optghc=-dynamic)
 LIB_DEPS = base $(INSTALL_DEPS)
-INSTALL_DEPS = template-haskell leancheck cmdargs
+INSTALL_DEPS = template-haskell leancheck cmdargs pretty
 
 all: mk/toplibs
 
