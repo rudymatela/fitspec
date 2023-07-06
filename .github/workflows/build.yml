@@ -46,13 +46,17 @@ jobs:
 
       - run: make install-dependencies
 
-      # for some reason these are failing due to missing "base"?
-      # commenting for the time being
-      #- run: make
-      #- run: make test
-      #- run: make haddock
+      # 2023-07: some projects were failing with missing base for GHC 9.6.
+      #          Here we compile through cabal only provisionally.
+      # - run: make
+      # - run: make test
+      # - run: make haddock
       - run: make test-sdist
-      - run: make test-via-cabal
+      #- run: make test-via-cabal
+      - run: cabal configure --enable-tests --enable-benchmarks --ghc-options="-O0"
+      - run: cabal build
+      - run: cabal test
+      - run: cabal haddock
 
 
   test-with-ghc:
