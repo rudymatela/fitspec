@@ -16,7 +16,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ~/.cabal/packages
-          key:          v1-${{ runner.os }}-cabal-packages-${{ hashFiles('hello.cabal') }}
+          key:          v1-${{ runner.os }}-cabal-packages-${{ hashFiles('*.cabal') }}
           restore-keys: v1-${{ runner.os }}-cabal-packages-
 
       - name: Cache ~/.cabal and ~/.ghc
@@ -26,7 +26,7 @@ jobs:
             ~/.cabal
             !~/.cabal/packages
             ~/.ghc
-          key:          v1-${{ runner.os }}-cabal-ghc-latest-${{ hashFiles('hello.cabal') }}
+          key:          v1-${{ runner.os }}-cabal-ghc-latest-${{ hashFiles('*.cabal') }}
           restore-keys: v1-${{ runner.os }}-cabal-ghc-latest-
 
       - run: du -hd3 ~/.cabal ~/.ghc || true
@@ -75,7 +75,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ~/.cabal/packages
-          key:          v1-${{ runner.os }}-cabal-packages-${{ hashFiles('hello.cabal') }}
+          key:          v1-${{ runner.os }}-cabal-packages-${{ hashFiles('*.cabal') }}
           restore-keys: v1-${{ runner.os }}-cabal-packages-
 
       - name: Cache ~/.cabal and ~/.ghc
@@ -85,7 +85,7 @@ jobs:
             ~/.cabal
             !~/.cabal/packages
             ~/.ghc
-          key:          v1-${{ runner.os }}-cabal-ghc-${{ matrix.ghc }}-${{ hashFiles('hello.cabal') }}
+          key:          v1-${{ runner.os }}-cabal-ghc-${{ matrix.ghc }}-${{ hashFiles('*.cabal') }}
           restore-keys: v1-${{ runner.os }}-cabal-ghc-${{ matrix.ghc }}-
 
       - run: du -hd3 ~/.cabal ~/.ghc || true
