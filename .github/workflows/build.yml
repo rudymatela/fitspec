@@ -50,9 +50,10 @@ jobs:
       - run: cabal update
       - run: cabal install --lib leancheck
 
-      - run: ghc hello.hs -o hello
-
       - run: ghc-pkg list
+      - run: cat /home/runner/.ghc/x86_64-linux-9.6.2/environments/default || true
+
+      - run: ghc hello.hs -o hello
 
       - run: make
       - run: make test
