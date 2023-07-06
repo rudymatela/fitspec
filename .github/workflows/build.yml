@@ -46,7 +46,9 @@ jobs:
 
       - run: ghc hello.hs -o hello
 
-      - run: make install-dependencies
+      #- run: make install-dependencies
+      - run: cabal update
+      - run: cabal install --lib leancheck
 
       - run: ghc hello.hs -o hello
 
