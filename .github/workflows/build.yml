@@ -67,7 +67,6 @@ jobs:
           - '8.6'
           - '8.4'
           - '8.2'
-          - '7.10'
     runs-on: ubuntu-latest
     needs: build-and-test
     container: haskell:${{ matrix.ghc }}
