@@ -44,7 +44,11 @@ jobs:
 
       - run: git --version
 
+      - run: ghc hello.hs -o hello
+
       - run: make install-dependencies
+
+      - run: ghc hello.hs -o hello
 
       - run: ghc-pkg list
 
