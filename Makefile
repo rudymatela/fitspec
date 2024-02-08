@@ -48,8 +48,8 @@ TESTS = \
 LIST_ALL_HSS = find \( -path "./dist*" -o -path "./.stack-work" -o -path "./Setup.hs" -o -name "haskell-src*.hs" \) -prune \
                     -o -name "*.*hs" -print
 HADDOCKFLAGS = $(shell grep -q "Arch Linux" /etc/lsb-release && echo --optghc=-dynamic)
-LIB_DEPS = base template-haskell $(INSTALL_DEPS)
-INSTALL_DEPS = leancheck cmdargs
+LIB_DEPS = base $(INSTALL_DEPS)
+INSTALL_DEPS = leancheck cmdargs template-haskell
 
 all: mk/toplibs
 
