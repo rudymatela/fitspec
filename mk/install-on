@@ -2,7 +2,7 @@
 #
 # mk/install-on: install or updates the mk folder on a Haskell project
 #
-# Copyright (c) 2019-2021 Rudy Matela.
+# Copyright (c) 2019-2024 Rudy Matela.
 # Distributed under the 3-Clause BSD licence.
 #
 # usage: ./mk/install-on path/to/project

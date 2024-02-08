@@ -4,4 +4,4 @@ packages:
 - .
 
 extra-deps:
-- leancheck-1.0.0
+- leancheck-1.0.2

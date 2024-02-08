@@ -2,7 +2,7 @@
 #
 # haddock-i: list haddock's -i parameters.
 #
-# Copyright (c) 2015-2021 Rudy Matela.
+# Copyright (c) 2015-2024 Rudy Matela.
 # Distributed under the 3-Clause BSD licence.
 #
 # $ haddock-i <package1> <package2> ... <packageN>

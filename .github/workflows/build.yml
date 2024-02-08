@@ -1,8 +1,8 @@
 # Builds and tests this Haskell project on "GitHub Actions"
 #
-# 2021-2023  Rudy Matela
+# 2021-2024  Rudy Matela
 #
-# some docs: https://github.com/haskell/actions/tree/main/setup
+# some docs: https://github.com/haskell-actions/setup
 #
 # The official haskell docker image: https://hub.docker.com/_/haskell
 name: build
@@ -11,58 +11,66 @@ jobs:
   build-and-test:
     runs-on: ubuntu-latest
     steps:
+      - run: git   --version
+      - run: make  --version
+      - run: ghc   --version
+      - run: cabal --version
 
-      - name: Cache ~/.cabal/packages
+      - name: Check out repository
+        uses: actions/checkout@v3
+
+      # check out needs to happen before cache so that hashing works
+      - name: Cache hash
+        run: echo Cache hash = ${{ hashFiles('*.cabal') }}
+
+      - name: Cache cabal (source) packages
         uses: actions/cache@v3
         with:
-          path: ~/.cabal/packages
+          path: |
+            ~/.cabal/packages
+            ~/.cache/cabal
           key:          v1-${{ runner.os }}-cabal-packages-${{ hashFiles('*.cabal') }}
           restore-keys: v1-${{ runner.os }}-cabal-packages-
 
-      - name: Cache ~/.cabal and ~/.ghc
+      - name: Cache installed cabal packages
         uses: actions/cache@v3
         with:
           path: |
             ~/.cabal
             !~/.cabal/packages
+            ~/.config/cabal
+            ~/.local/state/cabal
             ~/.ghc
           key:          v1-${{ runner.os }}-cabal-ghc-latest-${{ hashFiles('*.cabal') }}
-          restore-keys: v1-${{ runner.os }}-cabal-ghc-latest-
-
-      - run: du -hd3 ~/.cabal ~/.ghc || true
-
-      - run: make --version
+          restore-keys: v1-${{ runner.os }}-cabal-ghc-latest-${{ hashFiles('*.cabal') }}
+          # restore with exact match has some versions of cabal have trouble updating
 
       - run: haddock --version || sudo apt-get install ghc-haddock
-      - run: ghc     --version
-      - run: cabal   --version
-      - run: haddock --version
+      # blank line
+      # blank line for alignment with matrix scripts
+
+      - run: du -hd3 ~/.ghc ~/.cabal ~/.config/cabal ~/.cache/cabal ~/.local/state/cabal || true
+
+      - run: ghc-pkg list
+      - run: make install-dependencies
       - run: ghc-pkg list
 
-      - name: Check out repository
-        uses: actions/checkout@v3
+      - run: du -hd3 ~/.ghc ~/.cabal ~/.config/cabal ~/.cache/cabal ~/.local/state/cabal || true
 
-      - run: git --version
-
-      - run: make install-dependencies
-
-      # 2023-07: some projects were failing with missing base for GHC 9.6.
-      #          Here we compile through cabal only provisionally.
-      # - run: make
-      # - run: make test
-      # - run: make haddock
+      - run: make
+      - run: make test
+      - run: make haddock
       - run: make test-sdist
-      #- run: make test-via-cabal
-      - run: cabal configure --enable-tests --enable-benchmarks --ghc-options="-O0"
-      - run: cabal build
-      - run: cabal test
-      - run: cabal haddock
+      - run: make test-via-cabal
 
 
   test-with-ghc:
     strategy:
+      max-parallel: 6
       matrix:
         ghc:
+          - '9.8'
+          - '9.6'
           - '9.4'
           - '9.2'
           - '9.0'
@@ -73,38 +81,51 @@ jobs:
     needs: build-and-test
     container: haskell:${{ matrix.ghc }}
     steps:
-      - name: Cache ~/.cabal/packages
+      - run: git   --version || true # git is missing in some images
+      - run: make  --version || true # make is missing in some images
+      - run: ghc   --version
+      - run: cabal --version
+
+      - name: Check out repository
+        uses: actions/checkout@v3
+
+      # check out needs to happen before cache so that hashing works
+      - name: Cache hash
+        run: echo Cache hash = ${{ hashFiles('*.cabal') }}
+
+      - name: Cache cabal (source) packages
         uses: actions/cache@v3
         with:
-          path: ~/.cabal/packages
+          path: |
+            ~/.cabal/packages
+            ~/.cache/cabal
           key:          v1-${{ runner.os }}-cabal-packages-${{ hashFiles('*.cabal') }}
           restore-keys: v1-${{ runner.os }}-cabal-packages-
 
-      - name: Cache ~/.cabal and ~/.ghc
+      - name: Cache installed cabal packages
         uses: actions/cache@v3
         with:
           path: |
             ~/.cabal
             !~/.cabal/packages
+            ~/.config/cabal
+            ~/.local/state/cabal
             ~/.ghc
           key:          v1-${{ runner.os }}-cabal-ghc-${{ matrix.ghc }}-${{ hashFiles('*.cabal') }}
-          restore-keys: v1-${{ runner.os }}-cabal-ghc-${{ matrix.ghc }}-
-
-      - run: du -hd3 ~/.cabal ~/.ghc || true
+          restore-keys: v1-${{ runner.os }}-cabal-ghc-${{ matrix.ghc }}-${{ hashFiles('*.cabal') }}
+          # restore with exact match has some versions of cabal have trouble updating
 
       - run: make --version || rm /etc/apt/sources.list.d/*.list # faster update
       - run: make --version || apt-get update
       - run: make --version || apt-get install make
 
-      - run: ghc     --version
-      - run: cabal   --version
-      - run: haddock --version
+      - run: du -hd3 ~/.ghc ~/.cabal ~/.config/cabal ~/.cache/cabal ~/.local/state/cabal || true
+
+      - run: ghc-pkg list
+      - run: make install-dependencies
       - run: ghc-pkg list
 
-      - name: Check out repository
-        uses: actions/checkout@v3
-
-      - run: make install-dependencies
+      - run: du -hd3 ~/.ghc ~/.cabal ~/.config/cabal ~/.cache/cabal ~/.local/state/cabal || true
 
       - run: make
       - run: make test
@@ -116,20 +137,41 @@ jobs:
     runs-on: ubuntu-latest
     needs: build-and-test
     steps:
-      - name: Setup Haskell's GHC and Cabal as required by current Stackage LTS
-        uses: haskell/actions/setup@v2
-        with: # lts-19.19
-          ghc-version: '9.0.2'
-          cabal-version: '3.4'
+      - name: Check out repository
+        uses: actions/checkout@v3
 
-      - uses: actions/cache@v3
+      # check out needs to happen before cache so that hashing works
+      - name: Cache hash
+        run: echo Cache hash = ${{ hashFiles('stack.yaml') }}
+
+      - name: Cache stack folder
+        uses: actions/cache@v3
         with:
           path: ~/.stack
           key:          v1-${{ runner.os }}-stack-${{ hashFiles('stack.yaml') }}
           restore-keys: v1-${{ runner.os }}-stack-
 
+      - name: Cache ghcup folder
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.ghcup
+            /usr/local/.ghcup/bin
+            /usr/local/.ghcup/db
+            /usr/local/.ghcup/ghc/9.0.2
+          key:          v1-${{ runner.os }}-ghcup-${{ hashFiles('stack.yaml') }}
+          restore-keys: v1-${{ runner.os }}-ghcup-
+
+      - name: Setup Haskell's GHC and Cabal as required by current Stackage LTS
+        uses: haskell-actions/setup@v2
+        with: # lts-19.19
+          ghc-version: '9.0.2'
+          cabal-version: '3.4'
+
+      - run: du -hd2 ~/.stack ~/.ghcup /usr/local/.ghcup || true
+
       - run: stack --version
 
-      - name: Check out repository
-        uses: actions/checkout@v3
       - run: make test-via-stack
+
+      - run: du -hd2 ~/.stack ~/.ghcup /usr/local/.ghcup || true

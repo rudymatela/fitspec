@@ -2,7 +2,7 @@
 #
 # ghcdeps: generate Haskell make dependencies for compiling with GHC.
 #
-# Copyright (c) 2015-2021 Rudy Matela.
+# Copyright (c) 2015-2024 Rudy Matela.
 # Distributed under the 3-Clause BSD licence.
 #
 # From a list of files provided on standard input,
