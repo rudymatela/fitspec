@@ -271,7 +271,7 @@ showBindings new ns bs =
 -- operator in the middle.
 --
 -- > fvarnames "x + y" == ["(+)","x","y"]
--- 
+--
 -- This function always returns a "head"
 --
 -- > fvarnames "" == ["f"]
