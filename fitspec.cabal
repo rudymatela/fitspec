@@ -52,9 +52,7 @@ tested-with: GHC==9.10
            , GHC==9.4
            , GHC==9.2
            , GHC==9.0
-           , GHC==8.10
-           , GHC==8.6
-           , GHC==8.2
+           , GHC==8.8
 
 source-repository head
   type:            git
